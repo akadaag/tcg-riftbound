@@ -9,6 +9,7 @@ import { getActiveEvents } from "@/features/engine/events";
 import { advanceDay, type EndDayResult } from "@/features/engine/day-cycle";
 import {
   getProductMap,
+  getProductSetMap,
   getGameplayMeta,
   getCardById,
 } from "@/features/catalog";
@@ -51,7 +52,15 @@ export default function HomePage() {
 
   function handleEndDay() {
     const productMap = getProductMap();
-    const result = advanceDay(save, productMap, getGameplayMeta);
+    const productSetMapData = getProductSetMap();
+    const result = advanceDay(
+      save,
+      productMap,
+      getGameplayMeta,
+      getCardById,
+      getGameplayMeta,
+      productSetMapData,
+    );
     setEndDayResult(result);
     // Don't apply save yet — wait for modal dismiss
   }

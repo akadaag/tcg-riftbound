@@ -14,6 +14,8 @@ import type {
   SetHype,
   ProductDefinition,
   MissionDefinition,
+  SinglesListing,
+  Rarity,
 } from "@/types/game";
 import { XP_THRESHOLDS, STARTING_SHELVES } from "@/types/game";
 import {
@@ -45,6 +47,8 @@ function createEmptyDayReport(day: number): DayReport {
     packsOpened: 0,
     newCardsDiscovered: 0,
     xpEarned: 0,
+    singlesRevenue: 0,
+    singlesSold: 0,
     activeEvents: [],
   };
 }
@@ -80,6 +84,7 @@ export function createInitialSave(): SaveGame {
     inventory: [],
     collection: [],
     displayCase: [],
+    singlesListings: [],
 
     // Hype
     setHype: [],
@@ -104,6 +109,9 @@ export function createInitialSave(): SaveGame {
       totalCardsCollected: 0,
       totalCustomersServed: 0,
       uniqueCardsOwned: 0,
+      totalSinglesRevenue: 0,
+      totalSinglesSold: 0,
+      totalTradesCompleted: 0,
     },
   };
 }
@@ -189,6 +197,14 @@ interface GameState {
   // Actions — Display Case
   addToDisplayCase: (cardId: string) => void;
   removeFromDisplayCase: (cardId: string) => void;
+
+  // Actions — Singles Counter
+  listSingle: (cardId: string, askingPrice: number) => boolean;
+  unlistSingle: (cardId: string) => void;
+  sellSingle: (cardId: string, revenue: number) => void;
+
+  // Actions — Card Trader
+  tradeCards: (selectedCardIds: string[], resultCardId: string) => void;
 
   // Actions — Unlocks
   unlockProduct: (productId: string) => void;
@@ -686,6 +702,148 @@ export const useGameStore = create<GameState>()((set, get) => ({
         updatedAt: new Date().toISOString(),
       },
     })),
+
+  // ── Singles Counter ──────────────────────────────
+
+  /**
+   * List a card for sale on the singles counter.
+   * Requires copiesOwned >= 2 (keep at least 1). Returns false if invalid.
+   */
+  listSingle: (cardId: string, askingPrice: number) => {
+    const state = get();
+    const entry = state.save.collection.find((c) => c.cardId === cardId);
+    if (!entry || entry.copiesOwned < 2) return false;
+
+    // Already listed?
+    if (state.save.singlesListings.some((l) => l.cardId === cardId))
+      return false;
+
+    // Slot limit: 5 base (fixed for now)
+    const MAX_SINGLES_SLOTS = 5;
+    if (state.save.singlesListings.length >= MAX_SINGLES_SLOTS) return false;
+
+    set({
+      save: {
+        ...state.save,
+        singlesListings: [
+          ...state.save.singlesListings,
+          {
+            cardId,
+            askingPrice: Math.max(1, Math.round(askingPrice)),
+            listedAt: new Date().toISOString(),
+          },
+        ],
+        updatedAt: new Date().toISOString(),
+      },
+    });
+    return true;
+  },
+
+  /** Remove a card listing from the singles counter. */
+  unlistSingle: (cardId: string) =>
+    set((state) => ({
+      save: {
+        ...state.save,
+        singlesListings: state.save.singlesListings.filter(
+          (l) => l.cardId !== cardId,
+        ),
+        updatedAt: new Date().toISOString(),
+      },
+    })),
+
+  /**
+   * Sell a single card. Removes the listing, decrements copiesOwned,
+   * adds revenue, updates stats and todayReport.
+   */
+  sellSingle: (cardId: string, revenue: number) =>
+    set((state) => {
+      const listing = state.save.singlesListings.find(
+        (l) => l.cardId === cardId,
+      );
+      if (!listing) return state;
+
+      return {
+        save: {
+          ...state.save,
+          softCurrency: state.save.softCurrency + revenue,
+          singlesListings: state.save.singlesListings.filter(
+            (l) => l.cardId !== cardId,
+          ),
+          collection: state.save.collection.map((c) =>
+            c.cardId === cardId
+              ? { ...c, copiesOwned: Math.max(0, c.copiesOwned - 1) }
+              : c,
+          ),
+          todayReport: {
+            ...state.save.todayReport,
+            singlesRevenue: state.save.todayReport.singlesRevenue + revenue,
+            singlesSold: state.save.todayReport.singlesSold + 1,
+            revenue: state.save.todayReport.revenue + revenue,
+          },
+          stats: {
+            ...state.save.stats,
+            totalSinglesRevenue: state.save.stats.totalSinglesRevenue + revenue,
+            totalSinglesSold: state.save.stats.totalSinglesSold + 1,
+            totalRevenue: state.save.stats.totalRevenue + revenue,
+          },
+          updatedAt: new Date().toISOString(),
+        },
+      };
+    }),
+
+  // ── Card Trader ──────────────────────────────────
+
+  /**
+   * Execute a trade: sacrifice 5 cards (decrement copiesOwned by 1 each),
+   * add 1 copy of the result card.
+   */
+  tradeCards: (selectedCardIds: string[], resultCardId: string) => {
+    const state = get();
+    const now = new Date().toISOString();
+
+    // Decrement copies for each sacrificed card
+    let collection = [...state.save.collection];
+    for (const cardId of selectedCardIds) {
+      collection = collection.map((c) =>
+        c.cardId === cardId
+          ? { ...c, copiesOwned: Math.max(0, c.copiesOwned - 1) }
+          : c,
+      );
+    }
+
+    // Add result card
+    const existing = collection.find((c) => c.cardId === resultCardId);
+    if (existing) {
+      collection = collection.map((c) =>
+        c.cardId === resultCardId
+          ? { ...c, copiesOwned: c.copiesOwned + 1 }
+          : c,
+      );
+    } else {
+      collection.push({
+        cardId: resultCardId,
+        copiesOwned: 1,
+        firstObtainedAt: now,
+        highestVariantOwned: null,
+        isNew: true,
+      });
+    }
+
+    set({
+      save: {
+        ...state.save,
+        collection,
+        stats: {
+          ...state.save.stats,
+          totalTradesCompleted: state.save.stats.totalTradesCompleted + 1,
+          uniqueCardsOwned: existing
+            ? state.save.stats.uniqueCardsOwned
+            : state.save.stats.uniqueCardsOwned + 1,
+        },
+        updatedAt: now,
+      },
+    });
+  },
 
   // ── Unlocks ──────────────────────────────────────
 

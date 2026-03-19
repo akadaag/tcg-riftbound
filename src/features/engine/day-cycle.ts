@@ -20,10 +20,12 @@ import type {
   ProductDefinition,
   MissionProgress,
   MissionDefinition,
+  CardGameplayMeta,
+  CardDefinition,
 } from "@/types/game";
 import { MAX_OFFLINE_HOURS } from "@/types/game";
 
-import { simulateOfflinePeriod } from "./customers";
+import { simulateOfflinePeriod, generateCustomerWave } from "./customers";
 import { calculateDayXP, applyXP } from "./economy";
 import { decayHype, applyEventHype } from "./hype";
 import {
@@ -50,6 +52,10 @@ import {
   shouldResetWeeklies,
   initializeMissionProgress,
 } from "@/features/missions";
+import {
+  simulateDaySinglesSales,
+  SINGLES_UNLOCK_LEVEL,
+} from "@/features/singles";
 
 // ── Offline Progress ─────────────────────────────────────────────────
 
@@ -73,6 +79,8 @@ export function calculateOfflineProgress(
   products: Map<string, ProductDefinition>,
   productSetMap: Map<string, string>,
   getMetaFn?: (cardId: string) => { displayScore: number } | undefined,
+  metaLookupFn?: (cardId: string) => CardGameplayMeta | undefined,
+  cardLookupFn?: (cardId: string) => CardDefinition | undefined,
 ): { report: OfflineReport; updatedSave: SaveGame } | null {
   const hours = calculateOfflineHours(save.lastPlayedAt);
 
@@ -122,32 +130,92 @@ export function calculateOfflineProgress(
     upgradeMods.toleranceBonus,
   );
 
+  // Simulate offline singles sales (if unlocked and listings exist)
+  let offlineSinglesRevenue = 0;
+  let offlineSinglesSold = 0;
+  let offlineSinglesListings = [...save.singlesListings];
+  let offlineCollection = [...save.collection];
+
+  if (
+    save.shopLevel >= SINGLES_UNLOCK_LEVEL &&
+    save.singlesListings.length > 0 &&
+    metaLookupFn &&
+    cardLookupFn
+  ) {
+    // Generate a proportional customer wave for offline singles
+    const offlineCustomers = generateCustomerWave(
+      save.shopLevel,
+      save.reputation,
+      activeEvents,
+      save.setHype,
+      save.shelves,
+      productSetMap,
+      upgradeMods.trafficBonus,
+      dcBonus.trafficBonus,
+    );
+
+    // Scale down customer count by offline hours/8 and efficiency
+    const offlineEfficiency = 0.6;
+    const scaledCount = Math.round(
+      offlineCustomers.length * (hours / 8) * offlineEfficiency,
+    );
+    const scaledCustomers = offlineCustomers.slice(0, scaledCount);
+
+    const eventMods = getCombinedEventModifiers(activeEvents);
+    const { sales, remainingListings } = simulateDaySinglesSales(
+      scaledCustomers,
+      offlineSinglesListings,
+      metaLookupFn,
+      cardLookupFn,
+      eventMods.priceToleranceMultiplier,
+      upgradeMods.toleranceBonus,
+    );
+
+    for (const sale of sales) {
+      offlineSinglesRevenue += sale.revenue;
+      offlineSinglesSold += 1;
+      offlineCollection = offlineCollection.map((c) =>
+        c.cardId === sale.cardId
+          ? { ...c, copiesOwned: Math.max(0, c.copiesOwned - 1) }
+          : c,
+      );
+    }
+    offlineSinglesListings = remainingListings;
+  }
+
+  const totalOfflineRevenue = simResult.revenue + offlineSinglesRevenue;
+
   const report: OfflineReport = {
     hoursElapsed: Math.round(hours * 10) / 10,
-    revenue: simResult.revenue,
+    revenue: totalOfflineRevenue,
     productsSold: simResult.productsSold,
-    totalItemsSold: simResult.totalItemsSold,
+    totalItemsSold: simResult.totalItemsSold + offlineSinglesSold,
     customersServed: simResult.customersServed,
   };
 
   const updatedSave: SaveGame = {
     ...save,
-    softCurrency: save.softCurrency + simResult.revenue,
+    softCurrency: save.softCurrency + totalOfflineRevenue,
     reputation: save.reputation + simResult.reputationGained,
     shelves: simResult.updatedShelves,
+    collection: offlineCollection,
+    singlesListings: offlineSinglesListings,
     lastPlayedAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     stats: {
       ...save.stats,
       totalSales: save.stats.totalSales + simResult.totalItemsSold,
-      totalRevenue: save.stats.totalRevenue + simResult.revenue,
+      totalRevenue: save.stats.totalRevenue + totalOfflineRevenue,
       totalCustomersServed:
         save.stats.totalCustomersServed + simResult.customersServed,
+      totalSinglesRevenue:
+        save.stats.totalSinglesRevenue + offlineSinglesRevenue,
+      totalSinglesSold: save.stats.totalSinglesSold + offlineSinglesSold,
     },
     // Update today report with offline sales
     todayReport: {
       ...save.todayReport,
-      revenue: save.todayReport.revenue + simResult.revenue,
+      revenue: save.todayReport.revenue + totalOfflineRevenue,
       customersVisited:
         save.todayReport.customersVisited + simResult.customersServed,
       customersPurchased:
@@ -156,6 +224,8 @@ export function calculateOfflineProgress(
         save.todayReport.productsSold,
         simResult.productsSold,
       ),
+      singlesRevenue: save.todayReport.singlesRevenue + offlineSinglesRevenue,
+      singlesSold: save.todayReport.singlesSold + offlineSinglesSold,
     },
   };
 
@@ -185,23 +255,28 @@ export interface EndDayResult {
  * Advance to the next day. This is the "End Day" action.
  *
  * Steps:
- * 1. Finalize today's report
- * 2. Calculate and apply XP (with upgrade bonus)
- * 3. Apply reputation-per-day from upgrades
- * 4. Decay hype
- * 5. Clean up expired events
- * 6. Maybe schedule a new event
- * 7. Evaluate and update mission progress
- * 8. Reset daily/weekly missions as needed; generate new ones
- * 9. Reset daily tracking
- * 10. Advance day counter
+ * 1. Simulate singles sales for today (if unlocked and listings exist)
+ * 2. Finalize today's report
+ * 3. Calculate and apply XP (with upgrade bonus + singles XP)
+ * 4. Apply reputation-per-day from upgrades
+ * 5. Decay hype
+ * 6. Clean up expired events
+ * 7. Maybe schedule a new event
+ * 8. Evaluate and update mission progress
+ * 9. Reset daily/weekly missions as needed; generate new ones
+ * 10. Reset daily tracking
+ * 11. Advance day counter
  *
- * @param getMetaFn — optional function to look up gameplay meta for display case bonus
+ * @param getMetaFn — optional function to look up gameplay meta for display case bonus and singles
+ * @param cardLookupFn — optional function to look up card definitions for singles
  */
 export function advanceDay(
   save: SaveGame,
   products: Map<string, ProductDefinition>,
   getMetaFn?: (cardId: string) => { displayScore: number } | undefined,
+  cardLookupFn?: (cardId: string) => CardDefinition | undefined,
+  metaLookupFn?: (cardId: string) => CardGameplayMeta | undefined,
+  productSetMap?: Map<string, string>,
 ): EndDayResult {
   const currentDay = save.currentDay;
   const nextDay = currentDay + 1;
@@ -209,13 +284,95 @@ export function advanceDay(
   // Get upgrade modifiers
   const upgradeMods = getUpgradeModifiers(save.upgrades);
 
-  // 1. Finalize today's report with profit calculation
+  // 1. Simulate singles sales for today's customer wave
+  let singlesRevenue = save.todayReport.singlesRevenue;
+  let singlesSold = save.todayReport.singlesSold;
+  let updatedSinglesListings = [...save.singlesListings];
+  let updatedCollection = [...save.collection];
+  let updatedStats = { ...save.stats };
+
+  if (
+    save.shopLevel >= SINGLES_UNLOCK_LEVEL &&
+    save.singlesListings.length > 0 &&
+    metaLookupFn &&
+    cardLookupFn &&
+    productSetMap
+  ) {
+    // Generate a fresh customer wave for singles browsing
+    const activeEventsForSingles = getActiveEvents(
+      save.activeEvents,
+      currentDay,
+    );
+    const dcBonus = getMetaFn
+      ? calculateDisplayCaseBonus(save.displayCase, getMetaFn)
+      : { trafficBonus: 0, totalDisplayScore: 0 };
+    const singlesCustomers = generateCustomerWave(
+      save.shopLevel,
+      save.reputation,
+      activeEventsForSingles,
+      save.setHype,
+      save.shelves,
+      productSetMap,
+      upgradeMods.trafficBonus,
+      dcBonus.trafficBonus,
+    );
+
+    const eventMods = getCombinedEventModifiers(activeEventsForSingles);
+    const { sales, remainingListings } = simulateDaySinglesSales(
+      singlesCustomers,
+      updatedSinglesListings,
+      metaLookupFn,
+      cardLookupFn,
+      eventMods.priceToleranceMultiplier,
+      upgradeMods.toleranceBonus,
+    );
+
+    // Apply singles sales
+    for (const sale of sales) {
+      singlesRevenue += sale.revenue;
+      singlesSold += 1;
+      // Decrement copiesOwned for sold card
+      updatedCollection = updatedCollection.map((c) =>
+        c.cardId === sale.cardId
+          ? { ...c, copiesOwned: Math.max(0, c.copiesOwned - 1) }
+          : c,
+      );
+    }
+    updatedSinglesListings = remainingListings;
+
+    // Update stats
+    updatedStats = {
+      ...updatedStats,
+      totalSinglesRevenue:
+        updatedStats.totalSinglesRevenue +
+        singlesRevenue -
+        save.todayReport.singlesRevenue,
+      totalSinglesSold:
+        updatedStats.totalSinglesSold +
+        singlesSold -
+        save.todayReport.singlesSold,
+      totalRevenue:
+        updatedStats.totalRevenue +
+        singlesRevenue -
+        save.todayReport.singlesRevenue,
+    };
+  }
+
+  // 2. Finalize today's report with profit calculation and singles
   const todayReport: DayReport = {
     ...save.todayReport,
-    profit: save.todayReport.revenue - save.todayReport.costOfGoodsSold,
+    singlesRevenue,
+    singlesSold,
+    revenue:
+      save.todayReport.revenue +
+      (singlesRevenue - save.todayReport.singlesRevenue),
+    profit:
+      save.todayReport.revenue +
+      (singlesRevenue - save.todayReport.singlesRevenue) -
+      save.todayReport.costOfGoodsSold,
   };
 
-  // 2. Calculate XP (with upgrade bonus)
+  // 3. Calculate XP (with upgrade bonus + singles)
   const activeEvents = getActiveEvents(save.activeEvents, currentDay);
   const eventMods = getCombinedEventModifiers(activeEvents);
 
@@ -226,6 +383,7 @@ export function advanceDay(
     todayReport.revenue,
     eventMods.xpMultiplier,
     upgradeMods.xpBonus,
+    todayReport.singlesSold,
   );
 
   const xpResult = applyXP(
@@ -380,6 +538,8 @@ export function advanceDay(
     packsOpened: 0,
     newCardsDiscovered: 0,
     xpEarned: 0,
+    singlesRevenue: 0,
+    singlesSold: 0,
     activeEvents: getActiveEvents(allEvents, nextDay).map((e) => e.id),
   };
 
@@ -391,6 +551,10 @@ export function advanceDay(
     xp: xpResult.xp,
     xpToNextLevel: xpResult.xpToNextLevel,
     reputation: save.reputation + reputationGain,
+    softCurrency:
+      save.softCurrency + (singlesRevenue - save.todayReport.singlesRevenue),
+    collection: updatedCollection,
+    singlesListings: updatedSinglesListings,
     setHype: updatedHype,
     activeEvents: allEvents,
     pastEventIds: updatedPastIds,
@@ -398,9 +562,7 @@ export function advanceDay(
     todayReport: freshReport,
     lastPlayedAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    stats: {
-      ...save.stats,
-    },
+    stats: updatedStats,
   };
 
   // Record the completed day's XP in the report
@@ -437,6 +599,8 @@ export function createEmptyDayReport(
     packsOpened: 0,
     newCardsDiscovered: 0,
     xpEarned: 0,
+    singlesRevenue: 0,
+    singlesSold: 0,
     activeEvents: activeEventIds,
   };
 }

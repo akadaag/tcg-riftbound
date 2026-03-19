@@ -8,6 +8,7 @@ import {
 } from "@/features/engine/events";
 import { getHypeMultiplier } from "@/features/engine/hype";
 import { calculateSellPrice } from "@/features/engine/economy";
+import { MAX_SINGLES_SLOTS, SINGLES_UNLOCK_LEVEL } from "@/features/singles";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -129,6 +130,35 @@ export default function ShopPage() {
           </div>
           <span className="text-accent-primary">&rarr;</span>
         </Link>
+
+        {/* Singles Counter Link */}
+        {save.shopLevel >= SINGLES_UNLOCK_LEVEL ? (
+          <Link
+            href="/shop/singles"
+            className="border-accent-secondary/30 bg-accent-secondary/10 hover:bg-accent-secondary/20 flex items-center justify-between rounded-xl border p-4 transition-colors"
+          >
+            <div>
+              <p className="text-accent-secondary font-medium">
+                Singles Counter
+              </p>
+              <p className="text-foreground-secondary text-sm">
+                {save.singlesListings.length}/{MAX_SINGLES_SLOTS} slots used
+              </p>
+            </div>
+            <span className="text-accent-secondary">&rarr;</span>
+          </Link>
+        ) : (
+          <div className="border-card-border bg-card-background flex items-center justify-between rounded-xl border p-4 opacity-50">
+            <div>
+              <p className="text-foreground-muted font-medium">
+                Singles Counter 🔒
+              </p>
+              <p className="text-foreground-muted text-sm">
+                Unlocks at shop level {SINGLES_UNLOCK_LEVEL}
+              </p>
+            </div>
+          </div>
+        )}
       </section>
     </div>
   );

@@ -313,6 +313,10 @@ export interface DayReport {
   newCardsDiscovered: number;
   /** XP earned this day. */
   xpEarned: number;
+  /** Revenue earned from singles sales. */
+  singlesRevenue: number;
+  /** Number of individual cards sold from singles counter. */
+  singlesSold: number;
   /** Active events during this day. */
   activeEvents: string[];
 }
@@ -407,6 +411,19 @@ export interface MissionDefinition {
 }
 
 // ============================================
+// Singles Counter
+// ============================================
+
+export interface SinglesListing {
+  /** The card ID being sold. */
+  cardId: string;
+  /** Player-set asking price in soft currency. */
+  askingPrice: number;
+  /** ISO timestamp when listed. */
+  listedAt: string;
+}
+
+// ============================================
 // Player Save Types (Game State)
 // ============================================
 
@@ -443,6 +460,12 @@ export interface ShopStats {
   totalCardsCollected: number;
   totalCustomersServed: number;
   uniqueCardsOwned: number;
+  /** Lifetime singles revenue. */
+  totalSinglesRevenue: number;
+  /** Lifetime singles cards sold. */
+  totalSinglesSold: number;
+  /** Lifetime trades completed via Card Trader. */
+  totalTradesCompleted: number;
 }
 
 // ============================================
@@ -475,6 +498,8 @@ export interface SaveGame {
   collection: CollectionEntry[];
   /** Card IDs placed in the display case (boosts reputation + collector traffic). */
   displayCase: string[];
+  /** Singles counter: individual cards listed for sale. */
+  singlesListings: SinglesListing[];
 
   // --- Hype ---
   /** Per-set hype state. */

@@ -18,6 +18,7 @@ import {
   getProductMap,
   getProductSetMap,
   getGameplayMeta,
+  getCardById,
 } from "@/features/catalog";
 import { buildActiveMissions } from "@/features/missions";
 import type { User } from "@supabase/supabase-js";
@@ -105,6 +106,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             };
           }
 
+          // 3b. Initialize singlesListings if missing (legacy save)
+          if (!resolvedSave.singlesListings) {
+            resolvedSave = {
+              ...resolvedSave,
+              singlesListings: [],
+            };
+          }
+
+          // 3c. Initialize new stats fields if missing (legacy save)
+          if (resolvedSave.stats.totalSinglesRevenue === undefined) {
+            resolvedSave = {
+              ...resolvedSave,
+              stats: {
+                ...resolvedSave.stats,
+                totalSinglesRevenue: 0,
+                totalSinglesSold: 0,
+                totalTradesCompleted: 0,
+              },
+            };
+          }
+
+          // 3d. Initialize new DayReport fields if missing (legacy save)
+          if (resolvedSave.todayReport.singlesRevenue === undefined) {
+            resolvedSave = {
+              ...resolvedSave,
+              todayReport: {
+                ...resolvedSave.todayReport,
+                singlesRevenue: 0,
+                singlesSold: 0,
+              },
+            };
+          }
+
           // 4. Calculate offline progress
           const productMap = getProductMap();
           const productSetMap = getProductSetMap();
@@ -113,6 +147,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             productMap,
             productSetMap,
             getGameplayMeta,
+            getGameplayMeta,
+            getCardById,
           );
 
           if (offlineResult) {

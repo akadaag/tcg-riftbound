@@ -1,9 +1,14 @@
+"use client";
+
 import Link from "next/link";
+import { useGameStore } from "@/stores/game-store";
+import { TRADER_UNLOCK_LEVEL } from "@/features/trader";
 
 interface MenuItem {
   label: string;
   description: string;
   href: string;
+  unlockLevel?: number;
 }
 
 const menuItems: MenuItem[] = [
@@ -11,6 +16,12 @@ const menuItems: MenuItem[] = [
     label: "Upgrades",
     description: "Improve your shop with new features and boosts",
     href: "/more/upgrades",
+  },
+  {
+    label: "Card Trader",
+    description: "Trade 5 duplicate cards for 1 of the next rarity",
+    href: "/more/trader",
+    unlockLevel: TRADER_UNLOCK_LEVEL,
   },
   {
     label: "Missions",
@@ -30,6 +41,8 @@ const menuItems: MenuItem[] = [
 ];
 
 export default function MorePage() {
+  const { save } = useGameStore();
+
   return (
     <div className="flex flex-1 flex-col px-4 pt-6">
       <div className="mb-6">
@@ -41,21 +54,44 @@ export default function MorePage() {
 
       {/* Menu items */}
       <div className="space-y-2">
-        {menuItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="border-card-border bg-card-background hover:bg-card-hover active:bg-card-hover flex items-center justify-between rounded-xl border p-4 transition-colors"
-          >
-            <div>
-              <p className="font-medium">{item.label}</p>
-              <p className="text-foreground-secondary text-sm">
-                {item.description}
-              </p>
-            </div>
-            <span className="text-foreground-muted">&rarr;</span>
-          </Link>
-        ))}
+        {menuItems.map((item) => {
+          const isLocked =
+            item.unlockLevel !== undefined && save.shopLevel < item.unlockLevel;
+
+          if (isLocked) {
+            return (
+              <div
+                key={item.href}
+                className="border-card-border bg-card-background flex items-center justify-between rounded-xl border p-4 opacity-50"
+              >
+                <div>
+                  <p className="text-foreground-muted font-medium">
+                    {item.label} 🔒
+                  </p>
+                  <p className="text-foreground-muted text-sm">
+                    Unlocks at shop level {item.unlockLevel}
+                  </p>
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="border-card-border bg-card-background hover:bg-card-hover active:bg-card-hover flex items-center justify-between rounded-xl border p-4 transition-colors"
+            >
+              <div>
+                <p className="font-medium">{item.label}</p>
+                <p className="text-foreground-secondary text-sm">
+                  {item.description}
+                </p>
+              </div>
+              <span className="text-foreground-muted">&rarr;</span>
+            </Link>
+          );
+        })}
       </div>
 
       {/* App info */}

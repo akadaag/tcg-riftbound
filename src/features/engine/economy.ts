@@ -226,12 +226,15 @@ export const XP_VALUES = {
   dayComplete: 15,
   /** Bonus per 100 revenue earned in a day. */
   revenuePer100: 2,
+  /** Per individual card sold from singles counter. */
+  singleSold: 8,
 } as const;
 
 /**
  * Calculate XP earned for a day's activity.
  *
  * @param upgradeXpBonus — additive multiplier from upgrades (e.g. 0.45 = +45%)
+ * @param singlesSold — number of individual cards sold from singles counter
  */
 export function calculateDayXP(
   customersPurchased: number,
@@ -240,13 +243,15 @@ export function calculateDayXP(
   revenue: number,
   xpMultiplier: number = 1.0,
   upgradeXpBonus: number = 0,
+  singlesSold: number = 0,
 ): number {
   const raw =
     customersPurchased * XP_VALUES.sale +
     packsOpened * XP_VALUES.packOpened +
     newCardsDiscovered * XP_VALUES.newCard +
     XP_VALUES.dayComplete +
-    Math.floor(revenue / 100) * XP_VALUES.revenuePer100;
+    Math.floor(revenue / 100) * XP_VALUES.revenuePer100 +
+    singlesSold * XP_VALUES.singleSold;
 
   return Math.round(raw * xpMultiplier * (1 + upgradeXpBonus));
 }

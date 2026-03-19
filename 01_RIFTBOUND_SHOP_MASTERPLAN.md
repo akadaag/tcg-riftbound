@@ -37,8 +37,8 @@ Creare un'esperienza che unisca:
 
 ## Current Status
 
-- Overall phase: `[x] Upgrades + Missions + Card Detail + Display Case`
-- Current milestone: `[x] M5 — Upgrades + Missions + Card Detail + Display Case`
+- Overall phase: `[x] Duplicate Systems (Card Trader + Singles Counter)`
+- Current milestone: `[x] M6 — Duplicate Systems`
 - App shell: `[x]`
 - Authentication: `[x]`
 - Cloud save sync: `[x]`
@@ -51,6 +51,7 @@ Creare un'esperienza che unisca:
 - Upgrades: `[x]` (8 upgrades in 5 categories, multi-level, effect aggregation, integrated into engine)
 - Events/Missions: `[x]` (events system complete, missions: 6 daily + 5 weekly + 16 milestone, seeded generation, day/week reset)
 - Display Case: `[x]` (showcase cards, traffic bonus via displayScore, capacity from upgrades)
+- Duplicate Systems: `[x]` (Card Trader: 5-for-1 rarity upgrade with 4 trade lanes, weighted result picking; Singles Counter: list individual cards for sale, auto-pricing with markup slider, integrated into day cycle + offline progress)
 - Polish/UI: `[ ]`
 
 ## Completed
@@ -70,6 +71,7 @@ Creare un'esperienza che unisca:
 - M3 Content Pipeline: Types aligned with real Riftbound TCG (5 rarities: common/uncommon/rare/epic/showcase, 6 card types, 4 supertypes, 7 domains). Import script fetches from RiftCodex API (656 cards, 3 sets). Normalised JSON data files: sets.json (3 sets with gameplay tuning), cards.json (656 cards with full metadata), gameplay-meta.json (derived baseValue/pullWeight/collectorScore). Products/drop tables for OGN + SFD boosters (14 cards: 7C+3U+2R+1foil+1token) and boxes (24 packs). OGS starter product. Typed catalog accessor module with Map-based indices for fast lookups.
 - M4 Core Gameplay Loop: Full game engine (pure functions, no side effects) covering: economy (sell pricing, markup, hype multiplier, XP calculation, daily traffic), customers (5 types with budget/patience/tolerance, offline simulation), pack opening (drop table resolution, weighted rarity, dupe detection, reveal sorting), events (9 event templates with modifiers, scheduling, cooldowns), hype tracker (per-set 0-100 with decay/boost), day cycle (offline progress capped at 8h, day advancement with XP/events/hype). Zustand store fully rewritten with all gameplay actions. UI screens: Home dashboard (offline report, XP bar, events, stats, End Day button), Shop (shelf management with markup slider, restock, product picker), Supplier (distributor catalog with box→pack conversion, event price modifiers), Pack Opening (card reveal sequence, rarity borders, NEW badges), Collection Binder (set progress, card grid, filter, showcase toggle). EndDayModal with day summary, XP earned, level up, event preview. Offline progress and hype initialization wired into AuthProvider on save load.
 - M5 Upgrades + Missions + Card Detail + Display Case: Upgrades engine (8 upgrades in 5 categories: Extra Shelf, Better Signage, Loyalty Program, Training Manual, Supplier Contacts, Display Case Expansion, Premium Lighting, Stock Room). Multi-level upgrades with scaling costs and aggregated UpgradeModifiers. Missions engine (6 daily templates, 5 weekly templates, 16 milestone missions) with seeded random generation, evaluation against save state, weekly accumulation, day/week reset. Display case bonus calculation (displayScore-based traffic bonus with sqrt diminishing returns). Full engine integration: traffic/tolerance/XP params from upgrades, wholesale discount from supplier contacts, display case bonus in traffic calc, mission lifecycle in day-cycle (evaluate→reset→generate). Store actions: purchaseUpgrade, setMissions, claimMissionReward. UI: Upgrades shop page (category groups, level badges, active bonuses summary), Missions tracker page (Daily/Weekly/Milestones tabs, progress bars, claim buttons), Card detail modal in collection (full metadata, gameplay meta, display case toggle), Display case summary on home dashboard, completed missions banner in EndDayModal.
+- M6 Duplicate Systems (Card Trader + Singles Counter): Card Trader engine (src/features/trader/) with 5-for-1 trade ratio, 4 rarity lanes (common→uncommon→rare→epic→showcase), weighted random result favoring unowned cards. Singles Counter engine (src/features/singles/) with auto-pricing from baseValue × rarity multiplier × hype, markup slider (0-100%), customer singles visit simulation for collectors/competitive customers. Day-cycle integration: singles sales simulated during End Day with fresh customer wave. Offline progress integration: scaled singles simulation during idle time. XP for singles (8 XP per sale via XP_VALUES.singleSold). Store actions: listSingle, unlistSingle, sellSingle, tradeCards. Legacy save migration for singlesListings, singlesRevenue, singlesSold, totalSinglesRevenue, totalSinglesSold, totalTradesCompleted. Card Trader UI (src/app/more/trader/page.tsx) with trade lanes overview, card picker with selection pills, trade result reveal with card image/NEW badge. Singles Counter UI (src/app/shop/singles/page.tsx) with listable card browser, price slider, active listings with unlist button, slot indicator (5 max). Navigation: Singles Counter link on Shop page (locked until level 5), Card Trader link on More page (locked until level 3).
 
 ## In Progress
 
@@ -77,9 +79,8 @@ Creare un'esperienza che unisca:
 
 ## Next Up
 
-1. M6: Duplicate systems (Card Trader, Singles Counter unlock at shop level 5)
-2. M7: UI polish (animations, loading states, error handling, responsive pass)
-3. M8: Performance + QA (balancing, bundle optimization, smoke tests)
+1. M7: UI polish (animations, loading states, error handling, responsive pass)
+2. M8: Performance + QA (balancing, bundle optimization, smoke tests)
 
 ## Blockers / Decisions
 
@@ -1050,6 +1051,19 @@ Il gioco deve rimanere utilizzabile e robusto anche se l'utente cambia browser, 
 - [x] set hype modifier
 - [x] impatto su domanda clienti
 
+## M8.5 — Duplicate Systems (Card Trader + Singles Counter)
+
+- [x] Card Trader engine (5-for-1 trade, 4 rarity lanes, weighted random result)
+- [x] Card Trader UI (trade lanes, card picker, selection pills, result reveal)
+- [x] Singles Counter engine (auto-pricing, markup slider, customer singles simulation)
+- [x] Singles Counter UI (listable cards, price slider, active listings, slot indicator)
+- [x] Day-cycle integration (singles sales during End Day)
+- [x] Offline progress integration (scaled singles sales)
+- [x] XP for singles sold (8 XP each)
+- [x] Store actions (listSingle, unlistSingle, sellSingle, tradeCards)
+- [x] Legacy save migration for new fields
+- [x] Navigation links (Singles Counter on Shop, Card Trader on More, locked states)
+
 ## M9 — Polish
 
 - [ ] animazioni pack migliori
@@ -1202,7 +1216,7 @@ public/
 
 # Implementation Log
 
-- 2026-03-19 24:00 — **M5 Upgrades + Missions + Card Detail + Display Case complete.** Built upgrades engine (src/features/upgrades/index.ts) with 8-upgrade catalog in 5 categories (Extra Shelf, Better Signage, Loyalty Program, Training Manual, Supplier Contacts, Display Case Expansion, Premium Lighting, Stock Room), multi-level with scaling costs, UpgradeModifiers aggregation, display case capacity/bonus calculation. Built missions engine (src/features/missions/index.ts) with 6 daily templates, 5 weekly templates, 16 milestone missions, seeded random generation, evaluation against save state, weekly accumulation, day/week reset. Added new types (UpgradeDefinition, MissionDefinition, etc.) to game.ts. Integrated into all engine modules: economy.ts (traffic/tolerance/XP params), customers.ts (upgrade modifier passthrough), day-cycle.ts (full mission lifecycle + upgrade modifiers + display case bonus), auth-provider.tsx (mission init on load), supplier/page.tsx (wholesale discount). Store actions: purchaseUpgrade, setMissions, claimMissionReward. UI: Upgrades shop page (src/app/more/upgrades/page.tsx) with category groups, level badges, active bonuses. Missions tracker page (src/app/more/missions/page.tsx) with Daily/Weekly/Milestones tabs, progress bars, claim buttons. Card detail modal in collection (tappable cards → full metadata + gameplay meta + display case toggle). Display case summary on home dashboard. Completed missions banner in EndDayModal. Fixed 1 type error (narrowed calculateDisplayCaseBonus getMetaFn param). Typecheck + build pass clean.
+- 2026-03-19 26:00 — **M6 Duplicate Systems (Card Trader + Singles Counter) complete.** Built across multiple sessions. Card Trader engine (src/features/trader/index.ts): TRADE_RATIO=5, 4 trade lanes (common→uncommon→rare→epic→showcase), getTradeableCards filters collection for 2+ copies, getTradeLanes provides lane overview, executeTrade with weighted random result favoring unowned cards (2× weight for new cards). Singles Counter engine (src/features/singles/index.ts): calculateSuggestedPrice from baseValue × rarity multiplier × hype, calculateAskingPrice with 0-100% markup, getListableCards filters for 2+ copies not already listed, simulateSinglesVisit for collectors/competitive customers with interest scoring (collectorScore/playableScore), simulateDaySinglesSales for batch processing. Types updated (game.ts): SinglesListing interface, singlesListings on SaveGame, singlesRevenue/singlesSold on DayReport, totalSinglesRevenue/totalSinglesSold/totalTradesCompleted on ShopStats. Store actions (game-store.ts): listSingle (validates copiesOwned≥2, slot limit 5), unlistSingle, sellSingle (decrements copies, updates revenue/stats), tradeCards (decrements sacrificed copies, adds result card). Day-cycle integration: advanceDay() now takes 6 params to simulate singles sales with fresh customer wave. Offline integration: calculateOfflineProgress() simulates scaled singles sales (proportional to hours × 60% efficiency). XP: singleSold=8 added to XP_VALUES, calculateDayXP accepts singlesSold param. Legacy save migration in auth-provider.tsx. Card Trader UI (src/app/more/trader/page.tsx): 4 trade lane buttons showing excess/tradeable counts, card picker with +/- controls and selection pills, trade result reveal with card image + NEW badge. Singles Counter UI (src/app/shop/singles/page.tsx): active listings section with unlist buttons, listable cards browser with expand-to-price flow (markup slider + asking price + List button), slot indicator (X/5), locked state for level<5. Navigation: Singles Counter link on Shop page with accent-secondary styling (locked badge until level 5), Card Trader link on More page with locked state until level 3. Build + typecheck pass clean.
 - 2026-03-19 23:00 — **Mobile touch-target fixes (5/5).** Fixed all 5 issues from mobile audit: (1) collection filter buttons py-1.5→py-2.5 + min-h-[44px], (2) "Back to Sets"/"Back to Shop" text links added py-2 px-1 min-h-[44px] padding, (3) supplier quantity +/- steppers py-1.5→py-2 + min-h-[44px], (4) pack "Open" button py-2→py-2.5 + min-h-[44px] + wider px, (5) EndDayModal inner container max-h-[85vh] + overflow-y-auto for short phones. Files changed: collection/page.tsx, supplier/page.tsx, packs/page.tsx, end-day-modal.tsx. Typecheck + build pass clean.
 - 2026-03-19 22:00 — **M4 Core Gameplay Loop complete.** Built full game engine as pure-function modules in src/features/engine/: economy.ts (sell pricing, markup, hype multiplier, XP, daily traffic), customers.ts (5 types with budget/patience/tolerance, offline sim), pack-opener.ts (drop table resolution, weighted rarity, dupe detection), events.ts (9 templates with modifiers, scheduling, cooldowns), hype.ts (per-set 0-100 decay/boost), day-cycle.ts (offline progress capped 8h, day advancement with XP/events/hype). Fully rewrote Zustand store with all gameplay actions (shelves, inventory, collection batch-add, day tracking, events, hype, display case, unlocks). Built 5 UI screens: Home dashboard (offline report, XP bar, events, stats, End Day button + EndDayModal), Shop (shelf management with markup slider, restock, product picker), Supplier (distributor catalog with box→pack conversion, event price modifiers), Pack Opening (card reveal sequence with rarity borders, NEW badges, reveal-all), Collection Binder (set progress bars, card grid with filter/showcase toggle, rarity-colored borders). Wired offline progress calculation + set hype initialization into AuthProvider on save load. Added getProductMap/getProductSetMap helpers to catalog module. Updated globals.css with Riftbound rarity colors and new design tokens. Typecheck, lint, and build all pass clean.
 - 2026-03-19 18:00 — **M2 PWA Shell complete.** Used @serwist/turbopack (v9.5.7) to solve Turbopack incompatibility with @serwist/next. Created route handler at src/app/serwist/[path]/route.ts that compiles SW via esbuild. Rewrote src/app/sw.ts with @serwist/turbopack/worker imports, defaultCache runtime caching, and offline fallback for navigation requests. Created SerwistProvider re-export (src/app/serwist.tsx) and wrapped root layout with it (swUrl="/serwist/sw.js"). Created offline fallback page at /~offline with retry button. Updated proxy.ts matcher to exclude /serwist/ paths from auth redirect. Excluded sw.ts from main tsconfig.json (esbuild compiles independently) to fix @types/serviceworker polluting global DOM types. Added "use client" to ~offline page (onClick handler). Cleaned up .gitignore and eslint.config.mjs (removed old public/sw.js patterns). Typecheck, lint, and build all pass clean. Note: manifest + icons were already created in M0.
