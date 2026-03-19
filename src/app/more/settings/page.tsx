@@ -1,4 +1,46 @@
+"use client";
+
+import { useAuth } from "@/features/auth/auth-provider";
+import { useGameStore } from "@/stores/game-store";
+import { signOut } from "@/app/(auth)/login/actions";
+
 export default function SettingsPage() {
+  const { user, displayName } = useAuth();
+  const { syncStatus } = useGameStore();
+
+  const syncStatusConfig: Record<
+    string,
+    { label: string; color: string; bg: string }
+  > = {
+    synced: {
+      label: "Synced",
+      color: "text-success",
+      bg: "bg-success/20",
+    },
+    saving_locally: {
+      label: "Saving...",
+      color: "text-info",
+      bg: "bg-info/20",
+    },
+    syncing_cloud: {
+      label: "Syncing...",
+      color: "text-info",
+      bg: "bg-info/20",
+    },
+    offline: {
+      label: "Offline",
+      color: "text-warning",
+      bg: "bg-warning/20",
+    },
+    sync_error: {
+      label: "Error",
+      color: "text-error",
+      bg: "bg-error/20",
+    },
+  };
+
+  const status = syncStatusConfig[syncStatus] ?? syncStatusConfig.offline;
+
   return (
     <div className="flex flex-1 flex-col px-4 pt-6">
       <div className="mb-6">
@@ -11,10 +53,31 @@ export default function SettingsPage() {
       {/* Account section */}
       <section className="mb-6">
         <h2 className="mb-3 text-lg font-semibold">Account</h2>
-        <div className="border-card-border bg-card-background rounded-xl border p-4">
-          <p className="text-foreground-muted text-sm">
-            Not signed in. Authentication will be available in a future update.
-          </p>
+        <div className="border-card-border bg-card-background space-y-3 rounded-xl border p-4">
+          {user ? (
+            <>
+              <div className="flex items-center justify-between">
+                <p className="text-foreground-secondary text-sm">Name</p>
+                <p className="text-sm font-medium">
+                  {displayName || "Shopkeeper"}
+                </p>
+              </div>
+              <div className="flex items-center justify-between">
+                <p className="text-foreground-secondary text-sm">Email</p>
+                <p className="text-sm font-medium">{user.email}</p>
+              </div>
+              <form action={signOut} className="pt-2">
+                <button
+                  type="submit"
+                  className="text-error hover:text-error/80 text-sm font-medium transition-colors"
+                >
+                  Sign Out
+                </button>
+              </form>
+            </>
+          ) : (
+            <p className="text-foreground-muted text-sm">Not signed in.</p>
+          )}
         </div>
       </section>
 
@@ -24,8 +87,10 @@ export default function SettingsPage() {
         <div className="border-card-border bg-card-background rounded-xl border p-4">
           <div className="flex items-center justify-between">
             <p className="text-sm">Sync Status</p>
-            <span className="bg-warning/20 text-warning rounded-full px-2 py-0.5 text-xs">
-              Offline
+            <span
+              className={`${status.bg} ${status.color} rounded-full px-2 py-0.5 text-xs`}
+            >
+              {status.label}
             </span>
           </div>
         </div>
@@ -44,7 +109,9 @@ export default function SettingsPage() {
           <div className="border-card-border bg-card-background rounded-xl border p-4">
             <div className="flex items-center justify-between">
               <p className="text-sm">Build</p>
-              <p className="text-foreground-secondary text-sm">M0 Foundation</p>
+              <p className="text-foreground-secondary text-sm">
+                M1 Auth + Save
+              </p>
             </div>
           </div>
         </div>

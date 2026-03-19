@@ -37,11 +37,11 @@ Creare un'esperienza che unisca:
 
 ## Current Status
 
-- Overall phase: `[-] Foundation / Setup`
-- Current milestone: `[x] M0 — Foundation`
+- Overall phase: `[-] Auth + Persistence`
+- Current milestone: `[x] M1 — Auth + Cross-Device Persistence`
 - App shell: `[x]`
-- Authentication: `[ ]`
-- Cloud save sync: `[ ]`
+- Authentication: `[x]`
+- Cloud save sync: `[x]`
 - PWA installability: `[-]` (manifest + icons ready, service worker deferred to M2 — Serwist incompatible with Turbopack in Next.js 16)
 - Catalog import pipeline: `[ ]`
 - Core gameplay loop: `[ ]`
@@ -64,26 +64,29 @@ Creare un'esperienza che unisca:
 - ESLint + Prettier configured with Tailwind class sorting
 - Dark/light theme via system preference with custom design tokens (rarity colors, accents, surfaces)
 - .env.example with Supabase placeholders
+- M1 Auth + Cross-Device Persistence: Supabase Auth (email+password), proxy JWT refresh, login/signup page, email confirmation, cloud save (Supabase JSONB), local save (IndexedDB), auto-save orchestration (2s local, 30s cloud), sync status indicator, AuthProvider + SaveProvider, settings page with account info + logout
 
 ## In Progress
 
-- M1 — Auth + Cross-Device Persistence (next milestone)
+- M2 — PWA Shell (service worker, caching, install prompt)
 
 ## Next Up
 
-1. Integrate Supabase Auth (magic link login)
-2. Session persistence + protected routes
-3. Cloud save table + load/save flow
-4. Local save via IndexedDB
-5. Sync status UI
+1. M2: Service worker + caching strategy (revisit Serwist / Turbopack compatibility)
+2. M2: Install prompt handling
+3. M2: Offline shell basics
+4. M3: Content pipeline — card/set/product catalog import + normalization
 
 ## Blockers / Decisions
 
 - Decision: Serwist service worker deferred to M2 — @serwist/next does not support Turbopack (Next.js 16 default bundler). Will revisit with @serwist/turbopack or configurator mode in M2.
 - Decision: Using Tailwind CSS v4 with CSS-based config (no tailwind.config.js)
 - Decision: System preference theme (dark default via CSS `prefers-color-scheme`)
+- Decision: Auth via email + password (not magic link). Display name stored in profiles table via trigger.
+- Decision: Supabase new key format — `sb_publishable_xxx` and `sb_secret_xxx`. Using `@supabase/ssr` (not deprecated auth-helpers).
 - Decisione assunta: progetto PWA, non Swift nativo
 - Decisione assunta: supporto cross-device con login semplice e salvataggi cloud
+- Pending: User must run SQL migration `scripts/migrations/001_profiles_and_savegames.sql` in Supabase SQL Editor and configure Site URL + Redirect URL in Supabase dashboard.
 
 ---
 
@@ -956,15 +959,15 @@ Il gioco deve rimanere utilizzabile e robusto anche se l'utente cambia browser, 
 
 ## M1 — Auth + Cross-Device Persistence
 
-- [ ] integrazione auth provider
-- [ ] login magic link
-- [ ] session restore
-- [ ] protected routes/app gating
-- [ ] tabella profilo utente
-- [ ] tabella savegame
-- [ ] load/save cloud base
-- [ ] snapshot locale IndexedDB
-- [ ] sync status UI minima
+- [x] integrazione auth provider
+- [x] login email + password (signup/login toggle)
+- [x] session restore (proxy JWT refresh)
+- [x] protected routes/app gating (proxy redirect)
+- [x] tabella profilo utente (SQL migration with auto-create trigger)
+- [x] tabella savegame (JSONB, RLS, upsert)
+- [x] load/save cloud base (Supabase upsert + select)
+- [x] snapshot locale IndexedDB
+- [x] sync status UI minima (SyncIndicator pill + auto-save orchestration)
 
 ## M2 — PWA Shell
 
@@ -1174,4 +1177,5 @@ public/
 
 # Implementation Log
 
+- 2026-03-19 15:00 — **M1 Auth + Cross-Device Persistence complete.** Built email+password login/signup page with Server Actions (signIn, signUp, signOut). Created auth layout (centered, no bottom nav). Implemented email confirmation callback route (/auth/confirm). Created SQL migration for profiles (auto-created via trigger on signup) and savegames (JSONB, RLS, unique per user) tables. Built cloud save service (loadCloudSave, saveToCloud, resolveConflict with last_write_wins). Built local save via IndexedDB (loadLocalSave, saveLocally, clearLocalSave). Created AuthProvider (checks session, loads saves with conflict resolution, provides user context). Created SaveProvider (auto-save to IndexedDB every 2s, cloud sync every 30s + on visibility change + beforeunload). Added SyncIndicator pill component. Updated root layout with AuthProvider + SaveProvider wrapping. Updated Settings page with real account info + logout. Updated Home page with display name + sync indicator. BottomNav hidden on auth pages. Updated .env.example with NEXT_PUBLIC_SITE_URL. Build, typecheck, and lint all pass clean. Note: User must run SQL migration in Supabase SQL Editor before auth will work.
 - 2026-03-19 11:00 — **M0 Foundation complete.** Initialized Next.js 16 + TypeScript strict + Tailwind v4 project. Created full folder structure per masterplan. Built mobile-first app shell with bottom navigation (Home, Shop, Packs, Collection, More). Created placeholder pages for all MVP screens including sub-routes (more/upgrades, more/missions, more/stats, more/settings). Implemented Zustand game store skeleton with full SaveGame shape and all CRUD actions. Defined all core game types (CardDefinition, SetDefinition, ProductDefinition, SaveGame, SyncStatus, etc.). Set up dark/light theme via system preference with custom CSS design tokens (rarity colors, accent colors, card surfaces). Configured PWA manifest.ts with dynamic generation and placeholder SVG icons. Set up ESLint + Prettier with Tailwind class sorting plugin. Created .env.example. Note: Serwist service worker deferred to M2 due to Turbopack incompatibility in Next.js 16. Build, typecheck, and lint all pass clean.

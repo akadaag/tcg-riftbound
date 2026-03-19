@@ -1,17 +1,27 @@
 "use client";
 
 import { useGameStore } from "@/stores/game-store";
+import { useAuth } from "@/features/auth/auth-provider";
+import { SyncIndicator } from "@/components/ui/sync-indicator";
 
 export default function HomePage() {
   const { save } = useGameStore();
+  const { displayName } = useAuth();
+
+  const greeting = displayName
+    ? `Welcome back, ${displayName}.`
+    : "Welcome back, shopkeeper.";
 
   return (
     <div className="flex flex-1 flex-col px-4 pt-6">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Riftbound Shop</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Riftbound Shop</h1>
+          <SyncIndicator />
+        </div>
         <p className="text-foreground-secondary mt-1 text-sm">
-          Day {save.currentDay} — Welcome back, shopkeeper.
+          Day {save.currentDay} — {greeting}
         </p>
       </div>
 

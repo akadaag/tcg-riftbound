@@ -146,9 +146,14 @@ function NavIcon({
 export function BottomNav() {
   const pathname = usePathname();
 
+  // Hide navigation on auth pages
+  if (pathname.startsWith("/login")) {
+    return null;
+  }
+
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 border-t border-nav-border bg-nav-background/95 backdrop-blur-md"
+      className="border-nav-border bg-nav-background/95 fixed right-0 bottom-0 left-0 z-50 border-t backdrop-blur-md"
       style={{ paddingBottom: "var(--safe-area-bottom)" }}
     >
       <div className="mx-auto flex h-[var(--nav-height)] max-w-lg items-center justify-around">
@@ -169,7 +174,7 @@ export function BottomNav() {
               }`}
             >
               <NavIcon item={item} active={isActive} />
-              <span className="text-[10px] font-medium leading-tight">
+              <span className="text-[10px] leading-tight font-medium">
                 {item.label}
               </span>
             </Link>
