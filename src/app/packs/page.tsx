@@ -301,7 +301,7 @@ export default function PacksPage() {
                   </div>
                   <button
                     onClick={() => handleOpenPack(item.productId)}
-                    className="bg-accent-primary hover:bg-accent-primary-hover rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors"
+                    className="bg-accent-primary hover:bg-accent-primary-hover min-h-[44px] rounded-lg px-5 py-2.5 text-sm font-medium text-white transition-colors"
                   >
                     Open
                   </button>

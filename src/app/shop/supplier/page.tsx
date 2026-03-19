@@ -27,7 +27,7 @@ export default function SupplierPage() {
       <div className="mb-4 flex items-center gap-3">
         <Link
           href="/shop"
-          className="text-foreground-secondary hover:text-foreground flex items-center gap-1 text-sm"
+          className="text-foreground-secondary hover:text-foreground flex min-h-[44px] items-center gap-1 px-1 py-2 text-sm"
         >
           <span>&larr;</span> Shop
         </Link>
@@ -208,7 +208,7 @@ function ProductCard({
           <div className="border-card-border flex items-center rounded-lg border">
             <button
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className="text-foreground-secondary hover:text-foreground px-3 py-1.5 text-sm"
+              className="text-foreground-secondary hover:text-foreground min-h-[44px] px-3 py-2 text-sm"
             >
               -
             </button>
@@ -217,7 +217,7 @@ function ProductCard({
             </span>
             <button
               onClick={() => setQuantity(quantity + 1)}
-              className="text-foreground-secondary hover:text-foreground px-3 py-1.5 text-sm"
+              className="text-foreground-secondary hover:text-foreground min-h-[44px] px-3 py-2 text-sm"
             >
               +
             </button>

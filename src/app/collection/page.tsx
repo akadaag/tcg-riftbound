@@ -232,7 +232,7 @@ function CardGridView({
       <div className="mb-4">
         <button
           onClick={onBack}
-          className="text-foreground-secondary hover:text-foreground mb-2 text-sm"
+          className="text-foreground-secondary hover:text-foreground mb-2 min-h-[44px] px-1 py-2 text-sm"
         >
           &larr; Back to Sets
         </button>
@@ -248,7 +248,7 @@ function CardGridView({
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`rounded-lg px-3 py-1.5 text-xs font-medium capitalize transition-colors ${
+            className={`min-h-[44px] rounded-lg px-3 py-2.5 text-xs font-medium capitalize transition-colors ${
               filter === f
                 ? "bg-accent-primary text-white"
                 : "bg-card-background text-foreground-secondary border-card-border border"
@@ -259,7 +259,7 @@ function CardGridView({
         ))}
         <button
           onClick={() => setShowShowcase(!showShowcase)}
-          className={`ml-auto rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+          className={`ml-auto min-h-[44px] rounded-lg px-3 py-2.5 text-xs font-medium transition-colors ${
             showShowcase
               ? "bg-rarity-showcase/20 text-rarity-showcase"
               : "bg-card-background text-foreground-secondary border-card-border border"

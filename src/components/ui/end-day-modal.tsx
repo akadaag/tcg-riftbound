@@ -25,7 +25,7 @@ export function EndDayModal({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4">
-      <div className="bg-background border-card-border w-full max-w-sm rounded-2xl border p-6">
+      <div className="bg-background border-card-border max-h-[85vh] w-full max-w-sm overflow-y-auto rounded-2xl border p-6">
         {/* Header */}
         <h2 className="mb-1 text-center text-xl font-bold">
           Day {dayReport.day} Complete
