@@ -1,26 +1,148 @@
 @import "tailwindcss";
 
+/* ============================================
+   Riftbound Shop — Design Tokens
+   System preference theme with dark default
+   ============================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Base palette — dark theme (default) */
+  --background: #0c0c14;
+  --background-secondary: #14141f;
+  --background-tertiary: #1c1c2e;
+  --foreground: #e8e8f0;
+  --foreground-secondary: #a0a0b8;
+  --foreground-muted: #606078;
+
+  /* Brand / accent */
+  --accent-primary: #7c5cfc;
+  --accent-primary-hover: #9478ff;
+  --accent-secondary: #3ecfcf;
+
+  /* Rarity colors */
+  --rarity-common: #b0b0c0;
+  --rarity-uncommon: #4caf50;
+  --rarity-rare: #2196f3;
+  --rarity-epic: #9c27b0;
+  --rarity-legendary: #ff9800;
+  --rarity-mythic: #ff1744;
+
+  /* Feedback */
+  --color-success: #4caf50;
+  --color-warning: #ff9800;
+  --color-error: #f44336;
+  --color-info: #2196f3;
+
+  /* Navigation */
+  --nav-background: #0a0a12;
+  --nav-border: #1e1e30;
+  --nav-active: #7c5cfc;
+  --nav-inactive: #606078;
+
+  /* Surfaces */
+  --card-background: #16162a;
+  --card-border: #2a2a44;
+  --card-hover: #1e1e38;
+
+  /* Sizing */
+  --nav-height: 4.5rem;
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+/* Light theme override */
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #f5f5fa;
+    --background-secondary: #ffffff;
+    --background-tertiary: #eeeef4;
+    --foreground: #1a1a2e;
+    --foreground-secondary: #4a4a64;
+    --foreground-muted: #8888a0;
+
+    --accent-primary: #6240ea;
+    --accent-primary-hover: #7c5cfc;
+    --accent-secondary: #2ba8a8;
+
+    --nav-background: #ffffff;
+    --nav-border: #e0e0ea;
+    --nav-active: #6240ea;
+    --nav-inactive: #8888a0;
+
+    --card-background: #ffffff;
+    --card-border: #e0e0ea;
+    --card-hover: #f0f0f8;
+  }
+}
+
+/* Tailwind v4 theme mapping */
 @theme inline {
   --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-background-tertiary: var(--background-tertiary);
   --color-foreground: var(--foreground);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-foreground-muted: var(--foreground-muted);
+
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-primary-hover: var(--accent-primary-hover);
+  --color-accent-secondary: var(--accent-secondary);
+
+  --color-rarity-common: var(--rarity-common);
+  --color-rarity-uncommon: var(--rarity-uncommon);
+  --color-rarity-rare: var(--rarity-rare);
+  --color-rarity-epic: var(--rarity-epic);
+  --color-rarity-legendary: var(--rarity-legendary);
+  --color-rarity-mythic: var(--rarity-mythic);
+
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-error: var(--color-error);
+  --color-info: var(--color-info);
+
+  --color-nav-background: var(--nav-background);
+  --color-nav-border: var(--nav-border);
+  --color-nav-active: var(--nav-active);
+  --color-nav-inactive: var(--nav-inactive);
+
+  --color-card-background: var(--card-background);
+  --color-card-border: var(--card-border);
+  --color-card-hover: var(--card-hover);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Base styles */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family:
+    var(--font-geist-sans),
+    system-ui,
+    -apple-system,
+    sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Safe area for PWA standalone mode */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  :root {
+    --safe-area-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Scrollbar styling for desktop */
+@media (min-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--background);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--foreground-muted);
+    border-radius: 3px;
+  }
 }
