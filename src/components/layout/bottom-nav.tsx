@@ -155,6 +155,7 @@ export function BottomNav() {
     <nav
       className="border-nav-border bg-nav-background/95 fixed right-0 bottom-0 left-0 z-50 border-t backdrop-blur-md"
       style={{ paddingBottom: "var(--safe-area-bottom)" }}
+      aria-label="Main navigation"
     >
       <div className="mx-auto flex h-[var(--nav-height)] max-w-lg items-center justify-around">
         {navItems.map((item) => {
@@ -167,6 +168,7 @@ export function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
+              aria-current={isActive ? "page" : undefined}
               className={`flex flex-1 flex-col items-center gap-0.5 py-1 transition-colors ${
                 isActive
                   ? "text-nav-active"

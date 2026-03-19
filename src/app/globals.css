@@ -12,7 +12,7 @@
   --background-tertiary: #1c1c2e;
   --foreground: #e8e8f0;
   --foreground-secondary: #a0a0b8;
-  --foreground-muted: #606078;
+  --foreground-muted: #8080a0;
 
   /* Brand / accent */
   --accent-primary: #7c5cfc;
@@ -45,7 +45,7 @@
   --nav-background: #0a0a12;
   --nav-border: #1e1e30;
   --nav-active: #7c5cfc;
-  --nav-inactive: #606078;
+  --nav-inactive: #8080a0;
 
   /* Surfaces */
   --card-background: #16162a;
@@ -158,4 +158,98 @@ body {
     background: var(--foreground-muted);
     border-radius: 3px;
   }
+}
+
+/* ============================================
+   Focus & Interaction Styles
+   ============================================ */
+
+/* Visible focus ring for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Remove focus ring for mouse/touch */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Tap feedback for mobile */
+@media (hover: none) {
+  button:active,
+  a:active {
+    opacity: 0.85;
+  }
+}
+
+/* ============================================
+   Keyframe Animations
+   ============================================ */
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes rarity-glow-rare {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(33, 150, 243, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(33, 150, 243, 0.6);
+  }
+}
+
+@keyframes rarity-glow-epic {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(156, 39, 176, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(156, 39, 176, 0.6);
+  }
+}
+
+@keyframes rarity-glow-showcase {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(255, 152, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(255, 152, 0, 0.7);
+  }
+}
+
+@keyframes counter-tick {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+/* Utility classes for animations */
+.animate-rarity-rare {
+  animation: rarity-glow-rare 2s ease-in-out infinite;
+}
+
+.animate-rarity-epic {
+  animation: rarity-glow-epic 2s ease-in-out infinite;
+}
+
+.animate-rarity-showcase {
+  animation: rarity-glow-showcase 2s ease-in-out infinite;
+}
+
+.animate-counter-tick {
+  animation: counter-tick 0.3s ease-out;
 }

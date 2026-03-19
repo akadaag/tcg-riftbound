@@ -275,6 +275,7 @@ function ShelfCard({
                   value={shelf.markup}
                   onChange={(e) => onMarkupChange(Number(e.target.value))}
                   className="accent-accent-primary w-full"
+                  aria-label={`Markup percentage: ${shelf.markup}%`}
                 />
                 <div className="text-foreground-muted mt-0.5 flex justify-between text-xs">
                   <span>0% (fast sales)</span>
@@ -287,13 +288,13 @@ function ShelfCard({
                 <button
                   onClick={() => onRestock(1)}
                   disabled={inStorage === 0}
-                  className="bg-accent-primary/20 text-accent-primary hover:bg-accent-primary/30 flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors disabled:opacity-40"
+                  className="bg-accent-primary/20 text-accent-primary hover:bg-accent-primary/30 min-h-[44px] flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors disabled:opacity-40"
                 >
                   Restock ({inStorage} avail)
                 </button>
                 <button
                   onClick={() => onRemove(shelf.quantity)}
-                  className="rounded-lg bg-red-500/20 px-3 py-2 text-sm font-medium text-red-400 transition-colors hover:bg-red-500/30"
+                  className="min-h-[44px] rounded-lg bg-red-500/20 px-3 py-2 text-sm font-medium text-red-400 transition-colors hover:bg-red-500/30"
                 >
                   Clear
                 </button>

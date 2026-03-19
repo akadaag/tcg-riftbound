@@ -15,6 +15,13 @@ import {
 import type { CardDefinition, CardGameplayMeta, Rarity } from "@/types/game";
 import { getCardById } from "@/features/catalog";
 import { useState, useCallback, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  cardFlip,
+  staggerContainer,
+  staggerItem,
+  fadeSlideUp,
+} from "@/lib/animations";
 
 type PageState = "select" | "opening" | "reveal";
 
@@ -108,8 +115,9 @@ export default function PacksPage() {
       setRevealIndex(0);
       setLastStats({ newCount: newUniqueCount, dupeCount: duplicateCount });
 
-      // Short delay then show reveal
-      setTimeout(() => setPageState("reveal"), 600);
+      // Pack animation: shake (500ms) then burst (400ms) then reveal
+      // Total opening animation ~ 900ms
+      setTimeout(() => setPageState("reveal"), 900);
     },
     [
       metaMap,
@@ -142,10 +150,29 @@ export default function PacksPage() {
   if (pageState === "opening") {
     return (
       <div className="flex flex-1 flex-col items-center justify-center px-4">
-        <div className="border-accent-primary/50 bg-accent-primary/10 h-40 w-28 animate-pulse rounded-xl border-2" />
-        <p className="text-foreground-secondary mt-4 text-sm">
+        <motion.div
+          className="border-accent-primary/50 bg-accent-primary/10 flex h-40 w-28 items-center justify-center rounded-xl border-2"
+          animate={{
+            rotate: [0, -3, 3, -2, 2, 0, 0, 0, 0],
+            scale: [1, 1.02, 1.02, 1.01, 1.01, 1, 1, 1.15, 0],
+            opacity: [1, 1, 1, 1, 1, 1, 1, 1, 0],
+          }}
+          transition={{
+            duration: 0.9,
+            ease: "easeInOut",
+            times: [0, 0.1, 0.2, 0.3, 0.4, 0.55, 0.6, 0.75, 1],
+          }}
+        >
+          <span className="text-accent-primary/60 text-3xl">?</span>
+        </motion.div>
+        <motion.p
+          className="text-foreground-secondary mt-4 text-sm"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
           Opening pack...
-        </p>
+        </motion.p>
       </div>
     );
   }
@@ -157,7 +184,12 @@ export default function PacksPage() {
     const visibleCards = revealCards.slice(0, revealIndex + 1);
 
     return (
-      <div className="flex flex-1 flex-col px-4 pt-6 pb-4">
+      <motion.div
+        className="flex flex-1 flex-col px-4 pt-6 pb-4"
+        variants={fadeSlideUp}
+        initial="initial"
+        animate="animate"
+      >
         {/* Progress */}
         <div className="mb-4 flex items-center justify-between">
           <span className="text-foreground-secondary text-sm">
@@ -175,86 +207,115 @@ export default function PacksPage() {
         </div>
 
         {/* Current card highlight */}
-        <div className="mb-6 flex justify-center">
-          <div
-            className={`relative overflow-hidden rounded-xl border-2 p-4 transition-all ${getRarityBorderClass(currentCard.rarity)}`}
-          >
-            {currentCard.isNew && (
-              <span className="absolute top-2 right-2 rounded bg-green-500/90 px-1.5 py-0.5 text-[10px] font-bold text-white">
-                NEW
-              </span>
-            )}
-            <div className="h-44 w-32">
-              {/* Card image placeholder — we have imageUrl but keeping it lightweight for now */}
-              <div
-                className={`flex h-full w-full flex-col items-center justify-center rounded-lg ${getRarityBgClass(currentCard.rarity)}`}
-              >
-                <span className="text-[10px] tracking-wider uppercase opacity-70">
-                  {currentCard.rarity}
-                </span>
-                <p className="mt-2 px-2 text-center text-sm leading-tight font-bold">
-                  {currentCard.card.name}
-                </p>
-                <p className="text-foreground-secondary mt-1 text-[10px]">
-                  {currentCard.card.setCode}-{currentCard.card.collectorNumber}
-                </p>
+        <div className="mb-6 flex justify-center" style={{ perspective: 800 }}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={revealIndex}
+              className={`relative overflow-hidden rounded-xl border-2 p-4 ${getRarityBorderClass(currentCard.rarity)} ${getRarityGlowClass(currentCard.rarity)}`}
+              variants={cardFlip}
+              initial="hidden"
+              animate="visible"
+              exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.15 } }}
+            >
+              {currentCard.isNew && (
+                <motion.span
+                  className="absolute top-2 right-2 rounded bg-green-500/90 px-1.5 py-0.5 text-[10px] font-bold text-white"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.4, type: "spring", stiffness: 500 }}
+                >
+                  NEW
+                </motion.span>
+              )}
+              <div className="h-44 w-32">
+                <div
+                  className={`flex h-full w-full flex-col items-center justify-center rounded-lg ${getRarityBgClass(currentCard.rarity)}`}
+                >
+                  <span className="text-[10px] tracking-wider uppercase opacity-70">
+                    {currentCard.rarity}
+                  </span>
+                  <p className="mt-2 px-2 text-center text-sm leading-tight font-bold">
+                    {currentCard.card.name}
+                  </p>
+                  <p className="text-foreground-secondary mt-1 text-[10px]">
+                    {currentCard.card.setCode}-
+                    {currentCard.card.collectorNumber}
+                  </p>
+                </div>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         {/* Card grid (all revealed so far) */}
-        <div className="mb-4 grid grid-cols-5 gap-1.5">
+        <motion.div
+          className="mb-4 grid grid-cols-4 gap-1.5 sm:grid-cols-5"
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+        >
           {visibleCards.map((c, i) => (
-            <div
+            <motion.div
               key={i}
               className={`rounded-md border p-1.5 text-center ${getRarityBorderClass(c.rarity)} ${
                 i === revealIndex ? "ring-1 ring-white/50" : "opacity-70"
               }`}
+              variants={staggerItem}
             >
-              <p className="truncate text-[8px] font-medium">{c.card.name}</p>
+              <p className="truncate text-[10px] font-medium">{c.card.name}</p>
               <p
-                className={`text-[8px] uppercase ${getRarityTextClass(c.rarity)}`}
+                className={`text-[10px] uppercase ${getRarityTextClass(c.rarity)}`}
               >
                 {c.rarity}
               </p>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Actions */}
         <div className="mt-auto flex gap-3">
           {!showingAll ? (
             <>
-              <button
+              <motion.button
                 onClick={handleNextCard}
-                className="bg-accent-primary hover:bg-accent-primary-hover flex-1 rounded-xl py-3 text-sm font-medium text-white transition-colors"
+                className="bg-accent-primary hover:bg-accent-primary-hover min-h-[44px] flex-1 rounded-xl py-3 text-sm font-medium text-white transition-colors"
+                whileTap={{ scale: 0.97 }}
               >
                 Next Card
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 onClick={handleRevealAll}
-                className="border-card-border bg-card-background text-foreground-secondary hover:bg-card-hover rounded-xl border px-4 py-3 text-sm font-medium transition-colors"
+                className="border-card-border bg-card-background text-foreground-secondary hover:bg-card-hover min-h-[44px] rounded-xl border px-4 py-3 text-sm font-medium transition-colors"
+                whileTap={{ scale: 0.97 }}
               >
                 Reveal All
-              </button>
+              </motion.button>
             </>
           ) : (
-            <button
+            <motion.button
               onClick={handleDone}
-              className="bg-accent-primary hover:bg-accent-primary-hover flex-1 rounded-xl py-3 text-sm font-medium text-white transition-colors"
+              className="bg-accent-primary hover:bg-accent-primary-hover min-h-[44px] flex-1 rounded-xl py-3 text-sm font-medium text-white transition-colors"
+              whileTap={{ scale: 0.97 }}
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 400 }}
             >
               Done
-            </button>
+            </motion.button>
           )}
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   // ── Pack selection ───────────────────────────────
   return (
-    <div className="flex flex-1 flex-col px-4 pt-6 pb-4">
+    <motion.div
+      className="flex flex-1 flex-col px-4 pt-6 pb-4"
+      variants={fadeSlideUp}
+      initial="initial"
+      animate="animate"
+    >
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Pack Opening</h1>
         <p className="text-foreground-secondary mt-1 text-sm">
@@ -284,13 +345,19 @@ export default function PacksPage() {
             </p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <motion.div
+            className="space-y-3"
+            variants={staggerContainer}
+            initial="hidden"
+            animate="visible"
+          >
             {openablePacks.map((item) => {
               const product = getProductById(item.productId)!;
               return (
-                <div
+                <motion.div
                   key={item.productId}
                   className="border-card-border bg-card-background flex items-center justify-between rounded-xl border p-4"
+                  variants={staggerItem}
                 >
                   <div>
                     <p className="font-medium">{product.name}</p>
@@ -299,16 +366,17 @@ export default function PacksPage() {
                       available
                     </p>
                   </div>
-                  <button
+                  <motion.button
                     onClick={() => handleOpenPack(item.productId)}
                     className="bg-accent-primary hover:bg-accent-primary-hover min-h-[44px] rounded-lg px-5 py-2.5 text-sm font-medium text-white transition-colors"
+                    whileTap={{ scale: 0.95 }}
                   >
                     Open
-                  </button>
-                </div>
+                  </motion.button>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         )}
       </section>
 
@@ -336,7 +404,7 @@ export default function PacksPage() {
           </div>
         </div>
       </section>
-    </div>
+    </motion.div>
   );
 }
 
@@ -390,5 +458,18 @@ function getRarityTextClass(rarity: Rarity): string {
       return "text-rarity-showcase";
     default:
       return "text-foreground-muted";
+  }
+}
+
+function getRarityGlowClass(rarity: Rarity): string {
+  switch (rarity) {
+    case "rare":
+      return "animate-rarity-rare";
+    case "epic":
+      return "animate-rarity-epic";
+    case "showcase":
+      return "animate-rarity-showcase";
+    default:
+      return "";
   }
 }

@@ -37,8 +37,8 @@ Creare un'esperienza che unisca:
 
 ## Current Status
 
-- Overall phase: `[x] Duplicate Systems (Card Trader + Singles Counter)`
-- Current milestone: `[x] M6 — Duplicate Systems`
+- Overall phase: `[x] Polish (UI, UX, Accessibility, Animations)`
+- Current milestone: `[x] M9 — Polish`
 - App shell: `[x]`
 - Authentication: `[x]`
 - Cloud save sync: `[x]`
@@ -52,7 +52,7 @@ Creare un'esperienza che unisca:
 - Events/Missions: `[x]` (events system complete, missions: 6 daily + 5 weekly + 16 milestone, seeded generation, day/week reset)
 - Display Case: `[x]` (showcase cards, traffic bonus via displayScore, capacity from upgrades)
 - Duplicate Systems: `[x]` (Card Trader: 5-for-1 rarity upgrade with 4 trade lanes, weighted result picking; Singles Counter: list individual cards for sale, auto-pricing with markup slider, integrated into day cycle + offline progress)
-- Polish/UI: `[ ]`
+- Polish/UI: `[x]`
 
 ## Completed
 
@@ -72,6 +72,7 @@ Creare un'esperienza che unisca:
 - M4 Core Gameplay Loop: Full game engine (pure functions, no side effects) covering: economy (sell pricing, markup, hype multiplier, XP calculation, daily traffic), customers (5 types with budget/patience/tolerance, offline simulation), pack opening (drop table resolution, weighted rarity, dupe detection, reveal sorting), events (9 event templates with modifiers, scheduling, cooldowns), hype tracker (per-set 0-100 with decay/boost), day cycle (offline progress capped at 8h, day advancement with XP/events/hype). Zustand store fully rewritten with all gameplay actions. UI screens: Home dashboard (offline report, XP bar, events, stats, End Day button), Shop (shelf management with markup slider, restock, product picker), Supplier (distributor catalog with box→pack conversion, event price modifiers), Pack Opening (card reveal sequence, rarity borders, NEW badges), Collection Binder (set progress, card grid, filter, showcase toggle). EndDayModal with day summary, XP earned, level up, event preview. Offline progress and hype initialization wired into AuthProvider on save load.
 - M5 Upgrades + Missions + Card Detail + Display Case: Upgrades engine (8 upgrades in 5 categories: Extra Shelf, Better Signage, Loyalty Program, Training Manual, Supplier Contacts, Display Case Expansion, Premium Lighting, Stock Room). Multi-level upgrades with scaling costs and aggregated UpgradeModifiers. Missions engine (6 daily templates, 5 weekly templates, 16 milestone missions) with seeded random generation, evaluation against save state, weekly accumulation, day/week reset. Display case bonus calculation (displayScore-based traffic bonus with sqrt diminishing returns). Full engine integration: traffic/tolerance/XP params from upgrades, wholesale discount from supplier contacts, display case bonus in traffic calc, mission lifecycle in day-cycle (evaluate→reset→generate). Store actions: purchaseUpgrade, setMissions, claimMissionReward. UI: Upgrades shop page (category groups, level badges, active bonuses summary), Missions tracker page (Daily/Weekly/Milestones tabs, progress bars, claim buttons), Card detail modal in collection (full metadata, gameplay meta, display case toggle), Display case summary on home dashboard, completed missions banner in EndDayModal.
 - M6 Duplicate Systems (Card Trader + Singles Counter): Card Trader engine (src/features/trader/) with 5-for-1 trade ratio, 4 rarity lanes (common→uncommon→rare→epic→showcase), weighted random result favoring unowned cards. Singles Counter engine (src/features/singles/) with auto-pricing from baseValue × rarity multiplier × hype, markup slider (0-100%), customer singles visit simulation for collectors/competitive customers. Day-cycle integration: singles sales simulated during End Day with fresh customer wave. Offline progress integration: scaled singles simulation during idle time. XP for singles (8 XP per sale via XP_VALUES.singleSold). Store actions: listSingle, unlistSingle, sellSingle, tradeCards. Legacy save migration for singlesListings, singlesRevenue, singlesSold, totalSinglesRevenue, totalSinglesSold, totalTradesCompleted. Card Trader UI (src/app/more/trader/page.tsx) with trade lanes overview, card picker with selection pills, trade result reveal with card image/NEW badge. Singles Counter UI (src/app/shop/singles/page.tsx) with listable card browser, price slider, active listings with unlist button, slot indicator (5 max). Navigation: Singles Counter link on Shop page (locked until level 5), Card Trader link on More page (locked until level 3).
+- M9 Polish (UI, UX, Accessibility, Animations): Comprehensive polish pass covering all sub-tasks. See M9 milestone breakdown below for details.
 
 ## In Progress
 
@@ -79,8 +80,8 @@ Creare un'esperienza che unisca:
 
 ## Next Up
 
-1. M7: UI polish (animations, loading states, error handling, responsive pass)
-2. M8: Performance + QA (balancing, bundle optimization, smoke tests)
+1. M10: Performance + QA (balancing, bundle optimization, smoke tests)
+2. M11: Advanced features (multi-open packs, guest mode, Google login, notifications)
 
 ## Blockers / Decisions
 
@@ -1066,12 +1067,18 @@ Il gioco deve rimanere utilizzabile e robusto anche se l'utente cambia browser, 
 
 ## M9 — Polish
 
-- [ ] animazioni pack migliori
-- [ ] UX tuning
-- [ ] loading/skeletons
-- [ ] error states
-- [ ] responsive pass
-- [ ] performance pass
+- [x] 9.1 Animation Foundation: Created src/lib/animations.ts with shared framer-motion variants (fadeIn, fadeSlideUp, overlayVariants, modalVariants, cardFlip, cardSlideIn, packShake, staggerContainer/Item, toastVariants, levelUpPulse, tapScale, hoverGlow). Added CSS keyframes and utility classes (shimmer, rarity-glow-rare/epic/showcase, counter-tick) to globals.css.
+- [x] 9.2 Pack Opening Animations: Rewrote packs/page.tsx with framer-motion. Pack shake→burst sequence (rotate/scale keyframes over 900ms), card flip reveal with perspective transform and AnimatePresence, rarity glow classes on rare/epic/showcase cards, stagger-animated card grid, spring-bounced NEW badge, motion.button whileTap feedback on all actions.
+- [x] 9.3 Modal & Overlay Animations: EndDayModal uses framer-motion AnimatePresence with overlayVariants (fade) + modalVariants (scale+slide spring). Level-up celebration uses levelUpPulse variant (scale 0.5→1.15→1). Stats rows stagger in. Missions/events sections animate with delay. CardDetailModal in collection uses overlayVariants + modalVariants for enter/exit animations.
+- [x] 9.4 Loading States: Created src/components/ui/skeleton.tsx with Skeleton, SkeletonText, SkeletonCard, SkeletonStatCard, DashboardSkeleton, ListPageSkeleton, GridPageSkeleton. Created loading.tsx for root, shop, shop/supplier, shop/singles, packs, collection, more.
+- [x] 9.5 Error States: Created src/components/ui/error-display.tsx with ErrorDisplay (retry button) and NotFoundDisplay (back-to-home link). Created error.tsx for root, shop, packs, collection. Created root not-found.tsx.
+- [x] 9.6 Toast System: Created src/components/ui/toast.tsx with ToastProvider (context), useToast hook, animated toast component using framer-motion AnimatePresence. Types: success, error, info, warning. Auto-dismiss with configurable duration. Wired ToastProvider into layout.tsx. Migrated inline setState+setTimeout messages in missions and upgrades pages to use toast.
+- [x] 9.7 Touch Targets: Fixed all buttons below 44px minimum. Collection modal close (32→44px), Trader +/- (36→44px), selected card pills (36→44px), Singles "Unlist" (36→44px), Shop Restock/Clear, Supplier Buy, Settings Sign Out, Login toggle link — all min-h-[44px].
+- [x] 9.8 Accessibility: Viewport userScalable false→true. Bottom nav aria-label + aria-current. CardDetailModal role="dialog", aria-modal, aria-label, Escape key. EndDayModal role="dialog", aria-modal, aria-label, Escape key. Collection close button aria-label. Trader +/- buttons aria-labels. Toast container aria-live="polite" + role="alert". SyncIndicator role="status" + aria-live="polite" + aria-label. Markup sliders (shop + singles) aria-label. Focus-visible styles added globally.
+- [x] 9.9 Responsive Pass: max-w-lg on main container in layout.tsx. Collection card grid: grid-cols-3 sm:grid-cols-4. Pack reveal grid: grid-cols-4 sm:grid-cols-5. Text overflow handling with truncate classes.
+- [x] 9.10 Color & Contrast: --foreground-muted increased from #606078 to #8080a0 for WCAG AA compliance. --nav-inactive updated to match. text-[8px] and text-[9px] in collection grid bumped to text-[10px]. Pack reveal grid text sizes fixed to text-[10px] minimum.
+- [x] 9.11 Micro-Interactions: Dashboard StatCard whileTap scale feedback. ActionButton whileTap scale feedback + min-h-[44px]. End Day button whileTap scale + min-h-[44px]. Pack selection Open buttons whileTap scale. Pack reveal Next/RevealAll/Done buttons whileTap scale. EndDayModal continue button whileTap scale. XP progress bar transition-all duration-500. Progress bars in stats page transition-all duration-500.
+- [x] 9.12 Stats Page: Full implementation with real game data. Overview cards (total revenue, avg revenue/day, items sold, customers served). Sales breakdown (items, revenue, singles, conversion rate, trades). Collection stats (packs opened, cards collected, unique cards, completion with progress bar). Per-set progress with individual progress bars. Shop info (level, day, balance, reputation, XP, display case). Motion animations (fadeSlideUp, staggerContainer/staggerItem).
 
 ---
 
@@ -1215,6 +1222,8 @@ public/
 ---
 
 # Implementation Log
+
+- 2026-03-19 27:00 — **M9 Polish complete (remaining sub-tasks).** Completed 9.2 Pack Opening Animations: rewrote packs/page.tsx with framer-motion — pack shake→burst keyframe sequence (900ms), card flip reveal with perspective transform and AnimatePresence, rarity glow CSS classes on rare/epic/showcase cards, stagger-animated reveal grid, spring-bounced NEW badge. Completed 9.3 Modal & Overlay Animations: EndDayModal rewritten with framer-motion AnimatePresence (overlayVariants + modalVariants + levelUpPulse + stagger stats), CardDetailModal in collection wrapped with motion overlay/modal variants. EndDayModal always rendered (isOpen controls AnimatePresence) for proper exit animations. Completed 9.8 Accessibility (remaining): EndDayModal now has role="dialog", aria-modal="true", aria-label, Escape key handler. SyncIndicator has role="status", aria-live="polite", aria-label. Shop markup slider and Singles markup slider both have aria-label. Completed 9.9 Responsive: collection card grid grid-cols-3 sm:grid-cols-4, pack reveal grid grid-cols-4 sm:grid-cols-5. Completed 9.10 Color & Contrast: pack reveal grid text sizes fixed to text-[10px] minimum. Completed 9.11 Micro-Interactions: dashboard StatCard/ActionButton/EndDay button all use motion whileTap scale, pack buttons have whileTap, EndDayModal continue button has whileTap. Completed 9.12 Stats Page: full implementation with overview cards (total revenue, avg rev/day, items sold, customers), sales breakdown (items, revenue, singles, conversion rate, trades), collection stats (packs, cards, unique, completion bar), per-set progress bars, shop info (level, day, balance, reputation, XP, display case). Uses fadeSlideUp + stagger animations. Updated masterplan with detailed M9 breakdown, fixed Next Up numbering (M10/M11). Typecheck + build pass clean. Files created: none (all edits to existing files). Files modified: packs/page.tsx, end-day-modal.tsx, collection/page.tsx, sync-indicator.tsx, more/stats/page.tsx, page.tsx (dashboard), shop/page.tsx, shop/singles/page.tsx, 01_RIFTBOUND_SHOP_MASTERPLAN.md.
 
 - 2026-03-19 26:00 — **M6 Duplicate Systems (Card Trader + Singles Counter) complete.** Built across multiple sessions. Card Trader engine (src/features/trader/index.ts): TRADE_RATIO=5, 4 trade lanes (common→uncommon→rare→epic→showcase), getTradeableCards filters collection for 2+ copies, getTradeLanes provides lane overview, executeTrade with weighted random result favoring unowned cards (2× weight for new cards). Singles Counter engine (src/features/singles/index.ts): calculateSuggestedPrice from baseValue × rarity multiplier × hype, calculateAskingPrice with 0-100% markup, getListableCards filters for 2+ copies not already listed, simulateSinglesVisit for collectors/competitive customers with interest scoring (collectorScore/playableScore), simulateDaySinglesSales for batch processing. Types updated (game.ts): SinglesListing interface, singlesListings on SaveGame, singlesRevenue/singlesSold on DayReport, totalSinglesRevenue/totalSinglesSold/totalTradesCompleted on ShopStats. Store actions (game-store.ts): listSingle (validates copiesOwned≥2, slot limit 5), unlistSingle, sellSingle (decrements copies, updates revenue/stats), tradeCards (decrements sacrificed copies, adds result card). Day-cycle integration: advanceDay() now takes 6 params to simulate singles sales with fresh customer wave. Offline integration: calculateOfflineProgress() simulates scaled singles sales (proportional to hours × 60% efficiency). XP: singleSold=8 added to XP_VALUES, calculateDayXP accepts singlesSold param. Legacy save migration in auth-provider.tsx. Card Trader UI (src/app/more/trader/page.tsx): 4 trade lane buttons showing excess/tradeable counts, card picker with +/- controls and selection pills, trade result reveal with card image + NEW badge. Singles Counter UI (src/app/shop/singles/page.tsx): active listings section with unlist buttons, listable cards browser with expand-to-price flow (markup slider + asking price + List button), slot indicator (X/5), locked state for level<5. Navigation: Singles Counter link on Shop page with accent-secondary styling (locked badge until level 5), Card Trader link on More page with locked state until level 3. Build + typecheck pass clean.
 - 2026-03-19 23:00 — **Mobile touch-target fixes (5/5).** Fixed all 5 issues from mobile audit: (1) collection filter buttons py-1.5→py-2.5 + min-h-[44px], (2) "Back to Sets"/"Back to Shop" text links added py-2 px-1 min-h-[44px] padding, (3) supplier quantity +/- steppers py-1.5→py-2 + min-h-[44px], (4) pack "Open" button py-2→py-2.5 + min-h-[44px] + wider px, (5) EndDayModal inner container max-h-[85vh] + overflow-y-auto for short phones. Files changed: collection/page.tsx, supplier/page.tsx, packs/page.tsx, end-day-modal.tsx. Typecheck + build pass clean.

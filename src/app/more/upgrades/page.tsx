@@ -1,6 +1,7 @@
 "use client";
 
 import { useGameStore } from "@/stores/game-store";
+import { useToast } from "@/components/ui/toast";
 import {
   getUpgradeCatalog,
   getUpgradesByCategory,
@@ -12,7 +13,7 @@ import {
   type UpgradeModifiers,
 } from "@/features/upgrades";
 import type { UpgradeDefinition, UpgradeCategory } from "@/types/game";
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 
 const CATEGORY_LABELS: Record<UpgradeCategory, string> = {
   shelves: "Shelves",
@@ -38,10 +39,7 @@ const CATEGORY_ORDER: UpgradeCategory[] = [
 
 export default function UpgradesPage() {
   const { save, purchaseUpgrade } = useGameStore();
-  const [purchaseMessage, setPurchaseMessage] = useState<{
-    text: string;
-    type: "success" | "error";
-  } | null>(null);
+  const { toast } = useToast();
 
   const catalog = getUpgradeCatalog();
   const mods = useMemo(
@@ -71,14 +69,10 @@ export default function UpgradesPage() {
   function handlePurchase(upgradeId: string) {
     const result = purchaseUpgrade(upgradeId);
     if (result.success) {
-      setPurchaseMessage({ text: "Upgrade purchased!", type: "success" });
+      toast("Upgrade purchased!", "success");
     } else {
-      setPurchaseMessage({
-        text: result.reason ?? "Cannot purchase",
-        type: "error",
-      });
+      toast(result.reason ?? "Cannot purchase", "error");
     }
-    setTimeout(() => setPurchaseMessage(null), 2000);
   }
 
   return (
@@ -89,19 +83,6 @@ export default function UpgradesPage() {
           Improve your shop capacity, reputation, and unlock new features.
         </p>
       </div>
-
-      {/* Purchase feedback */}
-      {purchaseMessage && (
-        <div
-          className={`mb-4 rounded-lg px-3 py-2 text-center text-sm font-medium transition-opacity ${
-            purchaseMessage.type === "success"
-              ? "bg-green-500/15 text-green-400"
-              : "bg-red-500/15 text-red-400"
-          }`}
-        >
-          {purchaseMessage.text}
-        </div>
-      )}
 
       {/* Summary stats */}
       <div className="mb-6 grid grid-cols-3 gap-3">

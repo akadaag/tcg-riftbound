@@ -18,9 +18,15 @@ export function SyncIndicator() {
   const config = statusConfig[syncStatus] ?? statusConfig.offline;
 
   return (
-    <div className="text-foreground-secondary inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-medium">
+    <div
+      className="text-foreground-secondary inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-medium"
+      role="status"
+      aria-live="polite"
+      aria-label={`Sync status: ${config.label}`}
+    >
       <span
         className={`${config.dotColor} inline-block h-1.5 w-1.5 rounded-full`}
+        aria-hidden="true"
       />
       {config.label}
     </div>

@@ -233,7 +233,7 @@ function ProductCard({
           <button
             onClick={handleBuy}
             disabled={!canAfford}
-            className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+            className={`min-h-[44px] flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
               canAfford
                 ? "bg-accent-primary hover:bg-accent-primary-hover text-white"
                 : "bg-card-border cursor-not-allowed text-gray-500"

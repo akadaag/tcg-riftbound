@@ -16,7 +16,9 @@ import type {
   CardDefinition,
   CollectionEntry,
 } from "@/types/game";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { overlayVariants, modalVariants } from "@/lib/animations";
 
 type ViewMode = "sets" | "cards";
 
@@ -155,21 +157,23 @@ export default function CollectionPage() {
       )}
 
       {/* Card Detail Modal */}
-      {detailCardId && (
-        <CardDetailModal
-          cardId={detailCardId}
-          collectionEntry={collectionEntryMap.get(detailCardId)}
-          isInDisplayCase={displayCaseSet.has(detailCardId)}
-          displayCaseFull={
-            save.displayCase.length >= displayCaseCapacity &&
-            !displayCaseSet.has(detailCardId)
-          }
-          displayCaseCapacity={displayCaseCapacity}
-          displayCaseCount={save.displayCase.length}
-          onToggleDisplayCase={() => handleToggleDisplayCase(detailCardId)}
-          onClose={() => setDetailCardId(null)}
-        />
-      )}
+      <AnimatePresence>
+        {detailCardId && (
+          <CardDetailModal
+            cardId={detailCardId}
+            collectionEntry={collectionEntryMap.get(detailCardId)}
+            isInDisplayCase={displayCaseSet.has(detailCardId)}
+            displayCaseFull={
+              save.displayCase.length >= displayCaseCapacity &&
+              !displayCaseSet.has(detailCardId)
+            }
+            displayCaseCapacity={displayCaseCapacity}
+            displayCaseCount={save.displayCase.length}
+            onToggleDisplayCase={() => handleToggleDisplayCase(detailCardId)}
+            onClose={() => setDetailCardId(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -321,7 +325,7 @@ function CardGridView({
       </div>
 
       {/* Card Grid */}
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
         {sortedCards.map((card) => {
           const copies = ownedMap.get(card.id) ?? 0;
           const isOwned = copies > 0;
@@ -348,11 +352,11 @@ function CardGridView({
               >
                 #{card.collectorNumber}
               </div>
-              <p className="truncate text-[9px] leading-tight font-medium">
+              <p className="truncate text-[10px] leading-tight font-medium">
                 {isOwned ? card.name : "???"}
               </p>
               {isOwned && copies > 1 && (
-                <span className="text-foreground-muted text-[8px]">
+                <span className="text-foreground-muted text-[10px]">
                   x{copies}
                 </span>
               )}
@@ -398,6 +402,15 @@ function CardDetailModal({
   const card = getCardById(cardId);
   const meta = getGameplayMeta(cardId);
 
+  // Escape key handler
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
   if (!card) return null;
 
   const copies = collectionEntry?.copiesOwned ?? 0;
@@ -406,13 +419,24 @@ function CardDetailModal({
     : null;
 
   return (
-    <div
+    <motion.div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4"
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Card details: ${card.name}`}
+      variants={overlayVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
     >
-      <div
+      <motion.div
         className="bg-background border-card-border max-h-[85vh] w-full max-w-sm overflow-y-auto rounded-2xl border"
         onClick={(e) => e.stopPropagation()}
+        variants={modalVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
       >
         {/* Card header with rarity accent */}
         <div className={`rounded-t-2xl p-4 ${getRarityHeaderBg(card.rarity)}`}>
@@ -428,7 +452,8 @@ function CardDetailModal({
             </div>
             <button
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-black/20 text-sm"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-black/20 text-sm"
+              aria-label="Close card details"
             >
               ✕
             </button>
@@ -590,8 +615,8 @@ function CardDetailModal({
             </p>
           )}
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 

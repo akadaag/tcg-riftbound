@@ -302,7 +302,7 @@ export default function CardTraderPage() {
                   <button
                     key={`${cardId}-${idx}`}
                     onClick={() => handleDeselectCard(cardId)}
-                    className={`min-h-[36px] rounded-lg border px-2.5 py-1.5 text-xs ${RARITY_BG[selectedRarity]}`}
+                    className={`min-h-[44px] rounded-lg border px-2.5 py-1.5 text-xs ${RARITY_BG[selectedRarity]}`}
                   >
                     {card?.name ?? "?"} &times;
                   </button>
@@ -479,7 +479,8 @@ function TradeableCardRow({
         {selectedCount > 0 && (
           <button
             onClick={onDeselect}
-            className="flex h-9 min-h-[36px] w-9 items-center justify-center rounded-lg bg-red-500/20 text-red-400 transition-colors hover:bg-red-500/30"
+            className="flex h-11 min-h-[44px] w-11 items-center justify-center rounded-lg bg-red-500/20 text-red-400 transition-colors hover:bg-red-500/30"
+            aria-label={`Remove ${tc.card.name}`}
           >
             -
           </button>
@@ -492,11 +493,12 @@ function TradeableCardRow({
         <button
           onClick={onSelect}
           disabled={!canSelect}
-          className={`flex h-9 min-h-[36px] w-9 items-center justify-center rounded-lg transition-colors ${
+          className={`flex h-11 min-h-[44px] w-11 items-center justify-center rounded-lg transition-colors ${
             canSelect
               ? `${RARITY_BG[rarity]} hover:brightness-125`
               : "bg-card-border text-foreground-muted opacity-40"
           }`}
+          aria-label={`Add ${tc.card.name}`}
         >
           +
         </button>

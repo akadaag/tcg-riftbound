@@ -143,7 +143,7 @@ export default function LoginPage() {
             setError(null);
             setSuccess(null);
           }}
-          className="text-accent-primary hover:text-accent-primary-hover text-sm transition-colors"
+          className="text-accent-primary hover:text-accent-primary-hover min-h-[44px] px-2 py-2 text-sm transition-colors"
         >
           {mode === "login"
             ? "Don't have an account? Sign up"

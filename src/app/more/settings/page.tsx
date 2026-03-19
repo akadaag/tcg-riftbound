@@ -69,7 +69,7 @@ export default function SettingsPage() {
               <form action={signOut} className="pt-2">
                 <button
                   type="submit"
-                  className="text-error hover:text-error/80 text-sm font-medium transition-colors"
+                  className="text-error hover:text-error/80 min-h-[44px] text-sm font-medium transition-colors"
                 >
                   Sign Out
                 </button>
@@ -109,9 +109,7 @@ export default function SettingsPage() {
           <div className="border-card-border bg-card-background rounded-xl border p-4">
             <div className="flex items-center justify-between">
               <p className="text-sm">Build</p>
-              <p className="text-foreground-secondary text-sm">
-                M1 Auth + Save
-              </p>
+              <p className="text-foreground-secondary text-sm">M9 Polish</p>
             </div>
           </div>
         </div>

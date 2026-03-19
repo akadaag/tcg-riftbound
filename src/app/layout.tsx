@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { AuthProvider } from "@/features/auth/auth-provider";
 import { SaveProvider } from "@/features/save/save-provider";
+import { ToastProvider } from "@/components/ui/toast";
 import { SerwistProvider } from "./serwist";
 import "./globals.css";
 
@@ -35,7 +36,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  userScalable: false,
+  userScalable: true,
   viewportFit: "cover",
   themeColor: [
     { media: "(prefers-color-scheme: dark)", color: "#0c0c14" },
@@ -57,10 +58,12 @@ export default function RootLayout({
         <SerwistProvider swUrl="/serwist/sw.js">
           <AuthProvider>
             <SaveProvider>
-              <main className="flex flex-1 flex-col pb-[var(--nav-height)]">
-                {children}
-              </main>
-              <BottomNav />
+              <ToastProvider>
+                <main className="mx-auto flex w-full max-w-lg flex-1 flex-col pb-[var(--nav-height)]">
+                  {children}
+                </main>
+                <BottomNav />
+              </ToastProvider>
             </SaveProvider>
           </AuthProvider>
         </SerwistProvider>

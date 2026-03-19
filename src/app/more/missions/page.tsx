@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useGameStore } from "@/stores/game-store";
+import { useToast } from "@/components/ui/toast";
 import {
   generateDailyMissions,
   generateWeeklyMissions,
@@ -20,7 +21,7 @@ type Tab = "daily" | "weekly" | "milestones";
 export default function MissionsPage() {
   const { save, claimMissionReward } = useGameStore();
   const [activeTab, setActiveTab] = useState<Tab>("daily");
-  const [claimMessage, setClaimMessage] = useState<string | null>(null);
+  const { toast } = useToast();
 
   // Generate active mission definitions
   const dailyMissions = useMemo(
@@ -61,8 +62,7 @@ export default function MissionsPage() {
           : mission.rewardType === "xp"
             ? `${mission.rewardValue} XP`
             : `${mission.rewardValue} Rep`;
-      setClaimMessage(`Claimed: +${rewardLabel}`);
-      setTimeout(() => setClaimMessage(null), 2000);
+      toast(`Claimed: +${rewardLabel}`, "success");
     }
   }
 
@@ -81,13 +81,6 @@ export default function MissionsPage() {
           Complete objectives to earn rewards and progress.
         </p>
       </div>
-
-      {/* Claim feedback */}
-      {claimMessage && (
-        <div className="mb-4 rounded-lg bg-green-500/15 px-3 py-2 text-center text-sm font-medium text-green-400 transition-opacity">
-          {claimMessage}
-        </div>
-      )}
 
       {/* Tab bar */}
       <div className="mb-4 flex gap-2">

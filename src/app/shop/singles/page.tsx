@@ -226,7 +226,7 @@ export default function SinglesCounterPage() {
                   </span>
                   <button
                     onClick={() => handleUnlist(listing.cardId)}
-                    className="min-h-[36px] rounded-lg bg-red-500/20 px-3 py-1.5 text-xs font-medium text-red-400 transition-colors hover:bg-red-500/30"
+                    className="min-h-[44px] rounded-lg bg-red-500/20 px-3 py-2 text-xs font-medium text-red-400 transition-colors hover:bg-red-500/30"
                   >
                     Unlist
                   </button>
@@ -386,6 +386,7 @@ function ListableCardRow({
               value={markup}
               onChange={(e) => onMarkupChange(Number(e.target.value))}
               className="accent-accent-primary w-full"
+              aria-label={`Singles markup percentage: ${markup}%`}
             />
             <div className="text-foreground-muted mt-0.5 flex justify-between text-xs">
               <span>0% (fast sale)</span>

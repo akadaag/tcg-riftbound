@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { motion } from "framer-motion";
 import { useGameStore } from "@/stores/game-store";
 import { useAuth } from "@/features/auth/auth-provider";
 import { SyncIndicator } from "@/components/ui/sync-indicator";
@@ -19,6 +20,23 @@ import {
 } from "@/features/upgrades";
 import { XP_THRESHOLDS } from "@/types/game";
 import Link from "next/link";
+import type { DayReport } from "@/types/game";
+
+const emptyDayReport: DayReport = {
+  day: 0,
+  revenue: 0,
+  costOfGoodsSold: 0,
+  profit: 0,
+  customersVisited: 0,
+  customersPurchased: 0,
+  productsSold: {},
+  packsOpened: 0,
+  newCardsDiscovered: 0,
+  xpEarned: 0,
+  singlesRevenue: 0,
+  singlesSold: 0,
+  activeEvents: [],
+};
 
 export default function HomePage() {
   const { save, offlineReport, setOfflineReport, applySave } = useGameStore();
@@ -231,27 +249,26 @@ export default function HomePage() {
 
       {/* End Day Button */}
       <section className="mb-6">
-        <button
+        <motion.button
           onClick={handleEndDay}
-          className="w-full rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-4 text-sm font-medium text-yellow-300 transition-colors hover:bg-yellow-500/20 active:bg-yellow-500/30"
+          className="min-h-[44px] w-full rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-4 text-sm font-medium text-yellow-300 transition-colors hover:bg-yellow-500/20 active:bg-yellow-500/30"
+          whileTap={{ scale: 0.97 }}
         >
           End Day {save.currentDay}
-        </button>
+        </motion.button>
       </section>
 
       {/* End Day Modal */}
-      {endDayResult && (
-        <EndDayModal
-          isOpen={true}
-          dayReport={endDayResult.dayReport}
-          xpEarned={endDayResult.xpEarned}
-          levelsGained={endDayResult.levelsGained}
-          newLevel={endDayResult.newLevel}
-          nextDayEvent={endDayResult.nextDayEvent}
-          completedMissions={endDayResult.completedMissions}
-          onClose={handleEndDayClose}
-        />
-      )}
+      <EndDayModal
+        isOpen={!!endDayResult}
+        dayReport={endDayResult?.dayReport ?? emptyDayReport}
+        xpEarned={endDayResult?.xpEarned ?? 0}
+        levelsGained={endDayResult?.levelsGained ?? 0}
+        newLevel={endDayResult?.newLevel ?? save.shopLevel}
+        nextDayEvent={endDayResult?.nextDayEvent ?? null}
+        completedMissions={endDayResult?.completedMissions}
+        onClose={handleEndDayClose}
+      />
     </div>
   );
 }
@@ -330,24 +347,30 @@ function StatCard({
   accent?: boolean;
 }) {
   return (
-    <div className="border-card-border bg-card-background rounded-xl border p-3">
+    <motion.div
+      className="border-card-border bg-card-background rounded-xl border p-3"
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+    >
       <p className="text-foreground-muted text-xs">{label}</p>
       <p
         className={`mt-1 text-lg font-bold ${accent ? "text-accent-primary" : "text-foreground"}`}
       >
         {value}
       </p>
-    </div>
+    </motion.div>
   );
 }
 
 function ActionButton({ label, href }: { label: string; href: string }) {
   return (
-    <Link
-      href={href}
-      className="border-card-border bg-card-background text-foreground hover:bg-card-hover active:bg-card-hover flex items-center justify-center rounded-xl border px-4 py-3 text-sm font-medium transition-colors"
-    >
-      {label}
-    </Link>
+    <motion.div whileTap={{ scale: 0.96 }}>
+      <Link
+        href={href}
+        className="border-card-border bg-card-background text-foreground hover:bg-card-hover active:bg-card-hover flex min-h-[44px] items-center justify-center rounded-xl border px-4 py-3 text-sm font-medium transition-colors"
+      >
+        {label}
+      </Link>
+    </motion.div>
   );
 }
