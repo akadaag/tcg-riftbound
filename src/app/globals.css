@@ -53,13 +53,14 @@
   --card-hover: #1e1e38;
 
   /* Sizing */
-  --nav-height: 4.5rem;
+  --nav-height: calc(4.5rem + env(safe-area-inset-bottom, 0px));
   --safe-area-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* Light theme override */
+/* Light theme override — applied via .light class on <html> (manual toggle)
+   or via prefers-color-scheme when theme is set to "system" */
 @media (prefers-color-scheme: light) {
-  :root {
+  html:not(.dark) {
     --background: #f5f5fa;
     --background-secondary: #ffffff;
     --background-tertiary: #eeeef4;
@@ -80,6 +81,29 @@
     --card-border: #e0e0ea;
     --card-hover: #f0f0f8;
   }
+}
+
+/* Force light theme when .light class is set */
+html.light {
+  --background: #f5f5fa;
+  --background-secondary: #ffffff;
+  --background-tertiary: #eeeef4;
+  --foreground: #1a1a2e;
+  --foreground-secondary: #4a4a64;
+  --foreground-muted: #8888a0;
+
+  --accent-primary: #6240ea;
+  --accent-primary-hover: #7c5cfc;
+  --accent-secondary: #2ba8a8;
+
+  --nav-background: #ffffff;
+  --nav-border: #e0e0ea;
+  --nav-active: #6240ea;
+  --nav-inactive: #8888a0;
+
+  --card-background: #ffffff;
+  --card-border: #e0e0ea;
+  --card-hover: #f0f0f8;
 }
 
 /* Tailwind v4 theme mapping */
@@ -126,6 +150,11 @@
 }
 
 /* Base styles */
+html,
+body {
+  overscroll-behavior: none;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

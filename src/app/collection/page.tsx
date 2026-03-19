@@ -355,7 +355,6 @@ function CardGridView({
                     fill
                     sizes="(max-width: 640px) 30vw, 22vw"
                     className="object-cover"
-                    unoptimized
                   />
                 ) : (
                   <div
@@ -481,7 +480,6 @@ function CardDetailModal({
             fill
             sizes="(max-width: 640px) 100vw, 384px"
             className="object-cover"
-            unoptimized
           />
         </div>
 

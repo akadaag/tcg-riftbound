@@ -307,7 +307,6 @@ export default function PacksPage() {
                   fill
                   sizes="128px"
                   className="object-cover"
-                  unoptimized
                 />
                 {currentCard.isNew && (
                   <m.span

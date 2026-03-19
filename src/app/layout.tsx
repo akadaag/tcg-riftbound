@@ -5,6 +5,7 @@ import { AuthProvider } from "@/features/auth/auth-provider";
 import { SaveProvider } from "@/features/save/save-provider";
 import { ToastProvider } from "@/components/ui/toast";
 import { MotionProvider } from "@/components/ui/motion-provider";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 import { SerwistProvider } from "./serwist";
 import "./globals.css";
 
@@ -54,21 +55,33 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="bg-background text-foreground flex min-h-full flex-col">
+      <head>
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+        {/* Inline script to apply saved theme before first paint (prevents FOUC) */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("riftbound-theme");if(t==="light")document.documentElement.classList.add("light");else if(t==="dark")document.documentElement.classList.add("dark")}catch(e){}})();`,
+          }}
+        />
+      </head>
+      <body className="bg-background text-foreground flex min-h-dvh flex-col overscroll-none">
         <SerwistProvider swUrl="/serwist/sw.js">
-          <AuthProvider>
-            <SaveProvider>
-              <ToastProvider>
-                <MotionProvider>
-                  <main className="mx-auto flex w-full max-w-lg flex-1 flex-col pb-[var(--nav-height)]">
-                    {children}
-                  </main>
-                  <BottomNav />
-                </MotionProvider>
-              </ToastProvider>
-            </SaveProvider>
-          </AuthProvider>
+          <ThemeProvider>
+            <AuthProvider>
+              <SaveProvider>
+                <ToastProvider>
+                  <MotionProvider>
+                    <main className="mx-auto flex w-full max-w-lg flex-1 flex-col pt-[env(safe-area-inset-top)] pb-[var(--nav-height)]">
+                      {children}
+                    </main>
+                    <BottomNav />
+                  </MotionProvider>
+                </ToastProvider>
+              </SaveProvider>
+            </AuthProvider>
+          </ThemeProvider>
         </SerwistProvider>
       </body>
     </html>

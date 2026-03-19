@@ -153,7 +153,7 @@ export function BottomNav() {
 
   return (
     <nav
-      className="border-nav-border bg-nav-background/95 fixed right-0 bottom-0 left-0 z-50 border-t backdrop-blur-md"
+      className="border-nav-border bg-nav-background/95 fixed right-0 bottom-0 left-0 z-50 border-t backdrop-blur-md will-change-transform"
       style={{ paddingBottom: "var(--safe-area-bottom)" }}
       aria-label="Main navigation"
     >

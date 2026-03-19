@@ -63,7 +63,16 @@ export function SaveProvider({ children }: { children: ReactNode }) {
     }
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    // ---- Cloud sync on beforeunload ----
+    // ---- Cloud sync on beforeunload / pagehide ----
+    // iOS Safari does not reliably fire beforeunload; pagehide is the
+    // reliable counterpart on mobile Safari and all modern browsers.
+    function handlePageHide() {
+      if (user) {
+        const currentSave = useGameStore.getState().save;
+        saveToCloud(user.id, currentSave).catch(() => {});
+        saveLocally(currentSave).catch(() => {});
+      }
+    }
     function handleBeforeUnload() {
       if (user) {
         // Best-effort save on page close
@@ -75,12 +84,14 @@ export function SaveProvider({ children }: { children: ReactNode }) {
       }
     }
     window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("pagehide", handlePageHide);
 
     return () => {
       clearInterval(localInterval);
       clearInterval(cloudInterval);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("pagehide", handlePageHide);
     };
   }, [user]);
 

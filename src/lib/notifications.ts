@@ -20,8 +20,8 @@ function fireNotification(
 ): void {
   if (!enabled || !canNotify()) return;
   new Notification(title, {
-    icon: "/icons/icon-192x192.png",
-    badge: "/icons/icon-192x192.png",
+    icon: "/icons/icon-192.png",
+    badge: "/icons/icon-192.png",
     ...options,
   });
 }

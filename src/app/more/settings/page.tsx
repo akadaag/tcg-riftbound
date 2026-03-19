@@ -4,11 +4,20 @@ import { useAuth } from "@/features/auth/auth-provider";
 import { useGameStore } from "@/stores/game-store";
 import { signOut } from "@/app/(auth)/login/actions";
 import { useState } from "react";
+import { useTheme } from "@/components/ui/theme-provider";
+import type { Theme } from "@/components/ui/theme-provider";
 
 export default function SettingsPage() {
   const { user, displayName } = useAuth();
   const { syncStatus, save, setNotificationPreference } = useGameStore();
   const [notifError, setNotifError] = useState<string | null>(null);
+  const { theme, setTheme } = useTheme();
+
+  const themeOptions: { value: Theme; label: string }[] = [
+    { value: "system", label: "System" },
+    { value: "light", label: "Light" },
+    { value: "dark", label: "Dark" },
+  ];
 
   const syncStatusConfig: Record<
     string,
@@ -98,6 +107,31 @@ export default function SettingsPage() {
         </div>
       </section>
 
+      {/* Theme section */}
+      <section className="mb-6">
+        <h2 className="mb-3 text-lg font-semibold">Theme</h2>
+        <div className="border-card-border bg-card-background rounded-xl border p-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium">Appearance</p>
+            <div className="bg-background-tertiary flex gap-1 rounded-lg p-1">
+              {themeOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => setTheme(opt.value)}
+                  className={`min-h-[36px] rounded-md px-3 text-xs font-medium transition-colors ${
+                    theme === opt.value
+                      ? "bg-accent-primary text-white"
+                      : "text-foreground-secondary hover:text-foreground"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Notifications section */}
       <section className="mb-6">
         <h2 className="mb-3 text-lg font-semibold">Notifications</h2>
@@ -107,6 +141,9 @@ export default function SettingsPage() {
               <p className="text-sm font-medium">Push Notifications</p>
               <p className="text-foreground-muted text-xs">
                 Alerts for offline earnings, events, and set completions.
+              </p>
+              <p className="text-foreground-muted mt-0.5 text-[10px]">
+                On iOS, the app must be added to your Home Screen first.
               </p>
               {notifError && (
                 <p className="text-error mt-1 text-xs">{notifError}</p>
@@ -168,7 +205,9 @@ export default function SettingsPage() {
           <div className="border-card-border bg-card-background rounded-xl border p-4">
             <div className="flex items-center justify-between">
               <p className="text-sm">Build</p>
-              <p className="text-foreground-secondary text-sm">M9 Polish</p>
+              <p className="text-foreground-secondary text-sm">
+                M12 iOS + Vercel
+              </p>
             </div>
           </div>
         </div>

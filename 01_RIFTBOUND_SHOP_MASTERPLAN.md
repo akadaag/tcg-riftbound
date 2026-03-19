@@ -37,8 +37,8 @@ Creare un'esperienza che unisca:
 
 ## Current Status
 
-- Overall phase: `[x] Polish (UI, UX, Accessibility, Animations)`
-- Current milestone: `[x] M9 — Polish`
+- Overall phase: `[x] Advanced Features`
+- Current milestone: `[x] M11 — Card Art, 3D Pack Flip, Multi-Open, Notifications`
 - App shell: `[x]`
 - Authentication: `[x]`
 - Cloud save sync: `[x]`
@@ -73,6 +73,7 @@ Creare un'esperienza che unisca:
 - M5 Upgrades + Missions + Card Detail + Display Case: Upgrades engine (8 upgrades in 5 categories: Extra Shelf, Better Signage, Loyalty Program, Training Manual, Supplier Contacts, Display Case Expansion, Premium Lighting, Stock Room). Multi-level upgrades with scaling costs and aggregated UpgradeModifiers. Missions engine (6 daily templates, 5 weekly templates, 16 milestone missions) with seeded random generation, evaluation against save state, weekly accumulation, day/week reset. Display case bonus calculation (displayScore-based traffic bonus with sqrt diminishing returns). Full engine integration: traffic/tolerance/XP params from upgrades, wholesale discount from supplier contacts, display case bonus in traffic calc, mission lifecycle in day-cycle (evaluate→reset→generate). Store actions: purchaseUpgrade, setMissions, claimMissionReward. UI: Upgrades shop page (category groups, level badges, active bonuses summary), Missions tracker page (Daily/Weekly/Milestones tabs, progress bars, claim buttons), Card detail modal in collection (full metadata, gameplay meta, display case toggle), Display case summary on home dashboard, completed missions banner in EndDayModal.
 - M6 Duplicate Systems (Card Trader + Singles Counter): Card Trader engine (src/features/trader/) with 5-for-1 trade ratio, 4 rarity lanes (common→uncommon→rare→epic→showcase), weighted random result favoring unowned cards. Singles Counter engine (src/features/singles/) with auto-pricing from baseValue × rarity multiplier × hype, markup slider (0-100%), customer singles visit simulation for collectors/competitive customers. Day-cycle integration: singles sales simulated during End Day with fresh customer wave. Offline progress integration: scaled singles simulation during idle time. XP for singles (8 XP per sale via XP_VALUES.singleSold). Store actions: listSingle, unlistSingle, sellSingle, tradeCards. Legacy save migration for singlesListings, singlesRevenue, singlesSold, totalSinglesRevenue, totalSinglesSold, totalTradesCompleted. Card Trader UI (src/app/more/trader/page.tsx) with trade lanes overview, card picker with selection pills, trade result reveal with card image/NEW badge. Singles Counter UI (src/app/shop/singles/page.tsx) with listable card browser, price slider, active listings with unlist button, slot indicator (5 max). Navigation: Singles Counter link on Shop page (locked until level 5), Card Trader link on More page (locked until level 3).
 - M9 Polish (UI, UX, Accessibility, Animations): Comprehensive polish pass covering all sub-tasks. See M9 milestone breakdown below for details.
+- M11 Advanced Features (Card Art, 3D Pack Flip, Multi-Open, Notifications): 11.1 Card art in collection grid (`aspect-[5/7]` + `<Image fill>` for owned cards; unowned keeps rarity placeholder) and card detail modal (full-width art block above details). 11.2 True 3D card-back flip in pack reveal: CSS utilities (`.preserve-3d`, `.backface-hidden`, `.rotate-y-180`) added to globals.css; `cardFlip` variant rewritten as container-level `rotateY: 0→180`; large reveal card has back-face card-back image + front-face card art with NEW badge; small grid thumbnails use `aspect-[5/7]` + `<Image fill>` with rarity borders and green dot for new cards. 11.3 Multi-open (5×): `openPackBatch()` added to pack-opener.ts with mutable seenSet for cross-batch dupe tracking; "Open 5x" button visible when ownedQuantity ≥ 5; `batch_reveal` page state shows all cards in staggered grid with summary banner. 11.4 Local push notifications: `notificationPreference: boolean` added to SaveGame + store; settings page toggle with `Notification.requestPermission()` flow; `src/lib/notifications.ts` with `notifyOfflineReturn`, `notifyDayStart`, `notifySetComplete`; wired in auth-provider.tsx (offline return) and page.tsx handleEndDayClose (day start + set complete). Typecheck + build pass clean. Committed and pushed as `39bd0d4`.
 
 ## In Progress
 
@@ -80,7 +81,7 @@ Creare un'esperienza che unisca:
 
 ## Next Up
 
-1. M11: Advanced features (multi-open packs, guest mode, Google login, notifications)
+1. M12: Guest mode, Google login, or next feature batch
 
 ## Blockers / Decisions
 
@@ -946,7 +947,7 @@ Il gioco deve rimanere utilizzabile e robusto anche se l'utente cambia browser, 
 - [x] hype set base
 - [ ] filtri collection avanzati
 - [x] sync status UI
-- [ ] multi-open pack semplice
+- [x] multi-open pack semplice
 
 ## Nice to Have
 
@@ -954,7 +955,7 @@ Il gioco deve rimanere utilizzabile e robusto anche se l'utente cambia browser, 
 - [ ] statistiche dettagliate
 - [ ] guest mode
 - [ ] Google login
-- [ ] notifiche leggere
+- [x] notifiche leggere
 
 ---
 
@@ -1078,6 +1079,20 @@ Il gioco deve rimanere utilizzabile e robusto anche se l'utente cambia browser, 
 - [x] 9.10 Color & Contrast: --foreground-muted increased from #606078 to #8080a0 for WCAG AA compliance. --nav-inactive updated to match. text-[8px] and text-[9px] in collection grid bumped to text-[10px]. Pack reveal grid text sizes fixed to text-[10px] minimum.
 - [x] 9.11 Micro-Interactions: Dashboard StatCard whileTap scale feedback. ActionButton whileTap scale feedback + min-h-[44px]. End Day button whileTap scale + min-h-[44px]. Pack selection Open buttons whileTap scale. Pack reveal Next/RevealAll/Done buttons whileTap scale. EndDayModal continue button whileTap scale. XP progress bar transition-all duration-500. Progress bars in stats page transition-all duration-500.
 - [x] 9.12 Stats Page: Full implementation with real game data. Overview cards (total revenue, avg revenue/day, items sold, customers served). Sales breakdown (items, revenue, singles, conversion rate, trades). Collection stats (packs opened, cards collected, unique cards, completion with progress bar). Per-set progress with individual progress bars. Shop info (level, day, balance, reputation, XP, display case). Motion animations (fadeSlideUp, staggerContainer/staggerItem).
+
+## M11 — Card Art, 3D Pack Flip, Multi-Open, Notifications
+
+- [x] 11.1a Collection grid: `<Image fill>` in `aspect-[5/7]` container for owned cards; unowned keeps rarity-colored placeholder with collector number
+- [x] 11.1b Card Detail Modal: full-width `aspect-[5/7]` card art block inserted between rarity header and details section
+- [x] 11.2a CSS 3D flip utilities in globals.css: `.preserve-3d`, `.backface-hidden`, `.rotate-y-180`
+- [x] 11.2b `cardFlip` variant in animations.ts rewritten as container-level `rotateY: 0 → 180`
+- [x] 11.2c Pack reveal large card: true 3D card-back → front art flip; NEW badge on front face; dimensions set via `style` prop (128×176px) for exact aspect ratio
+- [x] 11.2d Pack reveal small grid: card art thumbnails with `aspect-[5/7]` + `<Image fill>`, rarity border, green dot for new cards
+- [x] 11.3a `openPackBatch(count, dropTable, allCards, metaMap, ownedCardIds, rarityBoostChance)` added to pack-opener.ts; returns `BatchPackResult { cardIds, pulls, newCount, dupeCount }`; uses mutable seenSet so earlier pulls in a batch count as "owned" for later packs
+- [x] 11.3b "Open 5x" button in pack selection (visible when ownedQuantity ≥ 5); `batch_reveal` page state; batch reveal UI shows all cards in staggered grid with summary banner
+- [x] 11.4a `notificationPreference: boolean` added to SaveGame in types/game.ts; added to `createInitialSave()` in game-store.ts; `setNotificationPreference(v: boolean)` action added to store
+- [x] 11.4b Settings page: Notifications section with toggle switch; calls `Notification.requestPermission()` before enabling; shows error if denied
+- [x] 11.4c `src/lib/notifications.ts` created with `canNotify()`, `fireNotification()`, `notifyOfflineReturn()`, `notifyDayStart()`, `notifySetComplete()`; wired in auth-provider.tsx (offline return) and page.tsx handleEndDayClose (day start + set complete)
 
 ---
 
@@ -1222,7 +1237,9 @@ public/
 
 # Implementation Log
 
-- 2026-03-19 28:00 — **M10 complete.** 10.1: Wired customer preferredSets + event affectedSets — generateCustomer() takes preferredSets param, generateCustomerWave() populates from event.affectedSets (50% chance for boosted types), rollNewEvent called with availableSetCodes from save.setHype. 10.2: Inventory capacity enforcement (BASE_INVENTORY_CAPACITY=200, getTotalInventoryCapacity exported), set completion detection in advanceDay (EndDayResult.setCompletions, completedSets on SaveGame, set reward banner in EndDayModal), complete_set_pct mission type + two new milestones (ms_collection_25pct 2000G, ms_collection_50pct 5000G). 10.3: Product unlock auto-population on level-up in advanceDay (7th param sets?: SetDefinition[], populates unlockedProducts for shop level). 10.4: Economy balancing — starting gold 500→750G, XP dayComplete 15→20. 10.5: Performance — next/image remotePatterns for cmsassets.rgpub.io, LazyMotion+domAnimation via MotionProvider client component (layout.tsx), all motion._ → m._ across page.tsx/packs/collection/stats/end-day-modal/toast, <img> → <Image> in singles and trader, inventory capacity progress bar in supplier (color-coded at 70%/90%), CacheFirst SW rule for card art (500 entries, 30d TTL). Typecheck + build pass clean. Files modified: customers.ts, events.ts, day-cycle.ts, economy.ts, missions/index.ts, upgrades/index.ts, types/game.ts, game-store.ts, page.tsx, end-day-modal.tsx, layout.tsx, next.config.ts, packs/page.tsx, collection/page.tsx, more/stats/page.tsx, shop/singles/page.tsx, more/trader/page.tsx, shop/supplier/page.tsx, sw.ts. Files created: src/components/ui/motion-provider.tsx.
+- 2026-03-19 29:00 — **M11 complete.** 11.1: Card art in collection grid (owned cards use `<Image fill>` in `aspect-[5/7]` container; unowned keep rarity placeholder) and in card detail modal (full-width art block above details section). 11.2: True 3D card-back flip for pack reveal — CSS utilities `.preserve-3d`, `.backface-hidden`, `.rotate-y-180` added to globals.css; `cardFlip` variant rewritten to container-level `rotateY: 0→180`; large reveal card has two absolutely-positioned backface-hidden faces (card-back image + card art + NEW badge); small grid cells use `aspect-[5/7]` + `<Image fill>` with rarity borders and green dot for new cards. 11.3: Multi-open 5×: `openPackBatch()` + `BatchPackResult` added to pack-opener.ts with mutable seenSet for cross-batch dupe tracking; "Open 5x" button visible when ownedQuantity ≥ 5; `batch_reveal` page state renders all cards in staggered grid with new/dupe summary banner. 11.4: Local push notifications: `notificationPreference: boolean` added to SaveGame + store; settings toggle calls `Notification.requestPermission()` and shows error if denied; `src/lib/notifications.ts` (canNotify, fireNotification, notifyOfflineReturn, notifyDayStart, notifySetComplete) wired into auth-provider.tsx (offline return) and page.tsx handleEndDayClose (day start + set complete). Typecheck + build pass clean. Committed + pushed (`39bd0d4`). Files modified: collection/page.tsx, packs/page.tsx, globals.css, animations.ts, pack-opener.ts, types/game.ts, game-store.ts, more/settings/page.tsx, auth-provider.tsx, page.tsx. Files created: src/lib/notifications.ts.
+
+- 2026-03-19 28:00 — **M10 complete.** 10.1: Wired customer preferredSets + event affectedSets — generateCustomer() takes preferredSets param, generateCustomerWave() populates from event.affectedSets (50% chance for boosted types), rollNewEvent called with availableSetCodes from save.setHype. 10.2: Inventory capacity enforcement (BASE*INVENTORY_CAPACITY=200, getTotalInventoryCapacity exported), set completion detection in advanceDay (EndDayResult.setCompletions, completedSets on SaveGame, set reward banner in EndDayModal), complete_set_pct mission type + two new milestones (ms_collection_25pct 2000G, ms_collection_50pct 5000G). 10.3: Product unlock auto-population on level-up in advanceDay (7th param sets?: SetDefinition[], populates unlockedProducts for shop level). 10.4: Economy balancing — starting gold 500→750G, XP dayComplete 15→20. 10.5: Performance — next/image remotePatterns for cmsassets.rgpub.io, LazyMotion+domAnimation via MotionProvider client component (layout.tsx), all motion.* → m.\_ across page.tsx/packs/collection/stats/end-day-modal/toast, <img> → <Image> in singles and trader, inventory capacity progress bar in supplier (color-coded at 70%/90%), CacheFirst SW rule for card art (500 entries, 30d TTL). Typecheck + build pass clean. Files modified: customers.ts, events.ts, day-cycle.ts, economy.ts, missions/index.ts, upgrades/index.ts, types/game.ts, game-store.ts, page.tsx, end-day-modal.tsx, layout.tsx, next.config.ts, packs/page.tsx, collection/page.tsx, more/stats/page.tsx, shop/singles/page.tsx, more/trader/page.tsx, shop/supplier/page.tsx, sw.ts. Files created: src/components/ui/motion-provider.tsx.
 
 - 2026-03-19 27:00 — **M9 Polish complete (remaining sub-tasks).** Completed 9.2 Pack Opening Animations: rewrote packs/page.tsx with framer-motion — pack shake→burst keyframe sequence (900ms), card flip reveal with perspective transform and AnimatePresence, rarity glow CSS classes on rare/epic/showcase cards, stagger-animated reveal grid, spring-bounced NEW badge. Completed 9.3 Modal & Overlay Animations: EndDayModal rewritten with framer-motion AnimatePresence (overlayVariants + modalVariants + levelUpPulse + stagger stats), CardDetailModal in collection wrapped with motion overlay/modal variants. EndDayModal always rendered (isOpen controls AnimatePresence) for proper exit animations. Completed 9.8 Accessibility (remaining): EndDayModal now has role="dialog", aria-modal="true", aria-label, Escape key handler. SyncIndicator has role="status", aria-live="polite", aria-label. Shop markup slider and Singles markup slider both have aria-label. Completed 9.9 Responsive: collection card grid grid-cols-3 sm:grid-cols-4, pack reveal grid grid-cols-4 sm:grid-cols-5. Completed 9.10 Color & Contrast: pack reveal grid text sizes fixed to text-[10px] minimum. Completed 9.11 Micro-Interactions: dashboard StatCard/ActionButton/EndDay button all use motion whileTap scale, pack buttons have whileTap, EndDayModal continue button has whileTap. Completed 9.12 Stats Page: full implementation with overview cards (total revenue, avg rev/day, items sold, customers), sales breakdown (items, revenue, singles, conversion rate, trades), collection stats (packs, cards, unique, completion bar), per-set progress bars, shop info (level, day, balance, reputation, XP, display case). Uses fadeSlideUp + stagger animations. Updated masterplan with detailed M9 breakdown, fixed Next Up numbering (M10/M11). Typecheck + build pass clean. Files created: none (all edits to existing files). Files modified: packs/page.tsx, end-day-modal.tsx, collection/page.tsx, sync-indicator.tsx, more/stats/page.tsx, page.tsx (dashboard), shop/page.tsx, shop/singles/page.tsx, 01_RIFTBOUND_SHOP_MASTERPLAN.md.
 
