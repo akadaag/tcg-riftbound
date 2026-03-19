@@ -19,6 +19,7 @@ import type {
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { overlayVariants, modalVariants } from "@/lib/animations";
+import Image from "next/image";
 
 type ViewMode = "sets" | "cards";
 
@@ -343,14 +344,26 @@ function CardGridView({
               disabled={!isOwned}
             >
               {isNew && (
-                <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-green-500" />
+                <span className="absolute -top-1 -right-1 z-10 h-2 w-2 rounded-full bg-green-500" />
               )}
-              <div
-                className={`mx-auto mb-1 flex h-12 w-full items-center justify-center rounded text-[10px] ${
-                  isOwned ? getRarityBgClass(card.rarity) : "bg-gray-800/50"
-                }`}
-              >
-                #{card.collectorNumber}
+              {/* Card art */}
+              <div className="relative mb-1 aspect-[5/7] w-full overflow-hidden rounded">
+                {isOwned ? (
+                  <Image
+                    src={card.imageUrl}
+                    alt={card.name}
+                    fill
+                    sizes="(max-width: 640px) 30vw, 22vw"
+                    className="object-cover"
+                    unoptimized
+                  />
+                ) : (
+                  <div
+                    className={`flex h-full w-full items-center justify-center text-[10px] ${getRarityBgClass(card.rarity)}`}
+                  >
+                    #{card.collectorNumber}
+                  </div>
+                )}
               </div>
               <p className="truncate text-[10px] leading-tight font-medium">
                 {isOwned ? card.name : "???"}
@@ -458,6 +471,18 @@ function CardDetailModal({
               ✕
             </button>
           </div>
+        </div>
+
+        {/* Card art */}
+        <div className="relative aspect-[5/7] w-full overflow-hidden">
+          <Image
+            src={card.imageUrl}
+            alt={card.name}
+            fill
+            sizes="(max-width: 640px) 100vw, 384px"
+            className="object-cover"
+            unoptimized
+          />
         </div>
 
         {/* Card details */}

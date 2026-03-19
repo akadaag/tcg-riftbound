@@ -22,6 +22,7 @@ import {
 import { XP_THRESHOLDS } from "@/types/game";
 import Link from "next/link";
 import type { DayReport } from "@/types/game";
+import { notifyDayStart, notifySetComplete } from "@/lib/notifications";
 
 const emptyDayReport: DayReport = {
   day: 0,
@@ -88,6 +89,24 @@ export default function HomePage() {
   function handleEndDayClose() {
     if (endDayResult) {
       applySave(endDayResult.updatedSave);
+
+      const notifEnabled =
+        endDayResult.updatedSave.notificationPreference ?? false;
+
+      // Notify: new day started
+      notifyDayStart(notifEnabled, endDayResult.updatedSave.currentDay);
+
+      // Notify: set completions
+      if (
+        endDayResult.setCompletions &&
+        endDayResult.setCompletions.length > 0
+      ) {
+        notifySetComplete(
+          notifEnabled,
+          endDayResult.setCompletions.map((sc) => sc.setName),
+        );
+      }
+
       setEndDayResult(null);
     }
   }

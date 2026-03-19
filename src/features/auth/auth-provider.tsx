@@ -12,6 +12,7 @@ import { useGameStore, createInitialSave } from "@/stores/game-store";
 import { loadCloudSave, resolveConflict } from "@/features/save/cloud-save";
 import { loadLocalSave } from "@/features/save/local-save";
 import { calculateOfflineProgress } from "@/features/engine/day-cycle";
+import { notifyOfflineReturn } from "@/lib/notifications";
 import { initializeHype } from "@/features/engine/hype";
 import {
   getAllSets,
@@ -155,6 +156,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // Apply offline progress to save and show report
             loadSave(offlineResult.updatedSave);
             setOfflineReport(offlineResult.report);
+
+            // Fire notification if player has enabled them
+            if (offlineResult.report.revenue > 0) {
+              notifyOfflineReturn(
+                offlineResult.updatedSave.notificationPreference ?? false,
+                offlineResult.report.revenue,
+                offlineResult.report.hoursElapsed,
+              );
+            }
 
             // 5. Initialize missions if empty
             if (offlineResult.updatedSave.missions.length === 0) {

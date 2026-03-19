@@ -115,6 +115,9 @@ export function createInitialSave(): SaveGame {
       totalSinglesSold: 0,
       totalTradesCompleted: 0,
     },
+
+    // Preferences
+    notificationPreference: false,
   };
 }
 
@@ -235,6 +238,9 @@ interface GameState {
 
   // Actions — Sync
   setSyncStatus: (status: SyncStatus) => void;
+
+  // Actions — Preferences
+  setNotificationPreference: (enabled: boolean) => void;
 
   // Actions — UI
   setLoading: (loading: boolean) => void;
@@ -1058,6 +1064,17 @@ export const useGameStore = create<GameState>()((set, get) => ({
   // ── Sync ─────────────────────────────────────────
 
   setSyncStatus: (status: SyncStatus) => set({ syncStatus: status }),
+
+  // ── Preferences ──────────────────────────────────
+
+  setNotificationPreference: (enabled: boolean) =>
+    set((state) => ({
+      save: {
+        ...state.save,
+        notificationPreference: enabled,
+        updatedAt: new Date().toISOString(),
+      },
+    })),
 
   // ── UI ───────────────────────────────────────────
 

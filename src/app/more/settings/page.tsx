@@ -3,10 +3,12 @@
 import { useAuth } from "@/features/auth/auth-provider";
 import { useGameStore } from "@/stores/game-store";
 import { signOut } from "@/app/(auth)/login/actions";
+import { useState } from "react";
 
 export default function SettingsPage() {
   const { user, displayName } = useAuth();
-  const { syncStatus } = useGameStore();
+  const { syncStatus, save, setNotificationPreference } = useGameStore();
+  const [notifError, setNotifError] = useState<string | null>(null);
 
   const syncStatusConfig: Record<
     string,
@@ -92,6 +94,63 @@ export default function SettingsPage() {
             >
               {status.label}
             </span>
+          </div>
+        </div>
+      </section>
+
+      {/* Notifications section */}
+      <section className="mb-6">
+        <h2 className="mb-3 text-lg font-semibold">Notifications</h2>
+        <div className="border-card-border bg-card-background rounded-xl border p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium">Push Notifications</p>
+              <p className="text-foreground-muted text-xs">
+                Alerts for offline earnings, events, and set completions.
+              </p>
+              {notifError && (
+                <p className="text-error mt-1 text-xs">{notifError}</p>
+              )}
+            </div>
+            <button
+              onClick={async () => {
+                setNotifError(null);
+                if (save.notificationPreference) {
+                  setNotificationPreference(false);
+                } else {
+                  if (!("Notification" in window)) {
+                    setNotifError("Notifications not supported.");
+                    return;
+                  }
+                  const perm = await Notification.requestPermission();
+                  if (perm === "granted") {
+                    setNotificationPreference(true);
+                  } else {
+                    setNotifError(
+                      "Permission denied. Enable in browser settings.",
+                    );
+                  }
+                }
+              }}
+              className={`relative min-h-[32px] w-12 rounded-full transition-colors ${
+                save.notificationPreference
+                  ? "bg-accent-primary"
+                  : "bg-card-border"
+              }`}
+              aria-label={
+                save.notificationPreference
+                  ? "Disable notifications"
+                  : "Enable notifications"
+              }
+            >
+              <span
+                className={`absolute top-1 block h-6 w-6 rounded-full bg-white shadow transition-transform ${
+                  save.notificationPreference
+                    ? "translate-x-6"
+                    : "translate-x-1"
+                }`}
+              />
+            </button>
           </div>
         </div>
       </section>

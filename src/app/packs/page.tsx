@@ -7,7 +7,11 @@ import {
   getAllCards,
   getAllGameplayMeta,
 } from "@/features/catalog";
-import { openPack, sortForReveal } from "@/features/engine/pack-opener";
+import {
+  openPack,
+  openPackBatch,
+  sortForReveal,
+} from "@/features/engine/pack-opener";
 import {
   getActiveEvents,
   getCombinedEventModifiers,
@@ -16,6 +20,7 @@ import type { CardDefinition, CardGameplayMeta, Rarity } from "@/types/game";
 import { getCardById } from "@/features/catalog";
 import { useState, useCallback, useMemo } from "react";
 import { m, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import {
   cardFlip,
   staggerContainer,
@@ -23,7 +28,7 @@ import {
   fadeSlideUp,
 } from "@/lib/animations";
 
-type PageState = "select" | "opening" | "reveal";
+type PageState = "select" | "opening" | "reveal" | "batch_reveal";
 
 interface RevealCard {
   card: CardDefinition;
@@ -135,6 +140,66 @@ export default function PacksPage() {
     }
   };
 
+  const handleOpenPackBatch = useCallback(
+    (productId: string, count: number) => {
+      const dropTable = getDropTableForProduct(productId);
+      if (!dropTable) return;
+
+      setPageState("opening");
+
+      const allCards = getAllCards();
+      const batchResult = openPackBatch(
+        count,
+        dropTable,
+        allCards,
+        metaMap,
+        ownedCardIds,
+        eventMods.rarityBoostChance,
+      );
+
+      // Build reveal cards (sorted: commons first, showcases last)
+      const sorted = sortForReveal(batchResult.pulls);
+      const cards: RevealCard[] = [];
+      for (const pull of sorted) {
+        const card = getCardById(pull.cardId);
+        if (!card) continue;
+        cards.push({
+          card,
+          rarity: pull.rarity,
+          isNew: pull.isNew,
+          slotLabel: pull.slotLabel,
+        });
+      }
+
+      // Add all cards to collection
+      addCardsToCollection(batchResult.cardIds);
+
+      // Remove packs from inventory
+      removeInventory(productId, count);
+
+      // Record each pack in today's report
+      for (let i = 0; i < count; i++) {
+        recordPackOpened(0); // bulk — we track new count globally via lastStats
+      }
+
+      setRevealCards(cards);
+      setRevealIndex(cards.length - 1); // Show all immediately in batch mode
+      setLastStats({
+        newCount: batchResult.newCount,
+        dupeCount: batchResult.dupeCount,
+      });
+
+      setTimeout(() => setPageState("batch_reveal"), 900);
+    },
+    [
+      metaMap,
+      ownedCardIds,
+      eventMods.rarityBoostChance,
+      addCardsToCollection,
+      removeInventory,
+      recordPackOpened,
+    ],
+  );
   const handleRevealAll = () => {
     setRevealIndex(revealCards.length - 1);
   };
@@ -206,42 +271,54 @@ export default function PacksPage() {
           )}
         </div>
 
-        {/* Current card highlight */}
+        {/* Current card highlight — 3D flip */}
         <div className="mb-6 flex justify-center" style={{ perspective: 800 }}>
           <AnimatePresence mode="wait">
             <m.div
               key={revealIndex}
-              className={`relative overflow-hidden rounded-xl border-2 p-4 ${getRarityBorderClass(currentCard.rarity)} ${getRarityGlowClass(currentCard.rarity)}`}
+              className="preserve-3d relative"
+              style={{ width: 128, height: 176 }}
               variants={cardFlip}
               initial="hidden"
               animate="visible"
               exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.15 } }}
             >
-              {currentCard.isNew && (
-                <m.span
-                  className="absolute top-2 right-2 rounded bg-green-500/90 px-1.5 py-0.5 text-[10px] font-bold text-white"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.4, type: "spring", stiffness: 500 }}
-                >
-                  NEW
-                </m.span>
-              )}
-              <div className="h-44 w-32">
-                <div
-                  className={`flex h-full w-full flex-col items-center justify-center rounded-lg ${getRarityBgClass(currentCard.rarity)}`}
-                >
-                  <span className="text-[10px] tracking-wider uppercase opacity-70">
-                    {currentCard.rarity}
-                  </span>
-                  <p className="mt-2 px-2 text-center text-sm leading-tight font-bold">
-                    {currentCard.card.name}
-                  </p>
-                  <p className="text-foreground-secondary mt-1 text-[10px]">
-                    {currentCard.card.setCode}-
-                    {currentCard.card.collectorNumber}
-                  </p>
-                </div>
+              {/* Back face — card back image */}
+              <div
+                className={`absolute inset-0 overflow-hidden rounded-xl border-2 backface-hidden ${getRarityBorderClass(currentCard.rarity)}`}
+              >
+                <Image
+                  src="/images/card-back.png"
+                  alt="Card back"
+                  fill
+                  sizes="128px"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+
+              {/* Front face — card art (pre-rotated 180° in CSS) */}
+              <div
+                className={`absolute inset-0 rotate-y-180 overflow-hidden rounded-xl border-2 backface-hidden ${getRarityBorderClass(currentCard.rarity)} ${getRarityGlowClass(currentCard.rarity)}`}
+              >
+                <Image
+                  src={currentCard.card.imageUrl}
+                  alt={currentCard.card.name}
+                  fill
+                  sizes="128px"
+                  className="object-cover"
+                  unoptimized
+                />
+                {currentCard.isNew && (
+                  <m.span
+                    className="absolute top-2 right-2 rounded bg-green-500/90 px-1.5 py-0.5 text-[10px] font-bold text-white"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.4, type: "spring", stiffness: 500 }}
+                  >
+                    NEW
+                  </m.span>
+                )}
               </div>
             </m.div>
           </AnimatePresence>
@@ -257,17 +334,22 @@ export default function PacksPage() {
           {visibleCards.map((c, i) => (
             <m.div
               key={i}
-              className={`rounded-md border p-1.5 text-center ${getRarityBorderClass(c.rarity)} ${
+              className={`relative aspect-[5/7] overflow-hidden rounded-md border ${getRarityBorderClass(c.rarity)} ${
                 i === revealIndex ? "ring-1 ring-white/50" : "opacity-70"
               }`}
               variants={staggerItem}
             >
-              <p className="truncate text-[10px] font-medium">{c.card.name}</p>
-              <p
-                className={`text-[10px] uppercase ${getRarityTextClass(c.rarity)}`}
-              >
-                {c.rarity}
-              </p>
+              <Image
+                src={c.card.imageUrl}
+                alt={c.card.name}
+                fill
+                sizes="80px"
+                className="object-cover"
+                unoptimized
+              />
+              {c.isNew && (
+                <span className="absolute top-0.5 right-0.5 h-1.5 w-1.5 rounded-full bg-green-400" />
+              )}
             </m.div>
           ))}
         </m.div>
@@ -304,6 +386,78 @@ export default function PacksPage() {
             </m.button>
           )}
         </div>
+      </m.div>
+    );
+  }
+
+  // ── Batch reveal (all cards at once) ────────────────
+  if (pageState === "batch_reveal" && revealCards.length > 0) {
+    return (
+      <m.div
+        className="flex flex-1 flex-col px-4 pt-6 pb-4"
+        variants={fadeSlideUp}
+        initial="initial"
+        animate="animate"
+      >
+        {/* Summary banner */}
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold">Batch Reveal</h2>
+          {lastStats && (
+            <p className="text-sm">
+              <span className="font-medium text-green-400">
+                {lastStats.newCount} new
+              </span>
+              {" / "}
+              <span className="text-foreground-muted">
+                {lastStats.dupeCount} dupes
+              </span>
+              {" · "}
+              <span className="text-foreground-secondary">
+                {revealCards.length} cards total
+              </span>
+            </p>
+          )}
+        </div>
+
+        {/* All cards grid */}
+        <m.div
+          className="mb-4 grid grid-cols-4 gap-1.5 overflow-y-auto sm:grid-cols-5"
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+        >
+          {revealCards.map((c, i) => (
+            <m.div
+              key={i}
+              className={`relative aspect-[5/7] overflow-hidden rounded-md border ${getRarityBorderClass(c.rarity)} ${getRarityGlowClass(c.rarity)}`}
+              variants={staggerItem}
+            >
+              <Image
+                src={c.card.imageUrl}
+                alt={c.card.name}
+                fill
+                sizes="80px"
+                className="object-cover"
+                unoptimized
+              />
+              {c.isNew && (
+                <span className="absolute top-0.5 right-0.5 h-1.5 w-1.5 rounded-full bg-green-400" />
+              )}
+            </m.div>
+          ))}
+        </m.div>
+
+        {/* Done */}
+        <m.button
+          onClick={handleDone}
+          className="bg-accent-primary hover:bg-accent-primary-hover mt-auto min-h-[44px] w-full rounded-xl py-3 text-sm font-medium text-white transition-colors"
+          whileTap={{ scale: 0.97 }}
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 400 }}
+        >
+          Done
+        </m.button>
       </m.div>
     );
   }
@@ -366,13 +520,24 @@ export default function PacksPage() {
                       available
                     </p>
                   </div>
-                  <m.button
-                    onClick={() => handleOpenPack(item.productId)}
-                    className="bg-accent-primary hover:bg-accent-primary-hover min-h-[44px] rounded-lg px-5 py-2.5 text-sm font-medium text-white transition-colors"
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    Open
-                  </m.button>
+                  <div className="flex gap-2">
+                    {item.ownedQuantity >= 5 && (
+                      <m.button
+                        onClick={() => handleOpenPackBatch(item.productId, 5)}
+                        className="border-accent-primary text-accent-primary hover:bg-accent-primary/10 min-h-[44px] rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors"
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        Open 5x
+                      </m.button>
+                    )}
+                    <m.button
+                      onClick={() => handleOpenPack(item.productId)}
+                      className="bg-accent-primary hover:bg-accent-primary-hover min-h-[44px] rounded-lg px-5 py-2.5 text-sm font-medium text-white transition-colors"
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      Open
+                    </m.button>
+                  </div>
                 </m.div>
               );
             })}

@@ -73,12 +73,16 @@ export const modalVariants: Variants = {
 
 // ── Card reveal (pack opening) ────────────────────────
 
+/**
+ * Applied to the flip *container* (preserve-3d).
+ * Container starts at rotateY:0 (back face visible) and flips to rotateY:180
+ * (front face becomes visible). Both faces must have backface-hidden.
+ * Back face: no CSS rotation. Front face: rotate-y-180 in CSS.
+ */
 export const cardFlip: Variants = {
-  hidden: { rotateY: 180, opacity: 0, scale: 0.8 },
+  hidden: { rotateY: 0 },
   visible: {
-    rotateY: 0,
-    opacity: 1,
-    scale: 1,
+    rotateY: 180,
     transition: { duration: DURATIONS.reveal, ease: "easeOut" },
   },
 };

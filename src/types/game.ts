@@ -525,6 +525,10 @@ export interface SaveGame {
 
   // --- Lifetime stats ---
   stats: ShopStats;
+
+  // --- Preferences ---
+  /** Whether the player has opted in to local push notifications. */
+  notificationPreference: boolean;
 }
 
 // ============================================

@@ -272,3 +272,66 @@ export function sortForReveal(pulls: PullResult[]): PullResult[] {
     (a, b) => rarityOrder[a.rarity] - rarityOrder[b.rarity],
   );
 }
+
+// ── Batch pack opening ────────────────────────────────────────────────
+
+export interface BatchPackResult {
+  /** All card IDs pulled across all packs. */
+  cardIds: string[];
+  /** Flat list of all pull results across all packs, in reveal order. */
+  pulls: PullResult[];
+  /** How many new unique cards were discovered. */
+  newCount: number;
+  /** How many duplicates were pulled. */
+  dupeCount: number;
+}
+
+/**
+ * Open N packs in a single call.
+ * Uses `ownedCardIds` to track new vs. dupe across the batch.
+ * Cards pulled in earlier packs of the batch count as "owned" for
+ * dupe-detection in later packs.
+ *
+ * @param count - How many packs to open
+ */
+export function openPackBatch(
+  count: number,
+  dropTable: import("@/types/game").DropTable,
+  allCards: CardDefinition[],
+  allMeta: Map<string, CardGameplayMeta>,
+  ownedCardIds: Set<string>,
+  rarityBoostChance: number = 0,
+): BatchPackResult {
+  // Mutable working set so each successive pack knows about earlier pulls
+  const seenSet = new Set(ownedCardIds);
+  const allPulls: PullResult[] = [];
+  let newCount = 0;
+  let dupeCount = 0;
+
+  for (let i = 0; i < count; i++) {
+    const result = openPack(
+      dropTable,
+      allCards,
+      allMeta,
+      seenSet,
+      rarityBoostChance,
+    );
+    for (const pull of result.pulls) {
+      const isNew = !seenSet.has(pull.cardId);
+      if (isNew) {
+        newCount++;
+        seenSet.add(pull.cardId);
+      } else {
+        dupeCount++;
+      }
+      allPulls.push({ ...pull, isNew, isDuplicate: !isNew });
+    }
+  }
+
+  return {
+    cardIds: allPulls.map((p) => p.cardId),
+    pulls: allPulls,
+    newCount,
+    dupeCount,
+  };
+}
