@@ -19,13 +19,21 @@
   --accent-primary-hover: #9478ff;
   --accent-secondary: #3ecfcf;
 
-  /* Rarity colors */
+  /* Rarity colors (matches Riftbound TCG: common, uncommon, rare, epic, showcase) */
   --rarity-common: #b0b0c0;
   --rarity-uncommon: #4caf50;
   --rarity-rare: #2196f3;
   --rarity-epic: #9c27b0;
-  --rarity-legendary: #ff9800;
-  --rarity-mythic: #ff1744;
+  --rarity-showcase: #ff9800;
+
+  /* XP / Progress */
+  --xp-bar: #7c5cfc;
+  --xp-bar-glow: #9478ff;
+  --hype-hot: #f97316;
+  --hype-dead: #6b7280;
+
+  /* Currency */
+  --currency-gold: #fbbf24;
 
   /* Feedback */
   --color-success: #4caf50;
@@ -91,8 +99,13 @@
   --color-rarity-uncommon: var(--rarity-uncommon);
   --color-rarity-rare: var(--rarity-rare);
   --color-rarity-epic: var(--rarity-epic);
-  --color-rarity-legendary: var(--rarity-legendary);
-  --color-rarity-mythic: var(--rarity-mythic);
+  --color-rarity-showcase: var(--rarity-showcase);
+
+  --color-xp-bar: var(--xp-bar);
+  --color-xp-bar-glow: var(--xp-bar-glow);
+  --color-hype-hot: var(--hype-hot);
+  --color-hype-dead: var(--hype-dead);
+  --color-currency-gold: var(--currency-gold);
 
   --color-success: var(--color-success);
   --color-warning: var(--color-warning);

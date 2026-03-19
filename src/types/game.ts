@@ -193,13 +193,152 @@ export interface ProductDefinition {
 }
 
 // ============================================
+// Gameplay Types (Shop / Customers / Events)
+// ============================================
+
+// --------------- Shelf System ---------------
+
+export interface ShelfSlot {
+  /** Which product is on this shelf. null = empty slot. */
+  productId: string | null;
+  /** How many units stocked on this shelf. */
+  quantity: number;
+  /** Player-set markup percentage (0-100). Sell price = base * (1 + markup/100). */
+  markup: number;
+}
+
+// --------------- Customer System ---------------
+
+export type CustomerType =
+  | "casual"
+  | "collector"
+  | "competitive"
+  | "kid"
+  | "whale";
+
+export interface Customer {
+  id: string;
+  type: CustomerType;
+  name: string;
+  /** Max amount they'll spend in a visit. */
+  budget: number;
+  /** Set codes they prefer. Empty = any. */
+  preferredSets: string[];
+  /** Product types they prefer. Empty = any. */
+  preferredProducts: ProductType[];
+  /** 0-1: how tolerant of markup. 0 = only buys cheap, 1 = price insensitive. */
+  priceTolerance: number;
+  /** 0-1: how long they browse. Higher = more patience, checks more shelves. */
+  patience: number;
+}
+
+export interface CustomerVisitResult {
+  customer: Customer;
+  purchased: boolean;
+  productId: string | null;
+  quantity: number;
+  revenue: number;
+  satisfaction: number;
+}
+
+// --------------- Event System ---------------
+
+export type GameEventType =
+  | "tournament_weekend"
+  | "collector_convention"
+  | "holiday_rush"
+  | "influencer_visit"
+  | "distributor_sale"
+  | "supply_shortage"
+  | "new_set_hype"
+  | "lucky_week"
+  | "double_xp";
+
+export interface GameEvent {
+  id: string;
+  type: GameEventType;
+  name: string;
+  description: string;
+  /** Which day the event starts. */
+  startDay: number;
+  /** How many days the event lasts. */
+  duration: number;
+  /** Multiplier to customer traffic (1.0 = normal). */
+  trafficMultiplier: number;
+  /** Multiplier to customer budgets (1.0 = normal). */
+  budgetMultiplier: number;
+  /** Multiplier to customer price tolerance (1.0 = normal). */
+  priceToleranceMultiplier: number;
+  /** Bonus to specific customer types. Keys are CustomerType. */
+  customerTypeBonus: Partial<Record<CustomerType, number>>;
+  /** Multiplier to wholesale prices (1.0 = normal, 0.85 = 15% discount). */
+  wholesaleMultiplier: number;
+  /** Bonus to pack opening rarity upgrade chance (0.0 = none, 0.05 = +5%). */
+  rarityBoostChance: number;
+  /** XP multiplier (1.0 = normal, 2.0 = double). */
+  xpMultiplier: number;
+  /** Which sets are affected. Empty = all. */
+  affectedSets: string[];
+}
+
+// --------------- Hype Tracker ---------------
+
+export interface SetHype {
+  setCode: string;
+  /** Current hype level (0-100). Affects customer demand and willingness to pay. */
+  currentHype: number;
+  /** Base hype before modifiers. */
+  baseHype: number;
+}
+
+// --------------- Day Report ---------------
+
+export interface DayReport {
+  day: number;
+  /** Revenue earned from customer sales. */
+  revenue: number;
+  /** Cost of goods sold (wholesale cost of items customers bought). */
+  costOfGoodsSold: number;
+  /** Net profit = revenue - costOfGoodsSold. */
+  profit: number;
+  /** Number of customers who visited. */
+  customersVisited: number;
+  /** Number of customers who purchased. */
+  customersPurchased: number;
+  /** Products sold breakdown: productId → quantity. */
+  productsSold: Record<string, number>;
+  /** Packs opened by the player today. */
+  packsOpened: number;
+  /** New unique cards discovered today. */
+  newCardsDiscovered: number;
+  /** XP earned this day. */
+  xpEarned: number;
+  /** Active events during this day. */
+  activeEvents: string[];
+}
+
+/** Report generated when the player returns after being away. */
+export interface OfflineReport {
+  /** Hours elapsed since last play (capped at 8). */
+  hoursElapsed: number;
+  /** Revenue earned while away. */
+  revenue: number;
+  /** Products sold while away. */
+  productsSold: Record<string, number>;
+  /** Total items sold. */
+  totalItemsSold: number;
+  /** Customers who visited while away. */
+  customersServed: number;
+}
+
+// ============================================
 // Player Save Types (Game State)
 // ============================================
 
 export interface InventoryItem {
   productId: string;
+  /** Packs/products owned in the "back room" (not on shelves). */
   ownedQuantity: number;
-  listedQuantity: number;
 }
 
 export interface CollectionEntry {
@@ -239,16 +378,93 @@ export interface SaveGame {
   userId: string;
   saveVersion: number;
   updatedAt: string;
+
+  // --- Shop ---
   shopLevel: number;
   softCurrency: number;
   reputation: number;
   currentDay: number;
+  /** XP toward next shop level. */
+  xp: number;
+  /** XP required to reach next shop level. */
+  xpToNextLevel: number;
+  /** ISO timestamp of last active play session. Used for offline calc. */
+  lastPlayedAt: string;
+
+  // --- Shelves ---
+  /** Shop shelf slots. Length = number of shelves unlocked. */
+  shelves: ShelfSlot[];
+
+  // --- Inventory & Collection ---
   inventory: InventoryItem[];
   collection: CollectionEntry[];
+  /** Card IDs placed in the display case (boosts reputation + collector traffic). */
+  displayCase: string[];
+
+  // --- Hype ---
+  /** Per-set hype state. */
+  setHype: SetHype[];
+
+  // --- Events ---
+  /** Currently scheduled/active events. */
+  activeEvents: GameEvent[];
+  /** IDs of events already seen (prevents repeats too soon). */
+  pastEventIds: string[];
+
+  // --- Progression ---
   upgrades: UpgradeState[];
   missions: MissionProgress[];
+  /** Product IDs the player has unlocked access to. */
+  unlockedProducts: string[];
+
+  // --- Today tracking ---
+  /** Tracks what happened today (reset on day advance). */
+  todayReport: DayReport;
+
+  // --- Lifetime stats ---
   stats: ShopStats;
 }
+
+// ============================================
+// XP / Level Thresholds
+// ============================================
+
+/** XP required for each shop level (index = level, value = XP needed). */
+export const XP_THRESHOLDS: number[] = [
+  0, // level 0 (unused)
+  0, // level 1 (starting)
+  100, // level 2
+  250, // level 3
+  500, // level 4
+  800, // level 5
+  1200, // level 6
+  1700, // level 7
+  2400, // level 8
+  3200, // level 9
+  4200, // level 10
+  5500, // level 11
+  7000, // level 12
+  9000, // level 13
+  11500, // level 14
+  14500, // level 15
+  18000, // level 16
+  22000, // level 17
+  27000, // level 18
+  33000, // level 19
+  40000, // level 20
+];
+
+/** Max shop level. */
+export const MAX_SHOP_LEVEL = 20;
+
+/** Starting number of shelf slots. */
+export const STARTING_SHELVES = 3;
+
+/** Max hours of offline progress accumulated. */
+export const MAX_OFFLINE_HOURS = 8;
+
+/** Day-of-week cycle length. */
+export const WEEK_LENGTH = 7;
 
 // ============================================
 // UI / Misc Types

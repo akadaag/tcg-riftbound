@@ -8,9 +8,16 @@ import {
   type ReactNode,
 } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useGameStore } from "@/stores/game-store";
+import { useGameStore, createInitialSave } from "@/stores/game-store";
 import { loadCloudSave, resolveConflict } from "@/features/save/cloud-save";
 import { loadLocalSave } from "@/features/save/local-save";
+import { calculateOfflineProgress } from "@/features/engine/day-cycle";
+import { initializeHype } from "@/features/engine/hype";
+import {
+  getAllSets,
+  getProductMap,
+  getProductSetMap,
+} from "@/features/catalog";
 import type { User } from "@supabase/supabase-js";
 
 interface AuthContextValue {
@@ -40,8 +47,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [displayName, setDisplayName] = useState("");
   const [isReady, setIsReady] = useState(false);
 
-  const { loadSave, setAuthenticated, clearAuth, setLoading, setHydrated } =
-    useGameStore();
+  const {
+    loadSave,
+    setAuthenticated,
+    clearAuth,
+    setLoading,
+    setHydrated,
+    setOfflineReport,
+    applySave,
+    setSetHype,
+  } = useGameStore();
 
   useEffect(() => {
     const supabase = createClient();
@@ -73,11 +88,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           loadCloudSave(currentUser.id),
         ]);
 
-        const resolvedSave = resolveConflict(localSave, cloudSave);
+        let resolvedSave = resolveConflict(localSave, cloudSave);
 
         if (resolvedSave) {
           // Ensure userId matches current user
-          loadSave({ ...resolvedSave, userId: currentUser.id });
+          resolvedSave = { ...resolvedSave, userId: currentUser.id };
+
+          // 3. Initialize set hype if missing (new game or legacy save)
+          if (resolvedSave.setHype.length === 0) {
+            resolvedSave = {
+              ...resolvedSave,
+              setHype: initializeHype(getAllSets()),
+            };
+          }
+
+          // 4. Calculate offline progress
+          const productMap = getProductMap();
+          const productSetMap = getProductSetMap();
+          const offlineResult = calculateOfflineProgress(
+            resolvedSave,
+            productMap,
+            productSetMap,
+          );
+
+          if (offlineResult) {
+            // Apply offline progress to save and show report
+            loadSave(offlineResult.updatedSave);
+            setOfflineReport(offlineResult.report);
+          } else {
+            loadSave(resolvedSave);
+          }
         }
       } catch (error) {
         console.error("[auth-provider] Save load error:", error);

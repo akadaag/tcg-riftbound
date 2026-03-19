@@ -233,3 +233,20 @@ export function getDropTableForProduct(
   if (!product?.dropTableId) return undefined;
   return dropTableById.get(product.dropTableId);
 }
+
+// ── Engine helpers ───────────────────────────────────────────────────
+// Pre-built Maps that the engine functions need.
+
+/** Map of productId → ProductDefinition. Used by engine functions. */
+export function getProductMap(): Map<string, ProductDefinition> {
+  return productById;
+}
+
+/** Map of productId → setCode. Used by engine functions. */
+export function getProductSetMap(): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const [id, p] of productById) {
+    map.set(id, p.setCode);
+  }
+  return map;
+}

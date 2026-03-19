@@ -37,19 +37,19 @@ Creare un'esperienza che unisca:
 
 ## Current Status
 
-- Overall phase: `[-] Content Pipeline → Core Gameplay`
-- Current milestone: `[x] M3 — Content Pipeline`
+- Overall phase: `[x] Core Gameplay Loop`
+- Current milestone: `[x] M4 — Core Gameplay Loop`
 - App shell: `[x]`
 - Authentication: `[x]`
 - Cloud save sync: `[x]`
 - PWA installability: `[x]` (manifest + icons + service worker via @serwist/turbopack, offline fallback, caching strategy)
 - Catalog import pipeline: `[x]` (656 cards, 3 sets, 5 products, 2 drop tables, typed catalog module)
-- Core gameplay loop: `[ ]`
-- Collection/Binder: `[ ]`
-- Customers: `[ ]`
-- Economy: `[ ]`
+- Core gameplay loop: `[x]` (shelves, supplier, customers, economy, pack opening, day cycle, events, hype, offline progress, End Day flow)
+- Collection/Binder: `[x]` (set progress, card grid, filter, rarity borders, dupe tracking)
+- Customers: `[x]` (5 types, budget/patience/tolerance, offline simulation)
+- Economy: `[x]` (sell pricing, markup, hype multiplier, XP, daily traffic)
 - Upgrades: `[ ]`
-- Events/Missions: `[ ]`
+- Events/Missions: `[-]` (events system complete, missions not started)
 - Polish/UI: `[ ]`
 
 ## Completed
@@ -67,19 +67,19 @@ Creare un'esperienza che unisca:
 - M1 Auth + Cross-Device Persistence: Supabase Auth (email+password), proxy JWT refresh, login/signup page, email confirmation, cloud save (Supabase JSONB), local save (IndexedDB), auto-save orchestration (2s local, 30s cloud), sync status indicator, AuthProvider + SaveProvider, settings page with account info + logout
 - M2 PWA Shell: Service worker via @serwist/turbopack (route handler at /serwist/sw.js), defaultCache runtime caching, offline fallback page (/~offline), SerwistProvider registration in root layout, proxy excludes /serwist/ paths, tsconfig excludes sw.ts from main compilation (esbuild compiles separately)
 - M3 Content Pipeline: Types aligned with real Riftbound TCG (5 rarities: common/uncommon/rare/epic/showcase, 6 card types, 4 supertypes, 7 domains). Import script fetches from RiftCodex API (656 cards, 3 sets). Normalised JSON data files: sets.json (3 sets with gameplay tuning), cards.json (656 cards with full metadata), gameplay-meta.json (derived baseValue/pullWeight/collectorScore). Products/drop tables for OGN + SFD boosters (14 cards: 7C+3U+2R+1foil+1token) and boxes (24 packs). OGS starter product. Typed catalog accessor module with Map-based indices for fast lookups.
+- M4 Core Gameplay Loop: Full game engine (pure functions, no side effects) covering: economy (sell pricing, markup, hype multiplier, XP calculation, daily traffic), customers (5 types with budget/patience/tolerance, offline simulation), pack opening (drop table resolution, weighted rarity, dupe detection, reveal sorting), events (9 event templates with modifiers, scheduling, cooldowns), hype tracker (per-set 0-100 with decay/boost), day cycle (offline progress capped at 8h, day advancement with XP/events/hype). Zustand store fully rewritten with all gameplay actions. UI screens: Home dashboard (offline report, XP bar, events, stats, End Day button), Shop (shelf management with markup slider, restock, product picker), Supplier (distributor catalog with box→pack conversion, event price modifiers), Pack Opening (card reveal sequence, rarity borders, NEW badges), Collection Binder (set progress, card grid, filter, showcase toggle). EndDayModal with day summary, XP earned, level up, event preview. Offline progress and hype initialization wired into AuthProvider on save load.
 
 ## In Progress
 
-- M4 — Core Gameplay Loop (dashboard, inventory, stock purchase, pack opening, economy)
+- M5 — Polish + Upgrades (upgrades system, missions, UX improvements)
 
 ## Next Up
 
-1. M4: Core gameplay loop (dashboard, inventory, stock purchase, pack opening, economy)
-2. M5: Collection / Binder system
-3. M6: Customer system
-4. M7: Economy balancing
-5. M8: Upgrades system
-6. M9: Events / Missions
+1. M5: Upgrades system (shelf expansions, traffic boosts, reputation bonuses)
+2. M6: Missions system (daily/weekly objectives, rewards)
+3. M7: Duplicate systems (Card Trader, Display Case effects, Singles Counter)
+4. M8: UI polish (animations, loading states, error handling, responsive pass)
+5. M9: Performance + QA (balancing, bundle optimization, smoke tests)
 
 ## Blockers / Decisions
 
@@ -94,6 +94,11 @@ Creare un'esperienza che unisca:
 - Pending: User must run SQL migration `scripts/migrations/001_profiles_and_savegames.sql` in Supabase SQL Editor and configure Site URL + Redirect URL in Supabase dashboard.
 - Decision (RESOLVED): Riftbound pack structure — 14 cards per pack (7 common, 3 uncommon, 2 rare-or-better, 1 foil wildcard, 1 token/rune). 24 packs per box. "Showcase" rarity = alt-art/overnumbered/signature variants. Rarities: common/uncommon/rare/epic/showcase. Drop rates: rare-or-better slots have 70% rare, 23% epic, 7% showcase chance. Based on real Riftbound TCG research.
 - Decision (RESOLVED): RiftCodex API data source — fetches from api.riftcodex.com (/sets, /cards paginated). API uses `items`/`total`/`page`/`size`/`pages` response shape. Set label for SFD is "SFD" (use `name` field "Spiritforged" instead). tcgplayer_id is string not number.
+- Decision (RESOLVED): Game engine architecture — all engine modules (economy, customers, events, hype, day-cycle, pack-opener) are pure functions with no side effects, no React, no store access. UI calls engine functions and dispatches results to Zustand. This separation is intentional for testability and maintainability.
+- Decision (RESOLVED): Hybrid day cycle — offline idle revenue (capped 8h), active play for stocking/pricing/packs, manual "End Day" button advances day with summary/XP/events. Economy is the throttle (no artificial pack-opening limits).
+- Decision (RESOLVED): Customer system — 5 types (casual, collector, competitive, kid, whale) with budget, patience, price tolerance, product preferences. Progressively unlocked by shop level.
+- Decision (RESOLVED): Event system — 9 event types with traffic/budget/tolerance/wholesale/rarity/XP modifiers, min shop level requirements, cooldown logic, semi-random scheduling every 5-10 days.
+- Decision (RESOLVED): Hype tracker — per-set 0-100 scale with 3% daily decay toward base, event boosts, demand/price multiplier (0.5x at hype 0, 1.5x at hype 100).
 
 ---
 
@@ -914,32 +919,32 @@ Il gioco deve rimanere utilizzabile e robusto anche se l'utente cambia browser, 
 
 ## Must Have
 
-- [ ] progetto Next.js + TypeScript + Tailwind
-- [ ] shell app mobile-first
-- [ ] autenticazione semplice
-- [ ] cloud save base
-- [ ] stato locale persistente
-- [ ] catalogo carte/set/prodotti
-- [ ] import pipeline contenuti
-- [ ] home dashboard
-- [ ] inventario prodotti
-- [ ] acquisto stock
-- [ ] apertura pack base
-- [ ] aggiunta carte alla collezione
-- [ ] binder con progress set
-- [ ] clienti base
-- [ ] vendite base
-- [ ] economia base
+- [x] progetto Next.js + TypeScript + Tailwind
+- [x] shell app mobile-first
+- [x] autenticazione semplice
+- [x] cloud save base
+- [x] stato locale persistente
+- [x] catalogo carte/set/prodotti
+- [x] import pipeline contenuti
+- [x] home dashboard
+- [x] inventario prodotti
+- [x] acquisto stock
+- [x] apertura pack base
+- [x] aggiunta carte alla collezione
+- [x] binder con progress set
+- [x] clienti base
+- [x] vendite base
+- [x] economia base
 - [ ] upgrade base
 - [ ] missioni base
-- [ ] supporto installazione PWA
+- [x] supporto installazione PWA
 
 ## Should Have
 
-- [ ] eventi base
-- [ ] hype set base
+- [x] eventi base
+- [x] hype set base
 - [ ] filtri collection avanzati
-- [ ] sync status UI
+- [x] sync status UI
 - [ ] multi-open pack semplice
 
 ## Nice to Have
@@ -986,37 +991,48 @@ Il gioco deve rimanere utilizzabile e robusto anche se l'utente cambia browser, 
 
 ## M3 — Content Pipeline
 
-- [ ] script import carte
-- [ ] normalizzazione set
-- [ ] normalizzazione prodotti
-- [ ] data model catalogo interno
-- [ ] catalog versioning
-- [ ] seed iniziale pronto
+- [x] script import carte
+- [x] normalizzazione set
+- [x] normalizzazione prodotti
+- [x] data model catalogo interno
+- [x] catalog versioning
+- [x] seed iniziale pronto
 
 ## M4 — Core Gameplay Loop
 
-- [ ] dashboard base
-- [ ] inventario prodotti
-- [ ] acquisto stock
-- [ ] pack opening base
-- [ ] aggiunta reward al save
-- [ ] loop denaro di base
+- [x] dashboard base
+- [x] inventario prodotti
+- [x] acquisto stock
+- [x] pack opening base
+- [x] aggiunta reward al save
+- [x] loop denaro di base
+- [x] game engine (pure functions): economy, customers, events, hype, day cycle, pack opener
+- [x] shelf system with markup slider
+- [x] supplier screen with box→pack conversion
+- [x] customer simulation (5 types, offline support)
+- [x] event system (9 templates, scheduling, modifiers)
+- [x] hype tracker (per-set, decay/boost)
+- [x] day cycle (End Day + offline progress)
+- [x] collection/binder (set progress, card grid, filters)
+- [x] EndDayModal (summary, XP, level up, event preview)
+- [x] offline progress wired into auth-provider
+- [x] set hype initialization on new game
 
 ## M5 — Collection
 
-- [ ] binder per set
-- [ ] progress completion
+- [x] binder per set
+- [x] progress completion
 - [ ] dettaglio carta
-- [ ] stato new/owned/missing
-- [ ] gestione doppioni
+- [x] stato new/owned/missing
+- [x] gestione doppioni
 
 ## M6 — Customers + Sales
 
-- [ ] customer spawning logic base
-- [ ] archetipi base
-- [ ] decisione acquisto
-- [ ] vendita stock e guadagno
-- [ ] primi indicatori traffico
+- [x] customer spawning logic base
+- [x] archetipi base (casual, collector, competitive, kid, whale)
+- [x] decisione acquisto
+- [x] vendita stock e guadagno
+- [x] primi indicatori traffico
 
 ## M7 — Upgrades + Missions
 
@@ -1028,9 +1044,9 @@ Il gioco deve rimanere utilizzabile e robusto anche se l'utente cambia browser, 
 
 ## M8 — Events + Hype
 
-- [ ] sistema eventi semplice
-- [ ] set hype modifier
-- [ ] impatto su domanda clienti
+- [x] sistema eventi semplice
+- [x] set hype modifier
+- [x] impatto su domanda clienti
 
 ## M9 — Polish
 
@@ -1184,6 +1200,7 @@ public/
 
 # Implementation Log
 
+- 2026-03-19 22:00 — **M4 Core Gameplay Loop complete.** Built full game engine as pure-function modules in src/features/engine/: economy.ts (sell pricing, markup, hype multiplier, XP, daily traffic), customers.ts (5 types with budget/patience/tolerance, offline sim), pack-opener.ts (drop table resolution, weighted rarity, dupe detection), events.ts (9 templates with modifiers, scheduling, cooldowns), hype.ts (per-set 0-100 decay/boost), day-cycle.ts (offline progress capped 8h, day advancement with XP/events/hype). Fully rewrote Zustand store with all gameplay actions (shelves, inventory, collection batch-add, day tracking, events, hype, display case, unlocks). Built 5 UI screens: Home dashboard (offline report, XP bar, events, stats, End Day button + EndDayModal), Shop (shelf management with markup slider, restock, product picker), Supplier (distributor catalog with box→pack conversion, event price modifiers), Pack Opening (card reveal sequence with rarity borders, NEW badges, reveal-all), Collection Binder (set progress bars, card grid with filter/showcase toggle, rarity-colored borders). Wired offline progress calculation + set hype initialization into AuthProvider on save load. Added getProductMap/getProductSetMap helpers to catalog module. Updated globals.css with Riftbound rarity colors and new design tokens. Typecheck, lint, and build all pass clean.
 - 2026-03-19 18:00 — **M2 PWA Shell complete.** Used @serwist/turbopack (v9.5.7) to solve Turbopack incompatibility with @serwist/next. Created route handler at src/app/serwist/[path]/route.ts that compiles SW via esbuild. Rewrote src/app/sw.ts with @serwist/turbopack/worker imports, defaultCache runtime caching, and offline fallback for navigation requests. Created SerwistProvider re-export (src/app/serwist.tsx) and wrapped root layout with it (swUrl="/serwist/sw.js"). Created offline fallback page at /~offline with retry button. Updated proxy.ts matcher to exclude /serwist/ paths from auth redirect. Excluded sw.ts from main tsconfig.json (esbuild compiles independently) to fix @types/serviceworker polluting global DOM types. Added "use client" to ~offline page (onClick handler). Cleaned up .gitignore and eslint.config.mjs (removed old public/sw.js patterns). Typecheck, lint, and build all pass clean. Note: manifest + icons were already created in M0.
 - 2026-03-19 15:00 — **M1 Auth + Cross-Device Persistence complete.** Built email+password login/signup page with Server Actions (signIn, signUp, signOut). Created auth layout (centered, no bottom nav). Implemented email confirmation callback route (/auth/confirm). Created SQL migration for profiles (auto-created via trigger on signup) and savegames (JSONB, RLS, unique per user) tables. Built cloud save service (loadCloudSave, saveToCloud, resolveConflict with last_write_wins). Built local save via IndexedDB (loadLocalSave, saveLocally, clearLocalSave). Created AuthProvider (checks session, loads saves with conflict resolution, provides user context). Created SaveProvider (auto-save to IndexedDB every 2s, cloud sync every 30s + on visibility change + beforeunload). Added SyncIndicator pill component. Updated root layout with AuthProvider + SaveProvider wrapping. Updated Settings page with real account info + logout. Updated Home page with display name + sync indicator. BottomNav hidden on auth pages. Updated .env.example with NEXT_PUBLIC_SITE_URL. Build, typecheck, and lint all pass clean. Note: User must run SQL migration in Supabase SQL Editor before auth will work.
 - 2026-03-19 11:00 — **M0 Foundation complete.** Initialized Next.js 16 + TypeScript strict + Tailwind v4 project. Created full folder structure per masterplan. Built mobile-first app shell with bottom navigation (Home, Shop, Packs, Collection, More). Created placeholder pages for all MVP screens including sub-routes (more/upgrades, more/missions, more/stats, more/settings). Implemented Zustand game store skeleton with full SaveGame shape and all CRUD actions. Defined all core game types (CardDefinition, SetDefinition, ProductDefinition, SaveGame, SyncStatus, etc.). Set up dark/light theme via system preference with custom CSS design tokens (rarity colors, accent colors, card surfaces). Configured PWA manifest.ts with dynamic generation and placeholder SVG icons. Set up ESLint + Prettier with Tailwind class sorting plugin. Created .env.example. Note: Serwist service worker deferred to M2 due to Turbopack incompatibility in Next.js 16. Build, typecheck, and lint all pass clean.
