@@ -12,11 +12,6 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // Generated files:
-    "public/sw.js",
-    "public/sw.js.map",
-    "public/serwist-*.js",
-    "public/serwist-*.js.map",
     // Scripts (Node.js, not Next.js):
     "scripts/**",
   ]),

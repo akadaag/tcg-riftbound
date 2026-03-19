@@ -34,11 +34,8 @@ yarn-error.log*
 .env*
 !.env.example
 
-# serwist generated service worker
-public/sw.js
-public/sw.js.map
-public/serwist-*.js
-public/serwist-*.js.map
+# serwist — no generated files in public/ with @serwist/turbopack
+# SW is served via route handler at /serwist/sw.js
 
 # vercel
 .vercel

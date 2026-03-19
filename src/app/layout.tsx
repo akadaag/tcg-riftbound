@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { AuthProvider } from "@/features/auth/auth-provider";
 import { SaveProvider } from "@/features/save/save-provider";
+import { SerwistProvider } from "./serwist";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -53,14 +54,16 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="bg-background text-foreground flex min-h-full flex-col">
-        <AuthProvider>
-          <SaveProvider>
-            <main className="flex flex-1 flex-col pb-[var(--nav-height)]">
-              {children}
-            </main>
-            <BottomNav />
-          </SaveProvider>
-        </AuthProvider>
+        <SerwistProvider swUrl="/serwist/sw.js">
+          <AuthProvider>
+            <SaveProvider>
+              <main className="flex flex-1 flex-col pb-[var(--nav-height)]">
+                {children}
+              </main>
+              <BottomNav />
+            </SaveProvider>
+          </AuthProvider>
+        </SerwistProvider>
       </body>
     </html>
   );

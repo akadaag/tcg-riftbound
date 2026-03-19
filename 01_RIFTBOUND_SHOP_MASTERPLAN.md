@@ -37,12 +37,12 @@ Creare un'esperienza che unisca:
 
 ## Current Status
 
-- Overall phase: `[-] Auth + Persistence`
-- Current milestone: `[x] M1 — Auth + Cross-Device Persistence`
+- Overall phase: `[-] PWA Shell + Content Pipeline`
+- Current milestone: `[x] M2 — PWA Shell`
 - App shell: `[x]`
 - Authentication: `[x]`
 - Cloud save sync: `[x]`
-- PWA installability: `[-]` (manifest + icons ready, service worker deferred to M2 — Serwist incompatible with Turbopack in Next.js 16)
+- PWA installability: `[x]` (manifest + icons + service worker via @serwist/turbopack, offline fallback, caching strategy)
 - Catalog import pipeline: `[ ]`
 - Core gameplay loop: `[ ]`
 - Collection/Binder: `[ ]`
@@ -65,21 +65,25 @@ Creare un'esperienza che unisca:
 - Dark/light theme via system preference with custom design tokens (rarity colors, accents, surfaces)
 - .env.example with Supabase placeholders
 - M1 Auth + Cross-Device Persistence: Supabase Auth (email+password), proxy JWT refresh, login/signup page, email confirmation, cloud save (Supabase JSONB), local save (IndexedDB), auto-save orchestration (2s local, 30s cloud), sync status indicator, AuthProvider + SaveProvider, settings page with account info + logout
+- M2 PWA Shell: Service worker via @serwist/turbopack (route handler at /serwist/sw.js), defaultCache runtime caching, offline fallback page (/~offline), SerwistProvider registration in root layout, proxy excludes /serwist/ paths, tsconfig excludes sw.ts from main compilation (esbuild compiles separately)
 
 ## In Progress
 
-- M2 — PWA Shell (service worker, caching, install prompt)
+- M3 — Content Pipeline (card/set/product catalog import + normalization)
 
 ## Next Up
 
-1. M2: Service worker + caching strategy (revisit Serwist / Turbopack compatibility)
-2. M2: Install prompt handling
-3. M2: Offline shell basics
-4. M3: Content pipeline — card/set/product catalog import + normalization
+1. M3: Script to import card data from external source
+2. M3: Normalize sets + products into internal format
+3. M3: Data model for internal catalog (cards, sets, products, drop tables)
+4. M3: Catalog versioning
+5. M3: Seed data ready for gameplay
+6. M4: Core gameplay loop (dashboard, inventory, stock purchase, pack opening, economy)
 
 ## Blockers / Decisions
 
-- Decision: Serwist service worker deferred to M2 — @serwist/next does not support Turbopack (Next.js 16 default bundler). Will revisit with @serwist/turbopack or configurator mode in M2.
+- Decision (RESOLVED): Serwist service worker — @serwist/next does not support Turbopack. Solved with @serwist/turbopack (v9.5.7) which uses a route handler + esbuild. SW served at /serwist/sw.js. Registration via SerwistProvider from @serwist/turbopack/react.
+- Decision: @types/serviceworker pollutes global types (removes `window`/`document`). Solved by excluding sw.ts from main tsconfig (esbuild compiles it independently).
 - Decision: Using Tailwind CSS v4 with CSS-based config (no tailwind.config.js)
 - Decision: System preference theme (dark default via CSS `prefers-color-scheme`)
 - Decision: Auth via email + password (not magic link). Display name stored in profiles table via trigger.
@@ -971,11 +975,11 @@ Il gioco deve rimanere utilizzabile e robusto anche se l'utente cambia browser, 
 
 ## M2 — PWA Shell
 
-- [ ] manifest
-- [ ] icone
-- [ ] service worker / caching
-- [ ] install prompt handling
-- [ ] offline shell basics
+- [x] manifest
+- [x] icone
+- [x] service worker / caching
+- [x] install prompt handling
+- [x] offline shell basics
 
 ## M3 — Content Pipeline
 
@@ -1177,5 +1181,6 @@ public/
 
 # Implementation Log
 
+- 2026-03-19 18:00 — **M2 PWA Shell complete.** Used @serwist/turbopack (v9.5.7) to solve Turbopack incompatibility with @serwist/next. Created route handler at src/app/serwist/[path]/route.ts that compiles SW via esbuild. Rewrote src/app/sw.ts with @serwist/turbopack/worker imports, defaultCache runtime caching, and offline fallback for navigation requests. Created SerwistProvider re-export (src/app/serwist.tsx) and wrapped root layout with it (swUrl="/serwist/sw.js"). Created offline fallback page at /~offline with retry button. Updated proxy.ts matcher to exclude /serwist/ paths from auth redirect. Excluded sw.ts from main tsconfig.json (esbuild compiles independently) to fix @types/serviceworker polluting global DOM types. Added "use client" to ~offline page (onClick handler). Cleaned up .gitignore and eslint.config.mjs (removed old public/sw.js patterns). Typecheck, lint, and build all pass clean. Note: manifest + icons were already created in M0.
 - 2026-03-19 15:00 — **M1 Auth + Cross-Device Persistence complete.** Built email+password login/signup page with Server Actions (signIn, signUp, signOut). Created auth layout (centered, no bottom nav). Implemented email confirmation callback route (/auth/confirm). Created SQL migration for profiles (auto-created via trigger on signup) and savegames (JSONB, RLS, unique per user) tables. Built cloud save service (loadCloudSave, saveToCloud, resolveConflict with last_write_wins). Built local save via IndexedDB (loadLocalSave, saveLocally, clearLocalSave). Created AuthProvider (checks session, loads saves with conflict resolution, provides user context). Created SaveProvider (auto-save to IndexedDB every 2s, cloud sync every 30s + on visibility change + beforeunload). Added SyncIndicator pill component. Updated root layout with AuthProvider + SaveProvider wrapping. Updated Settings page with real account info + logout. Updated Home page with display name + sync indicator. BottomNav hidden on auth pages. Updated .env.example with NEXT_PUBLIC_SITE_URL. Build, typecheck, and lint all pass clean. Note: User must run SQL migration in Supabase SQL Editor before auth will work.
 - 2026-03-19 11:00 — **M0 Foundation complete.** Initialized Next.js 16 + TypeScript strict + Tailwind v4 project. Created full folder structure per masterplan. Built mobile-first app shell with bottom navigation (Home, Shop, Packs, Collection, More). Created placeholder pages for all MVP screens including sub-routes (more/upgrades, more/missions, more/stats, more/settings). Implemented Zustand game store skeleton with full SaveGame shape and all CRUD actions. Defined all core game types (CardDefinition, SetDefinition, ProductDefinition, SaveGame, SyncStatus, etc.). Set up dark/light theme via system preference with custom CSS design tokens (rarity colors, accent colors, card surfaces). Configured PWA manifest.ts with dynamic generation and placeholder SVG icons. Set up ESLint + Prettier with Tailwind class sorting plugin. Created .env.example. Note: Serwist service worker deferred to M2 due to Turbopack incompatibility in Next.js 16. Build, typecheck, and lint all pass clean.

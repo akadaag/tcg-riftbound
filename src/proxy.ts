@@ -68,8 +68,8 @@ export const config = {
      * - favicon.ico, icon.svg (browser icons)
      * - public assets (svg, png, jpg, etc.)
      * - manifest.webmanifest
-     * - sw.js (service worker)
+     * - serwist/* (service worker route handler)
      */
-    "/((?!_next/static|_next/image|favicon\\.ico|icon\\.svg|manifest\\.webmanifest|sw\\.js|icons/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon\\.ico|icon\\.svg|manifest\\.webmanifest|serwist/|icons/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
