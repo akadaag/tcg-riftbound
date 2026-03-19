@@ -9,6 +9,7 @@ interface EndDayModalProps {
   levelsGained: number;
   newLevel: number;
   nextDayEvent: GameEvent | null;
+  completedMissions?: string[];
   onClose: () => void;
 }
 
@@ -19,6 +20,7 @@ export function EndDayModal({
   levelsGained,
   newLevel,
   nextDayEvent,
+  completedMissions,
   onClose,
 }: EndDayModalProps) {
   if (!isOpen) return null;
@@ -85,6 +87,22 @@ export function EndDayModal({
             color="text-accent-primary"
           />
         </div>
+
+        {/* Completed missions */}
+        {completedMissions && completedMissions.length > 0 && (
+          <div className="mb-6 rounded-lg border border-green-500/30 bg-green-500/10 p-3">
+            <p className="mb-2 text-xs font-medium text-green-400">
+              Missions Completed
+            </p>
+            <div className="space-y-1">
+              {completedMissions.map((name) => (
+                <p key={name} className="text-sm text-green-300">
+                  {name}
+                </p>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Upcoming event preview */}
         {nextDayEvent && (

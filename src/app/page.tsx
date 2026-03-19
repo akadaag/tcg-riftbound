@@ -1,13 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useGameStore } from "@/stores/game-store";
 import { useAuth } from "@/features/auth/auth-provider";
 import { SyncIndicator } from "@/components/ui/sync-indicator";
 import { EndDayModal } from "@/components/ui/end-day-modal";
 import { getActiveEvents } from "@/features/engine/events";
 import { advanceDay, type EndDayResult } from "@/features/engine/day-cycle";
-import { getProductMap } from "@/features/catalog";
+import {
+  getProductMap,
+  getGameplayMeta,
+  getCardById,
+} from "@/features/catalog";
+import {
+  calculateDisplayCaseBonus,
+  getDisplayCaseCapacity,
+} from "@/features/upgrades";
 import { XP_THRESHOLDS } from "@/types/game";
 import Link from "next/link";
 
@@ -34,9 +42,16 @@ export default function HomePage() {
 
   const totalShelved = save.shelves.reduce((acc, s) => acc + s.quantity, 0);
 
+  // Display case info
+  const displayCaseBonus = useMemo(
+    () => calculateDisplayCaseBonus(save.displayCase, getGameplayMeta),
+    [save.displayCase],
+  );
+  const displayCaseCapacity = getDisplayCaseCapacity(save.upgrades);
+
   function handleEndDay() {
     const productMap = getProductMap();
-    const result = advanceDay(save, productMap);
+    const result = advanceDay(save, productMap, getGameplayMeta);
     setEndDayResult(result);
     // Don't apply save yet — wait for modal dismiss
   }
@@ -152,6 +167,16 @@ export default function HomePage() {
         <StatCard label="Reputation" value={save.reputation.toLocaleString()} />
       </div>
 
+      {/* Display Case Summary */}
+      {save.displayCase.length > 0 && (
+        <DisplayCaseSummary
+          cardIds={save.displayCase}
+          capacity={displayCaseCapacity}
+          trafficBonus={displayCaseBonus.trafficBonus}
+          totalScore={displayCaseBonus.totalDisplayScore}
+        />
+      )}
+
       {/* Today's Progress */}
       <section className="mb-6">
         <h2 className="mb-3 text-lg font-semibold">Today</h2>
@@ -214,12 +239,77 @@ export default function HomePage() {
           levelsGained={endDayResult.levelsGained}
           newLevel={endDayResult.newLevel}
           nextDayEvent={endDayResult.nextDayEvent}
+          completedMissions={endDayResult.completedMissions}
           onClose={handleEndDayClose}
         />
       )}
     </div>
   );
 }
+
+// ── Display Case Summary ────────────────────────────
+
+function DisplayCaseSummary({
+  cardIds,
+  capacity,
+  trafficBonus,
+  totalScore,
+}: {
+  cardIds: string[];
+  capacity: number;
+  trafficBonus: number;
+  totalScore: number;
+}) {
+  // Get card names for display
+  const cardNames = cardIds
+    .map((id) => {
+      const card = getCardById(id);
+      return card?.name ?? "Unknown";
+    })
+    .slice(0, 5); // Show first 5
+
+  return (
+    <section className="mb-6">
+      <h2 className="mb-3 text-lg font-semibold">Display Case</h2>
+      <div className="border-rarity-showcase/30 bg-rarity-showcase/5 rounded-xl border p-4">
+        <div className="mb-3 flex items-center justify-between">
+          <span className="text-rarity-showcase text-sm font-medium">
+            {cardIds.length}/{capacity} cards showcased
+          </span>
+          {trafficBonus > 0 && (
+            <span className="text-xs text-green-400">
+              +{trafficBonus} traffic
+            </span>
+          )}
+        </div>
+
+        {/* Card names */}
+        <div className="space-y-1">
+          {cardNames.map((name, i) => (
+            <p key={i} className="text-foreground-secondary truncate text-xs">
+              {name}
+            </p>
+          ))}
+          {cardIds.length > 5 && (
+            <p className="text-foreground-muted text-xs">
+              +{cardIds.length - 5} more
+            </p>
+          )}
+        </div>
+
+        {/* Link to collection */}
+        <Link
+          href="/collection"
+          className="text-rarity-showcase mt-3 block text-center text-xs font-medium"
+        >
+          Manage Display Case
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+// ── Helper components ───────────────────────────────
 
 function StatCard({
   label,

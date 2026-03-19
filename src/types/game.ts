@@ -332,6 +332,81 @@ export interface OfflineReport {
 }
 
 // ============================================
+// Upgrade System
+// ============================================
+
+export type UpgradeCategory =
+  | "shelves"
+  | "traffic"
+  | "reputation"
+  | "xp"
+  | "wholesale"
+  | "display_case"
+  | "tolerance"
+  | "storage";
+
+export type UpgradeEffectType =
+  | "shelf_slot"
+  | "traffic_multiplier"
+  | "reputation_per_day"
+  | "xp_multiplier"
+  | "wholesale_discount"
+  | "display_case_slots"
+  | "tolerance_bonus"
+  | "inventory_capacity";
+
+export interface UpgradeDefinition {
+  id: string;
+  category: UpgradeCategory;
+  name: string;
+  description: string;
+  /** Cost to purchase each level. Index 0 = cost for level 1, etc. */
+  costs: number[];
+  /** Maximum upgrade level. */
+  maxLevel: number;
+  /** What effect this upgrade applies. */
+  effectType: UpgradeEffectType;
+  /** Numeric effect value per level (additive or multiplicative depending on effectType). */
+  effectPerLevel: number;
+  /** Minimum shop level required to see/buy this upgrade. */
+  minShopLevel: number;
+  /** Icon hint for the UI (emoji). */
+  icon: string;
+}
+
+// ============================================
+// Mission System
+// ============================================
+
+export type MissionScope = "daily" | "weekly" | "milestone";
+
+export type MissionType =
+  | "sell_items"
+  | "earn_revenue"
+  | "open_packs"
+  | "discover_cards"
+  | "complete_set_pct"
+  | "serve_customers"
+  | "reach_shop_level"
+  | "earn_profit";
+
+export interface MissionDefinition {
+  id: string;
+  scope: MissionScope;
+  type: MissionType;
+  title: string;
+  description: string;
+  /** Target value to reach (e.g. sell 10 items → target = 10). */
+  targetValue: number;
+  /** Reward type: currency, xp, or reputation. */
+  rewardType: "currency" | "xp" | "reputation";
+  /** Reward amount. */
+  rewardValue: number;
+  /** Minimum shop level to be offered this mission (for daily/weekly scaling). */
+  minShopLevel: number;
+}
+
+// ============================================
 // Player Save Types (Game State)
 // ============================================
 

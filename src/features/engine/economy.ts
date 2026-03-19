@@ -28,12 +28,15 @@ export function calculateSellPrice(
  *
  * priceTolerance 0 = only buys at base price
  * priceTolerance 1 = will pay any markup
+ *
+ * @param toleranceBonus — additive bonus from upgrades (e.g. 0.1 = +10% tolerance)
  */
 export function willCustomerBuy(
   sellPrice: number,
   baseSellPrice: number,
   customerBudget: number,
   priceTolerance: number,
+  toleranceBonus: number = 0,
 ): boolean {
   // Can't afford it at all
   if (sellPrice > customerBudget) return false;
@@ -42,7 +45,8 @@ export function willCustomerBuy(
   const priceRatio = sellPrice / baseSellPrice;
   // Max ratio the customer will accept: base price * (1 + tolerance * 1.5)
   // tolerance 0 → max 1.0x (only base), tolerance 0.5 → max 1.75x, tolerance 1.0 → max 2.5x
-  const maxAcceptableRatio = 1 + priceTolerance * 1.5;
+  const effectiveTolerance = priceTolerance + toleranceBonus;
+  const maxAcceptableRatio = 1 + effectiveTolerance * 1.5;
 
   return priceRatio <= maxAcceptableRatio;
 }
@@ -75,13 +79,19 @@ const BASE_TRAFFIC_BY_LEVEL: Record<number, number> = {
 
 /**
  * Calculate daily customer traffic.
- * Base traffic from shop level, modified by reputation, events, hype.
+ * Base traffic from shop level, modified by reputation, events, hype,
+ * upgrade bonuses, and display case bonus.
+ *
+ * @param upgradeTrafficBonus — additive multiplier from upgrades (e.g. 0.3 = +30%)
+ * @param displayCaseBonus — additive flat bonus from display case (reputation-like)
  */
 export function calculateDailyTraffic(
   shopLevel: number,
   reputation: number,
   activeEvents: GameEvent[],
   averageHype: number,
+  upgradeTrafficBonus: number = 0,
+  displayCaseBonus: number = 0,
 ): number {
   const base = BASE_TRAFFIC_BY_LEVEL[shopLevel] ?? 5;
 
@@ -97,7 +107,11 @@ export function calculateDailyTraffic(
   // Hype gives a 0.8x to 1.3x multiplier (50 hype = 1.0x baseline)
   const hypeMultiplier = 0.8 + (averageHype / 100) * 0.5;
 
-  const total = (base + reputationBonus) * eventMultiplier * hypeMultiplier;
+  const total =
+    (base + reputationBonus + displayCaseBonus) *
+    eventMultiplier *
+    hypeMultiplier *
+    (1 + upgradeTrafficBonus);
 
   // Add some randomness: ±20%
   const variance = 0.8 + Math.random() * 0.4;
@@ -216,6 +230,8 @@ export const XP_VALUES = {
 
 /**
  * Calculate XP earned for a day's activity.
+ *
+ * @param upgradeXpBonus — additive multiplier from upgrades (e.g. 0.45 = +45%)
  */
 export function calculateDayXP(
   customersPurchased: number,
@@ -223,6 +239,7 @@ export function calculateDayXP(
   newCardsDiscovered: number,
   revenue: number,
   xpMultiplier: number = 1.0,
+  upgradeXpBonus: number = 0,
 ): number {
   const raw =
     customersPurchased * XP_VALUES.sale +
@@ -231,7 +248,7 @@ export function calculateDayXP(
     XP_VALUES.dayComplete +
     Math.floor(revenue / 100) * XP_VALUES.revenuePer100;
 
-  return Math.round(raw * xpMultiplier);
+  return Math.round(raw * xpMultiplier * (1 + upgradeXpBonus));
 }
 
 /**

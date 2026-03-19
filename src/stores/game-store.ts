@@ -13,8 +13,17 @@ import type {
   OfflineReport,
   SetHype,
   ProductDefinition,
+  MissionDefinition,
 } from "@/types/game";
 import { XP_THRESHOLDS, STARTING_SHELVES } from "@/types/game";
+import {
+  getUpgradeById,
+  getUpgradeCost,
+  canPurchaseUpgrade,
+  getOwnedLevel,
+  getDisplayCaseCapacity,
+} from "@/features/upgrades";
+import { applyXP } from "@/features/engine/economy";
 
 // ============================================
 // Game Store — Zustand
@@ -186,10 +195,19 @@ interface GameState {
 
   // Actions — Upgrades & Missions
   setUpgradeState: (upgrade: UpgradeState) => void;
+  purchaseUpgrade: (upgradeId: string) => {
+    success: boolean;
+    reason: string | null;
+  };
   updateMissionProgress: (
     missionId: string,
     changes: Partial<MissionProgress>,
   ) => void;
+  setMissions: (missions: MissionProgress[]) => void;
+  claimMissionReward: (
+    missionId: string,
+    mission: MissionDefinition,
+  ) => boolean;
 
   // Actions — Stats
   updateStats: (changes: Partial<ShopStats>) => void;
@@ -710,6 +728,69 @@ export const useGameStore = create<GameState>()((set, get) => ({
       };
     }),
 
+  /**
+   * Purchase the next level of an upgrade.
+   * Validates affordability, shop level, and max level.
+   * Deducts cost, increments level, applies instant effects (e.g. shelf slots).
+   */
+  purchaseUpgrade: (upgradeId: string) => {
+    const state = get();
+    const def = getUpgradeById(upgradeId);
+    if (!def) return { success: false, reason: "Upgrade not found" };
+
+    const currentLevel = getOwnedLevel(upgradeId, state.save.upgrades);
+    const check = canPurchaseUpgrade(
+      def,
+      currentLevel,
+      state.save.shopLevel,
+      state.save.softCurrency,
+    );
+    if (!check.canBuy) return { success: false, reason: check.reason };
+
+    const cost = getUpgradeCost(def, currentLevel)!;
+    const newLevel = currentLevel + 1;
+
+    // Update upgrade state
+    const existingUpgrade = state.save.upgrades.find(
+      (u) => u.upgradeId === upgradeId,
+    );
+    let upgrades: UpgradeState[];
+    if (existingUpgrade) {
+      upgrades = state.save.upgrades.map((u) =>
+        u.upgradeId === upgradeId ? { ...u, levelOwned: newLevel } : u,
+      );
+    } else {
+      upgrades = [...state.save.upgrades, { upgradeId, levelOwned: newLevel }];
+    }
+
+    // Build new save
+    let newSave: SaveGame = {
+      ...state.save,
+      softCurrency: state.save.softCurrency - cost,
+      upgrades,
+      updatedAt: new Date().toISOString(),
+    };
+
+    // Instant effects
+    if (def.effectType === "shelf_slot") {
+      // Add a new shelf slot immediately
+      newSave = {
+        ...newSave,
+        shelves: [
+          ...newSave.shelves,
+          { productId: null, quantity: 0, markup: 20 },
+        ],
+      };
+    }
+
+    if (def.effectType === "display_case_slots") {
+      // Display case capacity is computed dynamically, no instant save change needed
+    }
+
+    set({ save: newSave });
+    return { success: true, reason: null };
+  },
+
   // ── Missions ─────────────────────────────────────
 
   updateMissionProgress: (
@@ -725,6 +806,69 @@ export const useGameStore = create<GameState>()((set, get) => ({
         updatedAt: new Date().toISOString(),
       },
     })),
+
+  /** Replace the full missions array (used during init and day/week resets). */
+  setMissions: (missions: MissionProgress[]) =>
+    set((state) => ({
+      save: {
+        ...state.save,
+        missions,
+        updatedAt: new Date().toISOString(),
+      },
+    })),
+
+  /**
+   * Claim a completed mission's reward.
+   * Validates the mission is completed and not already claimed.
+   * Applies the reward (currency, xp, or reputation).
+   */
+  claimMissionReward: (missionId: string, mission: MissionDefinition) => {
+    const state = get();
+    const progress = state.save.missions.find((m) => m.missionId === missionId);
+    if (!progress || !progress.completed || progress.claimed) return false;
+
+    let newSave: SaveGame = {
+      ...state.save,
+      missions: state.save.missions.map((m) =>
+        m.missionId === missionId ? { ...m, claimed: true } : m,
+      ),
+      updatedAt: new Date().toISOString(),
+    };
+
+    // Apply reward
+    switch (mission.rewardType) {
+      case "currency":
+        newSave = {
+          ...newSave,
+          softCurrency: newSave.softCurrency + mission.rewardValue,
+        };
+        break;
+      case "xp": {
+        const xpResult = applyXP(
+          newSave.xp,
+          newSave.shopLevel,
+          newSave.xpToNextLevel,
+          mission.rewardValue,
+        );
+        newSave = {
+          ...newSave,
+          xp: xpResult.xp,
+          shopLevel: xpResult.level,
+          xpToNextLevel: xpResult.xpToNextLevel,
+        };
+        break;
+      }
+      case "reputation":
+        newSave = {
+          ...newSave,
+          reputation: newSave.reputation + mission.rewardValue,
+        };
+        break;
+    }
+
+    set({ save: newSave });
+    return true;
+  },
 
   // ── Stats ────────────────────────────────────────
 

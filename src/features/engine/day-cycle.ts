@@ -18,6 +18,8 @@ import type {
   ShelfSlot,
   SetHype,
   ProductDefinition,
+  MissionProgress,
+  MissionDefinition,
 } from "@/types/game";
 import { MAX_OFFLINE_HOURS } from "@/types/game";
 
@@ -32,6 +34,22 @@ import {
   getRecentEventTypes,
   getCombinedEventModifiers,
 } from "./events";
+import type { UpgradeModifiers } from "@/features/upgrades";
+import {
+  getUpgradeModifiers,
+  calculateDisplayCaseBonus,
+} from "@/features/upgrades";
+import {
+  generateDailyMissions,
+  generateWeeklyMissions,
+  getMilestoneMissions,
+  evaluateMissionProgress,
+  isMissionComplete,
+  accumulateWeeklyProgress,
+  getTodayContribution,
+  shouldResetWeeklies,
+  initializeMissionProgress,
+} from "@/features/missions";
 
 // ── Offline Progress ─────────────────────────────────────────────────
 
@@ -54,6 +72,7 @@ export function calculateOfflineProgress(
   save: SaveGame,
   products: Map<string, ProductDefinition>,
   productSetMap: Map<string, string>,
+  getMetaFn?: (cardId: string) => { displayScore: number } | undefined,
 ): { report: OfflineReport; updatedSave: SaveGame } | null {
   const hours = calculateOfflineHours(save.lastPlayedAt);
 
@@ -83,6 +102,12 @@ export function calculateOfflineProgress(
 
   const activeEvents = getActiveEvents(save.activeEvents, save.currentDay);
 
+  // Calculate upgrade modifiers
+  const upgradeMods = getUpgradeModifiers(save.upgrades);
+  const dcBonus = getMetaFn
+    ? calculateDisplayCaseBonus(save.displayCase, getMetaFn)
+    : { trafficBonus: 0, totalDisplayScore: 0 };
+
   const simResult = simulateOfflinePeriod(
     hours,
     save.shelves,
@@ -92,6 +117,9 @@ export function calculateOfflineProgress(
     save.setHype,
     products,
     productSetMap,
+    upgradeMods.trafficBonus,
+    dcBonus.trafficBonus,
+    upgradeMods.toleranceBonus,
   );
 
   const report: OfflineReport = {
@@ -149,6 +177,8 @@ export interface EndDayResult {
   nextDayEvent: GameEvent | null;
   /** Updated save state. */
   updatedSave: SaveGame;
+  /** Mission progress updates for end-of-day summary. */
+  completedMissions: string[];
 }
 
 /**
@@ -156,19 +186,28 @@ export interface EndDayResult {
  *
  * Steps:
  * 1. Finalize today's report
- * 2. Calculate and apply XP
- * 3. Decay hype
- * 4. Clean up expired events
- * 5. Maybe schedule a new event
- * 6. Reset daily tracking
- * 7. Advance day counter
+ * 2. Calculate and apply XP (with upgrade bonus)
+ * 3. Apply reputation-per-day from upgrades
+ * 4. Decay hype
+ * 5. Clean up expired events
+ * 6. Maybe schedule a new event
+ * 7. Evaluate and update mission progress
+ * 8. Reset daily/weekly missions as needed; generate new ones
+ * 9. Reset daily tracking
+ * 10. Advance day counter
+ *
+ * @param getMetaFn — optional function to look up gameplay meta for display case bonus
  */
 export function advanceDay(
   save: SaveGame,
   products: Map<string, ProductDefinition>,
+  getMetaFn?: (cardId: string) => { displayScore: number } | undefined,
 ): EndDayResult {
   const currentDay = save.currentDay;
   const nextDay = currentDay + 1;
+
+  // Get upgrade modifiers
+  const upgradeMods = getUpgradeModifiers(save.upgrades);
 
   // 1. Finalize today's report with profit calculation
   const todayReport: DayReport = {
@@ -176,7 +215,7 @@ export function advanceDay(
     profit: save.todayReport.revenue - save.todayReport.costOfGoodsSold,
   };
 
-  // 2. Calculate XP
+  // 2. Calculate XP (with upgrade bonus)
   const activeEvents = getActiveEvents(save.activeEvents, currentDay);
   const eventMods = getCombinedEventModifiers(activeEvents);
 
@@ -186,6 +225,7 @@ export function advanceDay(
     todayReport.newCardsDiscovered,
     todayReport.revenue,
     eventMods.xpMultiplier,
+    upgradeMods.xpBonus,
   );
 
   const xpResult = applyXP(
@@ -195,21 +235,24 @@ export function advanceDay(
     xpEarned,
   );
 
-  // 3. Decay hype
+  // 3. Apply reputation-per-day from upgrades
+  const reputationGain = Math.floor(upgradeMods.reputationPerDay);
+
+  // 4. Decay hype
   let updatedHype = decayHype(save.setHype);
 
-  // 4. Clean up expired events
+  // 5. Clean up expired events
   const { activeEvents: remainingEvents, expiredIds } = cleanupExpiredEvents(
     save.activeEvents,
     nextDay,
   );
   const updatedPastIds = [...save.pastEventIds, ...expiredIds];
 
-  // 5. Apply event hype boosts for remaining active events
+  // 6. Apply event hype boosts for remaining active events
   const nextDayActive = getActiveEvents(remainingEvents, nextDay);
   updatedHype = applyEventHype(updatedHype, nextDayActive);
 
-  // 6. Maybe schedule a new event
+  // 7. Maybe schedule a new event
   let newEvent: GameEvent | null = null;
   const lastEventDay =
     remainingEvents.length > 0
@@ -228,7 +271,104 @@ export function advanceDay(
 
   const allEvents = newEvent ? [...remainingEvents, newEvent] : remainingEvents;
 
-  // 7. Build the next day's fresh report
+  // 8. Evaluate and update mission progress
+  const completedMissions: string[] = [];
+  let updatedMissions = [...save.missions];
+
+  // Build the full mission definitions for evaluation
+  const dailyDefs = generateDailyMissions(save.shopLevel, currentDay);
+  const weeklyDefs = generateWeeklyMissions(save.shopLevel, currentDay);
+  const milestoneDefs = getMilestoneMissions();
+  const allMissionDefs = [...dailyDefs, ...weeklyDefs, ...milestoneDefs];
+
+  // Create a temporary save with updated XP/level for milestone evaluation
+  const tempSave: SaveGame = {
+    ...save,
+    shopLevel: xpResult.level,
+    todayReport,
+  };
+
+  // Evaluate daily missions (use todayReport directly)
+  for (const def of dailyDefs) {
+    const progress = updatedMissions.find((m) => m.missionId === def.id);
+    if (!progress || progress.completed) continue;
+    if (isMissionComplete(def, tempSave)) {
+      updatedMissions = updatedMissions.map((m) =>
+        m.missionId === def.id
+          ? {
+              ...m,
+              completed: true,
+              currentValue: evaluateMissionProgress(def, tempSave),
+            }
+          : m,
+      );
+      completedMissions.push(def.id);
+    } else {
+      updatedMissions = updatedMissions.map((m) =>
+        m.missionId === def.id
+          ? { ...m, currentValue: evaluateMissionProgress(def, tempSave) }
+          : m,
+      );
+    }
+  }
+
+  // Accumulate weekly mission progress
+  for (const def of weeklyDefs) {
+    const progress = updatedMissions.find((m) => m.missionId === def.id);
+    if (!progress || progress.completed) continue;
+    const todayContrib = getTodayContribution(def, tempSave);
+    const updated = accumulateWeeklyProgress(def, progress, todayContrib);
+    updatedMissions = updatedMissions.map((m) =>
+      m.missionId === def.id ? updated : m,
+    );
+    if (updated.completed && !progress.completed) {
+      completedMissions.push(def.id);
+    }
+  }
+
+  // Evaluate milestone missions
+  for (const def of milestoneDefs) {
+    const progress = updatedMissions.find((m) => m.missionId === def.id);
+    if (!progress || progress.completed) continue;
+    const currentValue = evaluateMissionProgress(def, tempSave);
+    if (currentValue >= def.targetValue) {
+      updatedMissions = updatedMissions.map((m) =>
+        m.missionId === def.id ? { ...m, completed: true, currentValue } : m,
+      );
+      completedMissions.push(def.id);
+    } else {
+      updatedMissions = updatedMissions.map((m) =>
+        m.missionId === def.id ? { ...m, currentValue } : m,
+      );
+    }
+  }
+
+  // 9. Reset daily missions (always) and weekly missions (if crossing week boundary)
+  const resetWeeklies = shouldResetWeeklies(currentDay, nextDay);
+
+  // Generate new daily missions for next day
+  const newDailyDefs = generateDailyMissions(xpResult.level, nextDay);
+  const newDailyProgress = initializeMissionProgress(newDailyDefs);
+
+  // Filter out old daily progress, keep weekly + milestones
+  let nextDayMissions = updatedMissions.filter(
+    (m) => !m.missionId.startsWith("daily_"),
+  );
+
+  // Add new daily progress
+  nextDayMissions = [...nextDayMissions, ...newDailyProgress];
+
+  // Reset weeklies if needed
+  if (resetWeeklies) {
+    const newWeeklyDefs = generateWeeklyMissions(xpResult.level, nextDay);
+    const newWeeklyProgress = initializeMissionProgress(newWeeklyDefs);
+    nextDayMissions = nextDayMissions.filter(
+      (m) => !m.missionId.startsWith("weekly_"),
+    );
+    nextDayMissions = [...nextDayMissions, ...newWeeklyProgress];
+  }
+
+  // 10. Build the next day's fresh report
   const freshReport: DayReport = {
     day: nextDay,
     revenue: 0,
@@ -243,20 +383,21 @@ export function advanceDay(
     activeEvents: getActiveEvents(allEvents, nextDay).map((e) => e.id),
   };
 
-  // 8. Build updated save
+  // 11. Build updated save
   const updatedSave: SaveGame = {
     ...save,
     currentDay: nextDay,
     shopLevel: xpResult.level,
     xp: xpResult.xp,
     xpToNextLevel: xpResult.xpToNextLevel,
+    reputation: save.reputation + reputationGain,
     setHype: updatedHype,
     activeEvents: allEvents,
     pastEventIds: updatedPastIds,
+    missions: nextDayMissions,
     todayReport: freshReport,
     lastPlayedAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    // Update today's report XP for the record
     stats: {
       ...save.stats,
     },
@@ -272,6 +413,7 @@ export function advanceDay(
     newLevel: xpResult.level,
     nextDayEvent: newEvent,
     updatedSave,
+    completedMissions,
   };
 }
 

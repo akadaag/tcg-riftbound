@@ -139,6 +139,9 @@ export function generateCustomer(
 
 /**
  * Generate a wave of customers for a day.
+ *
+ * @param upgradeTrafficBonus — additive traffic multiplier from upgrades
+ * @param displayCaseBonus — flat traffic bonus from display case
  */
 export function generateCustomerWave(
   shopLevel: number,
@@ -147,6 +150,8 @@ export function generateCustomerWave(
   setHype: SetHype[],
   shelves: ShelfSlot[],
   productSetMap: Map<string, string>,
+  upgradeTrafficBonus: number = 0,
+  displayCaseBonus: number = 0,
 ): Customer[] {
   const avgHype = calculateAverageHype(shelves, setHype, productSetMap);
   const count = calculateDailyTraffic(
@@ -154,6 +159,8 @@ export function generateCustomerWave(
     reputation,
     activeEvents,
     avgHype,
+    upgradeTrafficBonus,
+    displayCaseBonus,
   );
 
   const modifiers = getCombinedEventModifiers(activeEvents);
@@ -175,6 +182,8 @@ export function generateCustomerWave(
  * Simulate a single customer visiting the shop.
  * The customer browses shelves (based on patience) and buys if they find
  * something within budget and markup tolerance.
+ *
+ * @param toleranceBonus — additive tolerance bonus from upgrades (e.g. 0.1)
  */
 export function simulateCustomerVisit(
   customer: Customer,
@@ -182,6 +191,7 @@ export function simulateCustomerVisit(
   products: Map<string, ProductDefinition>,
   setHype: SetHype[],
   priceToleranceMod: number = 1.0,
+  toleranceBonus: number = 0,
 ): CustomerVisitResult {
   const hypeBySet = new Map(setHype.map((h) => [h.setCode, h.currentHype]));
 
@@ -239,6 +249,7 @@ export function simulateCustomerVisit(
         product.sellPriceBase,
         customer.budget,
         effectiveTolerance,
+        toleranceBonus,
       )
     ) {
       // Calculate satisfaction (lower price = higher satisfaction)
@@ -318,6 +329,9 @@ export interface OfflineSimResult {
  * @param activeEvents - Events active during offline period
  * @param setHype - Hype state
  * @param products - Product definitions map
+ * @param upgradeTrafficBonus — additive traffic multiplier from upgrades
+ * @param displayCaseBonus — flat traffic bonus from display case
+ * @param toleranceBonus — additive tolerance bonus from upgrades
  */
 export function simulateOfflinePeriod(
   hours: number,
@@ -328,6 +342,9 @@ export function simulateOfflinePeriod(
   setHype: SetHype[],
   products: Map<string, ProductDefinition>,
   productSetMap: Map<string, string>,
+  upgradeTrafficBonus: number = 0,
+  displayCaseBonus: number = 0,
+  toleranceBonus: number = 0,
 ): OfflineSimResult {
   // Each hour ~ roughly 1/8th of a day's traffic
   const offlineEfficiency = 0.6; // Offline sells at 60% efficiency
@@ -337,6 +354,8 @@ export function simulateOfflinePeriod(
       reputation,
       activeEvents,
       calculateAverageHype(shelves, setHype, productSetMap),
+      upgradeTrafficBonus,
+      displayCaseBonus,
     ) *
       (hours / 8) *
       offlineEfficiency,
@@ -367,6 +386,7 @@ export function simulateOfflinePeriod(
       products,
       setHype,
       modifiers.priceToleranceMultiplier,
+      toleranceBonus,
     );
 
     customersServed++;

@@ -17,7 +17,9 @@ import {
   getAllSets,
   getProductMap,
   getProductSetMap,
+  getGameplayMeta,
 } from "@/features/catalog";
+import { buildActiveMissions } from "@/features/missions";
 import type { User } from "@supabase/supabase-js";
 
 interface AuthContextValue {
@@ -56,6 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setOfflineReport,
     applySave,
     setSetHype,
+    setMissions,
   } = useGameStore();
 
   useEffect(() => {
@@ -109,14 +112,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             resolvedSave,
             productMap,
             productSetMap,
+            getGameplayMeta,
           );
 
           if (offlineResult) {
             // Apply offline progress to save and show report
             loadSave(offlineResult.updatedSave);
             setOfflineReport(offlineResult.report);
+
+            // 5. Initialize missions if empty
+            if (offlineResult.updatedSave.missions.length === 0) {
+              const { progress } = buildActiveMissions(
+                offlineResult.updatedSave.shopLevel,
+                offlineResult.updatedSave.currentDay,
+                [],
+              );
+              setMissions(progress);
+            }
           } else {
             loadSave(resolvedSave);
+
+            // 5. Initialize missions if empty
+            if (resolvedSave.missions.length === 0) {
+              const { progress } = buildActiveMissions(
+                resolvedSave.shopLevel,
+                resolvedSave.currentDay,
+                [],
+              );
+              setMissions(progress);
+            }
           }
         }
       } catch (error) {

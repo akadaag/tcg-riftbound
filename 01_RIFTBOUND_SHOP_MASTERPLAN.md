@@ -37,19 +37,20 @@ Creare un'esperienza che unisca:
 
 ## Current Status
 
-- Overall phase: `[x] Core Gameplay Loop`
-- Current milestone: `[x] M4 — Core Gameplay Loop`
+- Overall phase: `[x] Upgrades + Missions + Card Detail + Display Case`
+- Current milestone: `[x] M5 — Upgrades + Missions + Card Detail + Display Case`
 - App shell: `[x]`
 - Authentication: `[x]`
 - Cloud save sync: `[x]`
 - PWA installability: `[x]` (manifest + icons + service worker via @serwist/turbopack, offline fallback, caching strategy)
 - Catalog import pipeline: `[x]` (656 cards, 3 sets, 5 products, 2 drop tables, typed catalog module)
 - Core gameplay loop: `[x]` (shelves, supplier, customers, economy, pack opening, day cycle, events, hype, offline progress, End Day flow)
-- Collection/Binder: `[x]` (set progress, card grid, filter, rarity borders, dupe tracking)
+- Collection/Binder: `[x]` (set progress, card grid, filter, rarity borders, dupe tracking, card detail modal, display case toggle)
 - Customers: `[x]` (5 types, budget/patience/tolerance, offline simulation)
 - Economy: `[x]` (sell pricing, markup, hype multiplier, XP, daily traffic)
-- Upgrades: `[ ]`
-- Events/Missions: `[-]` (events system complete, missions not started)
+- Upgrades: `[x]` (8 upgrades in 5 categories, multi-level, effect aggregation, integrated into engine)
+- Events/Missions: `[x]` (events system complete, missions: 6 daily + 5 weekly + 16 milestone, seeded generation, day/week reset)
+- Display Case: `[x]` (showcase cards, traffic bonus via displayScore, capacity from upgrades)
 - Polish/UI: `[ ]`
 
 ## Completed
@@ -68,18 +69,17 @@ Creare un'esperienza che unisca:
 - M2 PWA Shell: Service worker via @serwist/turbopack (route handler at /serwist/sw.js), defaultCache runtime caching, offline fallback page (/~offline), SerwistProvider registration in root layout, proxy excludes /serwist/ paths, tsconfig excludes sw.ts from main compilation (esbuild compiles separately)
 - M3 Content Pipeline: Types aligned with real Riftbound TCG (5 rarities: common/uncommon/rare/epic/showcase, 6 card types, 4 supertypes, 7 domains). Import script fetches from RiftCodex API (656 cards, 3 sets). Normalised JSON data files: sets.json (3 sets with gameplay tuning), cards.json (656 cards with full metadata), gameplay-meta.json (derived baseValue/pullWeight/collectorScore). Products/drop tables for OGN + SFD boosters (14 cards: 7C+3U+2R+1foil+1token) and boxes (24 packs). OGS starter product. Typed catalog accessor module with Map-based indices for fast lookups.
 - M4 Core Gameplay Loop: Full game engine (pure functions, no side effects) covering: economy (sell pricing, markup, hype multiplier, XP calculation, daily traffic), customers (5 types with budget/patience/tolerance, offline simulation), pack opening (drop table resolution, weighted rarity, dupe detection, reveal sorting), events (9 event templates with modifiers, scheduling, cooldowns), hype tracker (per-set 0-100 with decay/boost), day cycle (offline progress capped at 8h, day advancement with XP/events/hype). Zustand store fully rewritten with all gameplay actions. UI screens: Home dashboard (offline report, XP bar, events, stats, End Day button), Shop (shelf management with markup slider, restock, product picker), Supplier (distributor catalog with box→pack conversion, event price modifiers), Pack Opening (card reveal sequence, rarity borders, NEW badges), Collection Binder (set progress, card grid, filter, showcase toggle). EndDayModal with day summary, XP earned, level up, event preview. Offline progress and hype initialization wired into AuthProvider on save load.
+- M5 Upgrades + Missions + Card Detail + Display Case: Upgrades engine (8 upgrades in 5 categories: Extra Shelf, Better Signage, Loyalty Program, Training Manual, Supplier Contacts, Display Case Expansion, Premium Lighting, Stock Room). Multi-level upgrades with scaling costs and aggregated UpgradeModifiers. Missions engine (6 daily templates, 5 weekly templates, 16 milestone missions) with seeded random generation, evaluation against save state, weekly accumulation, day/week reset. Display case bonus calculation (displayScore-based traffic bonus with sqrt diminishing returns). Full engine integration: traffic/tolerance/XP params from upgrades, wholesale discount from supplier contacts, display case bonus in traffic calc, mission lifecycle in day-cycle (evaluate→reset→generate). Store actions: purchaseUpgrade, setMissions, claimMissionReward. UI: Upgrades shop page (category groups, level badges, active bonuses summary), Missions tracker page (Daily/Weekly/Milestones tabs, progress bars, claim buttons), Card detail modal in collection (full metadata, gameplay meta, display case toggle), Display case summary on home dashboard, completed missions banner in EndDayModal.
 
 ## In Progress
 
-- M5 — Polish + Upgrades (upgrades system, missions, UX improvements)
+- (none — ready for next milestone)
 
 ## Next Up
 
-1. M5: Upgrades system (shelf expansions, traffic boosts, reputation bonuses)
-2. M6: Missions system (daily/weekly objectives, rewards)
-3. M7: Duplicate systems (Card Trader, Display Case effects, Singles Counter)
-4. M8: UI polish (animations, loading states, error handling, responsive pass)
-5. M9: Performance + QA (balancing, bundle optimization, smoke tests)
+1. M6: Duplicate systems (Card Trader, Singles Counter unlock at shop level 5)
+2. M7: UI polish (animations, loading states, error handling, responsive pass)
+3. M8: Performance + QA (balancing, bundle optimization, smoke tests)
 
 ## Blockers / Decisions
 
@@ -935,8 +935,8 @@ Il gioco deve rimanere utilizzabile e robusto anche se l'utente cambia browser, 
 - [x] clienti base
 - [x] vendite base
 - [x] economia base
-- [ ] upgrade base
-- [ ] missioni base
+- [x] upgrade base
+- [x] missioni base
 - [x] supporto installazione PWA
 
 ## Should Have
@@ -1018,11 +1018,11 @@ Il gioco deve rimanere utilizzabile e robusto anche se l'utente cambia browser, 
 - [x] offline progress wired into auth-provider
 - [x] set hype initialization on new game
 
-## M5 — Collection
+## M5 — Collection + Upgrades + Missions + Display Case
 
 - [x] binder per set
 - [x] progress completion
-- [ ] dettaglio carta
+- [x] dettaglio carta (card detail modal with full metadata, gameplay meta, display case toggle)
 - [x] stato new/owned/missing
 - [x] gestione doppioni
 
@@ -1036,11 +1036,13 @@ Il gioco deve rimanere utilizzabile e robusto anche se l'utente cambia browser, 
 
 ## M7 — Upgrades + Missions
 
-- [ ] catalogo upgrade
-- [ ] acquisto upgrade
-- [ ] impatto upgrade sul gameplay
-- [ ] missioni base
-- [ ] reward claim
+- [x] catalogo upgrade (8 upgrades in 5 categories)
+- [x] acquisto upgrade (multi-level with scaling costs)
+- [x] impatto upgrade sul gameplay (traffic, tolerance, XP, wholesale, shelf slots, display case capacity)
+- [x] missioni base (6 daily, 5 weekly, 16 milestone templates)
+- [x] reward claim (coins + XP rewards, mission progress evaluation)
+- [x] display case effects (displayScore-based traffic bonus, capacity from upgrades)
+- [x] mission lifecycle (evaluate → reset → generate in day cycle)
 
 ## M8 — Events + Hype
 
@@ -1200,6 +1202,7 @@ public/
 
 # Implementation Log
 
+- 2026-03-19 24:00 — **M5 Upgrades + Missions + Card Detail + Display Case complete.** Built upgrades engine (src/features/upgrades/index.ts) with 8-upgrade catalog in 5 categories (Extra Shelf, Better Signage, Loyalty Program, Training Manual, Supplier Contacts, Display Case Expansion, Premium Lighting, Stock Room), multi-level with scaling costs, UpgradeModifiers aggregation, display case capacity/bonus calculation. Built missions engine (src/features/missions/index.ts) with 6 daily templates, 5 weekly templates, 16 milestone missions, seeded random generation, evaluation against save state, weekly accumulation, day/week reset. Added new types (UpgradeDefinition, MissionDefinition, etc.) to game.ts. Integrated into all engine modules: economy.ts (traffic/tolerance/XP params), customers.ts (upgrade modifier passthrough), day-cycle.ts (full mission lifecycle + upgrade modifiers + display case bonus), auth-provider.tsx (mission init on load), supplier/page.tsx (wholesale discount). Store actions: purchaseUpgrade, setMissions, claimMissionReward. UI: Upgrades shop page (src/app/more/upgrades/page.tsx) with category groups, level badges, active bonuses. Missions tracker page (src/app/more/missions/page.tsx) with Daily/Weekly/Milestones tabs, progress bars, claim buttons. Card detail modal in collection (tappable cards → full metadata + gameplay meta + display case toggle). Display case summary on home dashboard. Completed missions banner in EndDayModal. Fixed 1 type error (narrowed calculateDisplayCaseBonus getMetaFn param). Typecheck + build pass clean.
 - 2026-03-19 23:00 — **Mobile touch-target fixes (5/5).** Fixed all 5 issues from mobile audit: (1) collection filter buttons py-1.5→py-2.5 + min-h-[44px], (2) "Back to Sets"/"Back to Shop" text links added py-2 px-1 min-h-[44px] padding, (3) supplier quantity +/- steppers py-1.5→py-2 + min-h-[44px], (4) pack "Open" button py-2→py-2.5 + min-h-[44px] + wider px, (5) EndDayModal inner container max-h-[85vh] + overflow-y-auto for short phones. Files changed: collection/page.tsx, supplier/page.tsx, packs/page.tsx, end-day-modal.tsx. Typecheck + build pass clean.
 - 2026-03-19 22:00 — **M4 Core Gameplay Loop complete.** Built full game engine as pure-function modules in src/features/engine/: economy.ts (sell pricing, markup, hype multiplier, XP, daily traffic), customers.ts (5 types with budget/patience/tolerance, offline sim), pack-opener.ts (drop table resolution, weighted rarity, dupe detection), events.ts (9 templates with modifiers, scheduling, cooldowns), hype.ts (per-set 0-100 decay/boost), day-cycle.ts (offline progress capped 8h, day advancement with XP/events/hype). Fully rewrote Zustand store with all gameplay actions (shelves, inventory, collection batch-add, day tracking, events, hype, display case, unlocks). Built 5 UI screens: Home dashboard (offline report, XP bar, events, stats, End Day button + EndDayModal), Shop (shelf management with markup slider, restock, product picker), Supplier (distributor catalog with box→pack conversion, event price modifiers), Pack Opening (card reveal sequence with rarity borders, NEW badges, reveal-all), Collection Binder (set progress bars, card grid with filter/showcase toggle, rarity-colored borders). Wired offline progress calculation + set hype initialization into AuthProvider on save load. Added getProductMap/getProductSetMap helpers to catalog module. Updated globals.css with Riftbound rarity colors and new design tokens. Typecheck, lint, and build all pass clean.
 - 2026-03-19 18:00 — **M2 PWA Shell complete.** Used @serwist/turbopack (v9.5.7) to solve Turbopack incompatibility with @serwist/next. Created route handler at src/app/serwist/[path]/route.ts that compiles SW via esbuild. Rewrote src/app/sw.ts with @serwist/turbopack/worker imports, defaultCache runtime caching, and offline fallback for navigation requests. Created SerwistProvider re-export (src/app/serwist.tsx) and wrapped root layout with it (swUrl="/serwist/sw.js"). Created offline fallback page at /~offline with retry button. Updated proxy.ts matcher to exclude /serwist/ paths from auth redirect. Excluded sw.ts from main tsconfig.json (esbuild compiles independently) to fix @types/serviceworker polluting global DOM types. Added "use client" to ~offline page (onClick handler). Cleaned up .gitignore and eslint.config.mjs (removed old public/sw.js patterns). Typecheck, lint, and build all pass clean. Note: manifest + icons were already created in M0.

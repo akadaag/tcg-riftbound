@@ -13,6 +13,7 @@ import {
   getCombinedEventModifiers,
   getActiveEvents,
 } from "@/features/engine/events";
+import { getUpgradeModifiers } from "@/features/upgrades";
 
 export default function SupplierPage() {
   const { save, buyFromSupplier } = useGameStore();
@@ -20,6 +21,11 @@ export default function SupplierPage() {
 
   const activeEvents = getActiveEvents(save.activeEvents, save.currentDay);
   const eventMods = getCombinedEventModifiers(activeEvents);
+  const upgradeMods = getUpgradeModifiers(save.upgrades);
+
+  // Combined wholesale multiplier: event modifier * (1 - upgrade discount)
+  const combinedWholesaleMultiplier =
+    eventMods.wholesaleMultiplier * (1 - upgradeMods.wholesaleDiscount);
 
   return (
     <div className="flex flex-1 flex-col px-4 pt-6 pb-4">
@@ -41,14 +47,14 @@ export default function SupplierPage() {
           <span className="text-currency-gold text-sm font-bold">
             {save.softCurrency.toLocaleString()} G
           </span>
-          {eventMods.wholesaleMultiplier < 1 && (
+          {combinedWholesaleMultiplier < 1 && (
             <span className="rounded bg-green-500/20 px-2 py-0.5 text-xs text-green-400">
-              Sale! {Math.round((1 - eventMods.wholesaleMultiplier) * 100)}% off
+              {Math.round((1 - combinedWholesaleMultiplier) * 100)}% off
             </span>
           )}
-          {eventMods.wholesaleMultiplier > 1 && (
+          {combinedWholesaleMultiplier > 1 && (
             <span className="rounded bg-red-500/20 px-2 py-0.5 text-xs text-red-400">
-              +{Math.round((eventMods.wholesaleMultiplier - 1) * 100)}% prices
+              +{Math.round((combinedWholesaleMultiplier - 1) * 100)}% prices
             </span>
           )}
         </div>
@@ -62,7 +68,7 @@ export default function SupplierPage() {
           shopLevel={save.shopLevel}
           currency={save.softCurrency}
           unlockedProducts={save.unlockedProducts}
-          wholesaleMultiplier={eventMods.wholesaleMultiplier}
+          wholesaleMultiplier={combinedWholesaleMultiplier}
           onBuy={buyFromSupplier}
         />
       ))}
