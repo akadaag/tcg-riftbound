@@ -115,10 +115,13 @@ let customerCounter = 0;
 
 /**
  * Generate a single customer.
+ *
+ * @param preferredSets — set codes this customer is specifically looking for (from active events).
  */
 export function generateCustomer(
   type: CustomerType,
   budgetMultiplier: number = 1.0,
+  preferredSets: string[] = [],
 ): Customer {
   customerCounter++;
   const [bMin, bMax] = BUDGET_RANGES[type];
@@ -130,7 +133,7 @@ export function generateCustomer(
     type,
     name: randomName(),
     budget: Math.round(randomInRange(bMin, bMax) * budgetMultiplier),
-    preferredSets: [], // Could be influenced by events later
+    preferredSets,
     preferredProducts: PRODUCT_PREFERENCES[type],
     priceTolerance: Math.round(randomInRange(tMin, tMax) * 100) / 100,
     patience: Math.round(randomInRange(pMin, pMax) * 100) / 100,
@@ -167,9 +170,29 @@ export function generateCustomerWave(
   const weights = getCustomerWeights(shopLevel);
   const customers: Customer[] = [];
 
+  // Collect affected set codes from active events (for set-specific events).
+  // Events with affectedSets bias customers of boosted types toward those sets.
+  const eventAffectedSets = activeEvents.flatMap((e) => e.affectedSets);
+
   for (let i = 0; i < count; i++) {
     const type = pickCustomerType(weights, modifiers.customerTypeBonus);
-    const customer = generateCustomer(type, modifiers.budgetMultiplier);
+
+    // If this customer type gets a bonus from an event that has affectedSets,
+    // give a 50% chance of making them prefer those sets.
+    let preferredSets: string[] = [];
+    if (
+      eventAffectedSets.length > 0 &&
+      modifiers.customerTypeBonus[type] !== undefined &&
+      Math.random() < 0.5
+    ) {
+      preferredSets = eventAffectedSets;
+    }
+
+    const customer = generateCustomer(
+      type,
+      modifiers.budgetMultiplier,
+      preferredSets,
+    );
     customers.push(customer);
   }
 

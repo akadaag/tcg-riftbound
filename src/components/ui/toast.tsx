@@ -8,7 +8,7 @@ import {
   useRef,
   type ReactNode,
 } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { toastVariants } from "@/lib/animations";
 
 // ── Types ─────────────────────────────────────────────
@@ -147,7 +147,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       >
         <AnimatePresence mode="popLayout">
           {toasts.map((t) => (
-            <motion.div
+            <m.div
               key={t.id}
               variants={toastVariants}
               initial="hidden"
@@ -160,7 +160,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             >
               <span className="shrink-0">{TYPE_ICONS[t.type]}</span>
               <span className="min-w-0 flex-1">{t.message}</span>
-            </motion.div>
+            </m.div>
           ))}
         </AnimatePresence>
       </div>

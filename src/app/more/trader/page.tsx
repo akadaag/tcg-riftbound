@@ -20,6 +20,7 @@ import {
 import type { Rarity } from "@/types/game";
 import type { TradeableCard, TradeResult } from "@/features/trader";
 import Link from "next/link";
+import Image from "next/image";
 
 // ── Rarity color map ─────────────────────────────────────────────────
 
@@ -210,10 +211,11 @@ export default function CardTraderPage() {
             className={`mx-auto mb-4 rounded-xl border p-4 ${RARITY_BG[resultCard.rarity]}`}
           >
             <div className="relative mx-auto mb-3 aspect-[2.5/3.5] w-32 overflow-hidden rounded-lg bg-black/30">
-              <img
+              <Image
                 src={resultCard.imageUrl}
                 alt={resultCard.name}
-                className="h-full w-full object-cover"
+                fill
+                className="object-cover"
               />
             </div>
             <p
@@ -458,9 +460,11 @@ function TradeableCardRow({
     >
       {/* Card thumbnail */}
       <div className="h-14 w-10 flex-shrink-0 overflow-hidden rounded-md bg-black/30">
-        <img
+        <Image
           src={tc.card.imageUrl}
           alt={tc.card.name}
+          width={40}
+          height={56}
           className="h-full w-full object-cover"
         />
       </div>

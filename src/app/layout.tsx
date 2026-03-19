@@ -4,6 +4,7 @@ import { BottomNav } from "@/components/layout/bottom-nav";
 import { AuthProvider } from "@/features/auth/auth-provider";
 import { SaveProvider } from "@/features/save/save-provider";
 import { ToastProvider } from "@/components/ui/toast";
+import { MotionProvider } from "@/components/ui/motion-provider";
 import { SerwistProvider } from "./serwist";
 import "./globals.css";
 
@@ -59,10 +60,12 @@ export default function RootLayout({
           <AuthProvider>
             <SaveProvider>
               <ToastProvider>
-                <main className="mx-auto flex w-full max-w-lg flex-1 flex-col pb-[var(--nav-height)]">
-                  {children}
-                </main>
-                <BottomNav />
+                <MotionProvider>
+                  <main className="mx-auto flex w-full max-w-lg flex-1 flex-col pb-[var(--nav-height)]">
+                    {children}
+                  </main>
+                  <BottomNav />
+                </MotionProvider>
               </ToastProvider>
             </SaveProvider>
           </AuthProvider>

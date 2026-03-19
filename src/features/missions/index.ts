@@ -297,6 +297,28 @@ const MILESTONE_MISSIONS: MissionDefinition[] = [
     rewardValue: 50,
     minShopLevel: 1,
   },
+  {
+    id: "ms_collection_25pct",
+    scope: "milestone",
+    type: "complete_set_pct",
+    title: "Quarter Collection",
+    description: "Own 25% of all available cards.",
+    targetValue: 25,
+    rewardType: "currency",
+    rewardValue: 2000,
+    minShopLevel: 1,
+  },
+  {
+    id: "ms_collection_50pct",
+    scope: "milestone",
+    type: "complete_set_pct",
+    title: "Half Collection",
+    description: "Own 50% of all available cards.",
+    targetValue: 50,
+    rewardType: "currency",
+    rewardValue: 5000,
+    minShopLevel: 1,
+  },
 ];
 
 // ── Scaling Functions ────────────────────────────────────────────────
@@ -480,8 +502,9 @@ export function evaluateMissionProgress(
     case "earn_profit":
       return save.todayReport.profit;
     case "complete_set_pct":
-      // Would need set-specific data — not used in current templates
-      return 0;
+      // Progress = percentage of total unique cards owned (656 total across all sets).
+      // Milestones use this to reward collection depth at 25 % and 50 % thresholds.
+      return Math.floor((save.stats.uniqueCardsOwned / 656) * 100);
     default:
       return 0;
   }

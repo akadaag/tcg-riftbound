@@ -3,7 +3,7 @@
 import { useGameStore } from "@/stores/game-store";
 import { getAllSets, getAllCards } from "@/features/catalog";
 import { useMemo } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { fadeSlideUp, staggerContainer, staggerItem } from "@/lib/animations";
 
 export default function StatsPage() {
@@ -63,7 +63,7 @@ export default function StatsPage() {
   }, [sets, allCards, save.collection]);
 
   return (
-    <motion.div
+    <m.div
       className="flex flex-1 flex-col px-4 pt-6 pb-4"
       variants={fadeSlideUp}
       initial="initial"
@@ -77,7 +77,7 @@ export default function StatsPage() {
       </div>
 
       {/* Overview Cards */}
-      <motion.div
+      <m.div
         className="mb-6 grid grid-cols-2 gap-3"
         variants={staggerContainer}
         initial="hidden"
@@ -100,7 +100,7 @@ export default function StatsPage() {
           label="Customers Served"
           value={stats.totalCustomersServed.toLocaleString()}
         />
-      </motion.div>
+      </m.div>
 
       {/* Sales Breakdown */}
       <Section title="Sales">
@@ -220,7 +220,7 @@ export default function StatsPage() {
           </div>
         </div>
       </Section>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -251,7 +251,7 @@ function StatCard({
   accent?: boolean;
 }) {
   return (
-    <motion.div
+    <m.div
       className="border-card-border bg-card-background rounded-xl border p-3"
       variants={staggerItem}
     >
@@ -261,7 +261,7 @@ function StatCard({
       >
         {value}
       </p>
-    </motion.div>
+    </m.div>
   );
 }
 

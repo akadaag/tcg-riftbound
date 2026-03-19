@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
   overlayVariants,
   modalVariants,
@@ -19,6 +19,7 @@ interface EndDayModalProps {
   newLevel: number;
   nextDayEvent: GameEvent | null;
   completedMissions?: string[];
+  setCompletions?: Array<{ setCode: string; setName: string; reward: number }>;
   onClose: () => void;
 }
 
@@ -30,6 +31,7 @@ export function EndDayModal({
   newLevel,
   nextDayEvent,
   completedMissions,
+  setCompletions,
   onClose,
 }: EndDayModalProps) {
   // Escape key handler
@@ -49,7 +51,7 @@ export function EndDayModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
+        <m.div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4"
           variants={overlayVariants}
           initial="hidden"
@@ -60,7 +62,7 @@ export function EndDayModal({
           aria-modal="true"
           aria-label={`Day ${dayReport.day} complete summary`}
         >
-          <motion.div
+          <m.div
             className="bg-background border-card-border max-h-[85vh] w-full max-w-sm overflow-y-auto rounded-2xl border p-6"
             variants={modalVariants}
             initial="hidden"
@@ -79,7 +81,7 @@ export function EndDayModal({
             {/* Level up animation */}
             <AnimatePresence>
               {levelsGained > 0 && (
-                <motion.div
+                <m.div
                   className="border-accent-primary/50 bg-accent-primary/10 mb-4 rounded-xl border p-4 text-center"
                   variants={levelUpPulse}
                   initial="hidden"
@@ -91,12 +93,12 @@ export function EndDayModal({
                   <p className="text-foreground-secondary text-sm">
                     Shop is now Level {newLevel}
                   </p>
-                </motion.div>
+                </m.div>
               )}
             </AnimatePresence>
 
             {/* Stats Grid */}
-            <motion.div
+            <m.div
               className="mb-6 space-y-3"
               variants={staggerContainer}
               initial="hidden"
@@ -142,11 +144,11 @@ export function EndDayModal({
                 value={`+${xpEarned} XP`}
                 color="text-accent-primary"
               />
-            </motion.div>
+            </m.div>
 
             {/* Completed missions */}
             {completedMissions && completedMissions.length > 0 && (
-              <motion.div
+              <m.div
                 className="mb-6 rounded-lg border border-green-500/30 bg-green-500/10 p-3"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -162,12 +164,39 @@ export function EndDayModal({
                     </p>
                   ))}
                 </div>
-              </motion.div>
+              </m.div>
+            )}
+
+            {/* Set completion rewards */}
+            {setCompletions && setCompletions.length > 0 && (
+              <m.div
+                className="mb-6 rounded-lg border border-purple-500/30 bg-purple-500/10 p-3"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35 }}
+              >
+                <p className="mb-2 text-xs font-medium text-purple-400">
+                  Set Complete!
+                </p>
+                <div className="space-y-1">
+                  {setCompletions.map((sc) => (
+                    <div
+                      key={sc.setCode}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <span className="text-purple-300">{sc.setName}</span>
+                      <span className="text-currency-gold font-medium">
+                        +{sc.reward.toLocaleString()} G
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </m.div>
             )}
 
             {/* Upcoming event preview */}
             {nextDayEvent && (
-              <motion.div
+              <m.div
                 className="mb-6 rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-3"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -182,19 +211,19 @@ export function EndDayModal({
                 <p className="text-xs text-yellow-400/60">
                   {nextDayEvent.description}
                 </p>
-              </motion.div>
+              </m.div>
             )}
 
             {/* Continue button */}
-            <motion.button
+            <m.button
               onClick={onClose}
               className="bg-accent-primary hover:bg-accent-primary-hover min-h-[44px] w-full rounded-xl py-3 text-sm font-medium text-white transition-colors"
               whileTap={{ scale: 0.97 }}
             >
               Start Day {dayReport.day + 1}
-            </motion.button>
-          </motion.div>
-        </motion.div>
+            </m.button>
+          </m.div>
+        </m.div>
       )}
     </AnimatePresence>
   );
@@ -210,7 +239,7 @@ function StatRow({
   color?: string;
 }) {
   return (
-    <motion.div
+    <m.div
       className="flex items-center justify-between text-sm"
       variants={staggerItem}
     >
@@ -218,6 +247,6 @@ function StatRow({
       <span className={`font-medium ${color ?? "text-foreground"}`}>
         {value}
       </span>
-    </motion.div>
+    </m.div>
   );
 }

@@ -13,7 +13,10 @@ import {
   getCombinedEventModifiers,
   getActiveEvents,
 } from "@/features/engine/events";
-import { getUpgradeModifiers } from "@/features/upgrades";
+import {
+  getUpgradeModifiers,
+  getTotalInventoryCapacity,
+} from "@/features/upgrades";
 
 export default function SupplierPage() {
   const { save, buyFromSupplier } = useGameStore();
@@ -22,6 +25,17 @@ export default function SupplierPage() {
   const activeEvents = getActiveEvents(save.activeEvents, save.currentDay);
   const eventMods = getCombinedEventModifiers(activeEvents);
   const upgradeMods = getUpgradeModifiers(save.upgrades);
+
+  // Inventory capacity
+  const totalCapacity = getTotalInventoryCapacity(save.upgrades);
+  const currentStock = save.inventory.reduce(
+    (sum, item) => sum + item.ownedQuantity,
+    0,
+  );
+  const capacityPct = Math.min(
+    100,
+    Math.round((currentStock / totalCapacity) * 100),
+  );
 
   // Combined wholesale multiplier: event modifier * (1 - upgrade discount)
   const combinedWholesaleMultiplier =
@@ -57,6 +71,23 @@ export default function SupplierPage() {
               +{Math.round((combinedWholesaleMultiplier - 1) * 100)}% prices
             </span>
           )}
+        </div>
+        {/* Inventory capacity bar */}
+        <div className="mt-3">
+          <div className="mb-1 flex items-center justify-between text-xs">
+            <span className="text-foreground-secondary">Inventory</span>
+            <span
+              className={`font-medium ${capacityPct >= 90 ? "text-red-400" : capacityPct >= 70 ? "text-yellow-400" : "text-foreground-muted"}`}
+            >
+              {currentStock}/{totalCapacity}
+            </span>
+          </div>
+          <div className="bg-card-border h-1.5 w-full overflow-hidden rounded-full">
+            <div
+              className={`h-full rounded-full transition-all ${capacityPct >= 90 ? "bg-red-500" : capacityPct >= 70 ? "bg-yellow-500" : "bg-accent-primary"}`}
+              style={{ width: `${capacityPct}%` }}
+            />
+          </div>
         </div>
       </div>
 

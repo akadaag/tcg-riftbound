@@ -17,7 +17,7 @@ import type {
   CollectionEntry,
 } from "@/types/game";
 import { useState, useMemo, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { overlayVariants, modalVariants } from "@/lib/animations";
 
 type ViewMode = "sets" | "cards";
@@ -419,7 +419,7 @@ function CardDetailModal({
     : null;
 
   return (
-    <motion.div
+    <m.div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4"
       onClick={onClose}
       role="dialog"
@@ -430,7 +430,7 @@ function CardDetailModal({
       animate="visible"
       exit="exit"
     >
-      <motion.div
+      <m.div
         className="bg-background border-card-border max-h-[85vh] w-full max-w-sm overflow-y-auto rounded-2xl border"
         onClick={(e) => e.stopPropagation()}
         variants={modalVariants}
@@ -615,8 +615,8 @@ function CardDetailModal({
             </p>
           )}
         </div>
-      </motion.div>
-    </motion.div>
+      </m.div>
+    </m.div>
   );
 }
 

@@ -282,6 +282,17 @@ export function getUpgradeModifiers(
 /** Base display case slots before upgrades. */
 export const BASE_DISPLAY_CASE_SLOTS = 3;
 
+/** Base inventory capacity (pack/product units in the back room). */
+export const BASE_INVENTORY_CAPACITY = 200;
+
+/**
+ * Get the total inventory capacity (base + stock room upgrade bonus).
+ */
+export function getTotalInventoryCapacity(upgrades: UpgradeState[]): number {
+  const mods = getUpgradeModifiers(upgrades);
+  return BASE_INVENTORY_CAPACITY + mods.extraInventoryCapacity;
+}
+
 /**
  * Get the total display case capacity (base + upgrade bonus).
  */

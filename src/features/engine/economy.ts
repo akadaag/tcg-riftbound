@@ -222,8 +222,8 @@ export const XP_VALUES = {
   packOpened: 3,
   /** Per new unique card discovered. */
   newCard: 2,
-  /** Completing a day (end-of-day). */
-  dayComplete: 15,
+  /** Completing a day (end-of-day). Bumped from 15 → 20 for better early-game pacing. */
+  dayComplete: 20,
   /** Bonus per 100 revenue earned in a day. */
   revenuePer100: 2,
   /** Per individual card sold from singles counter. */

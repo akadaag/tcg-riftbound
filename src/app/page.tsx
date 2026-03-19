@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useGameStore } from "@/stores/game-store";
 import { useAuth } from "@/features/auth/auth-provider";
 import { SyncIndicator } from "@/components/ui/sync-indicator";
@@ -13,6 +13,7 @@ import {
   getProductSetMap,
   getGameplayMeta,
   getCardById,
+  getAllSets,
 } from "@/features/catalog";
 import {
   calculateDisplayCaseBonus,
@@ -78,6 +79,7 @@ export default function HomePage() {
       getCardById,
       getGameplayMeta,
       productSetMapData,
+      getAllSets(),
     );
     setEndDayResult(result);
     // Don't apply save yet — wait for modal dismiss
@@ -249,13 +251,13 @@ export default function HomePage() {
 
       {/* End Day Button */}
       <section className="mb-6">
-        <motion.button
+        <m.button
           onClick={handleEndDay}
           className="min-h-[44px] w-full rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-4 text-sm font-medium text-yellow-300 transition-colors hover:bg-yellow-500/20 active:bg-yellow-500/30"
           whileTap={{ scale: 0.97 }}
         >
           End Day {save.currentDay}
-        </motion.button>
+        </m.button>
       </section>
 
       {/* End Day Modal */}
@@ -267,6 +269,7 @@ export default function HomePage() {
         newLevel={endDayResult?.newLevel ?? save.shopLevel}
         nextDayEvent={endDayResult?.nextDayEvent ?? null}
         completedMissions={endDayResult?.completedMissions}
+        setCompletions={endDayResult?.setCompletions}
         onClose={handleEndDayClose}
       />
     </div>
@@ -347,7 +350,7 @@ function StatCard({
   accent?: boolean;
 }) {
   return (
-    <motion.div
+    <m.div
       className="border-card-border bg-card-background rounded-xl border p-3"
       whileTap={{ scale: 0.97 }}
       transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -358,19 +361,19 @@ function StatCard({
       >
         {value}
       </p>
-    </motion.div>
+    </m.div>
   );
 }
 
 function ActionButton({ label, href }: { label: string; href: string }) {
   return (
-    <motion.div whileTap={{ scale: 0.96 }}>
+    <m.div whileTap={{ scale: 0.96 }}>
       <Link
         href={href}
         className="border-card-border bg-card-background text-foreground hover:bg-card-hover active:bg-card-hover flex min-h-[44px] items-center justify-center rounded-xl border px-4 py-3 text-sm font-medium transition-colors"
       >
         {label}
       </Link>
-    </motion.div>
+    </m.div>
   );
 }

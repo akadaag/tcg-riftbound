@@ -15,7 +15,7 @@ import {
 import type { CardDefinition, CardGameplayMeta, Rarity } from "@/types/game";
 import { getCardById } from "@/features/catalog";
 import { useState, useCallback, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
   cardFlip,
   staggerContainer,
@@ -150,7 +150,7 @@ export default function PacksPage() {
   if (pageState === "opening") {
     return (
       <div className="flex flex-1 flex-col items-center justify-center px-4">
-        <motion.div
+        <m.div
           className="border-accent-primary/50 bg-accent-primary/10 flex h-40 w-28 items-center justify-center rounded-xl border-2"
           animate={{
             rotate: [0, -3, 3, -2, 2, 0, 0, 0, 0],
@@ -164,15 +164,15 @@ export default function PacksPage() {
           }}
         >
           <span className="text-accent-primary/60 text-3xl">?</span>
-        </motion.div>
-        <motion.p
+        </m.div>
+        <m.p
           className="text-foreground-secondary mt-4 text-sm"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
           Opening pack...
-        </motion.p>
+        </m.p>
       </div>
     );
   }
@@ -184,7 +184,7 @@ export default function PacksPage() {
     const visibleCards = revealCards.slice(0, revealIndex + 1);
 
     return (
-      <motion.div
+      <m.div
         className="flex flex-1 flex-col px-4 pt-6 pb-4"
         variants={fadeSlideUp}
         initial="initial"
@@ -209,7 +209,7 @@ export default function PacksPage() {
         {/* Current card highlight */}
         <div className="mb-6 flex justify-center" style={{ perspective: 800 }}>
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={revealIndex}
               className={`relative overflow-hidden rounded-xl border-2 p-4 ${getRarityBorderClass(currentCard.rarity)} ${getRarityGlowClass(currentCard.rarity)}`}
               variants={cardFlip}
@@ -218,14 +218,14 @@ export default function PacksPage() {
               exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.15 } }}
             >
               {currentCard.isNew && (
-                <motion.span
+                <m.span
                   className="absolute top-2 right-2 rounded bg-green-500/90 px-1.5 py-0.5 text-[10px] font-bold text-white"
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.4, type: "spring", stiffness: 500 }}
                 >
                   NEW
-                </motion.span>
+                </m.span>
               )}
               <div className="h-44 w-32">
                 <div
@@ -243,19 +243,19 @@ export default function PacksPage() {
                   </p>
                 </div>
               </div>
-            </motion.div>
+            </m.div>
           </AnimatePresence>
         </div>
 
         {/* Card grid (all revealed so far) */}
-        <motion.div
+        <m.div
           className="mb-4 grid grid-cols-4 gap-1.5 sm:grid-cols-5"
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
         >
           {visibleCards.map((c, i) => (
-            <motion.div
+            <m.div
               key={i}
               className={`rounded-md border p-1.5 text-center ${getRarityBorderClass(c.rarity)} ${
                 i === revealIndex ? "ring-1 ring-white/50" : "opacity-70"
@@ -268,31 +268,31 @@ export default function PacksPage() {
               >
                 {c.rarity}
               </p>
-            </motion.div>
+            </m.div>
           ))}
-        </motion.div>
+        </m.div>
 
         {/* Actions */}
         <div className="mt-auto flex gap-3">
           {!showingAll ? (
             <>
-              <motion.button
+              <m.button
                 onClick={handleNextCard}
                 className="bg-accent-primary hover:bg-accent-primary-hover min-h-[44px] flex-1 rounded-xl py-3 text-sm font-medium text-white transition-colors"
                 whileTap={{ scale: 0.97 }}
               >
                 Next Card
-              </motion.button>
-              <motion.button
+              </m.button>
+              <m.button
                 onClick={handleRevealAll}
                 className="border-card-border bg-card-background text-foreground-secondary hover:bg-card-hover min-h-[44px] rounded-xl border px-4 py-3 text-sm font-medium transition-colors"
                 whileTap={{ scale: 0.97 }}
               >
                 Reveal All
-              </motion.button>
+              </m.button>
             </>
           ) : (
-            <motion.button
+            <m.button
               onClick={handleDone}
               className="bg-accent-primary hover:bg-accent-primary-hover min-h-[44px] flex-1 rounded-xl py-3 text-sm font-medium text-white transition-colors"
               whileTap={{ scale: 0.97 }}
@@ -301,16 +301,16 @@ export default function PacksPage() {
               transition={{ type: "spring", stiffness: 400 }}
             >
               Done
-            </motion.button>
+            </m.button>
           )}
         </div>
-      </motion.div>
+      </m.div>
     );
   }
 
   // ── Pack selection ───────────────────────────────
   return (
-    <motion.div
+    <m.div
       className="flex flex-1 flex-col px-4 pt-6 pb-4"
       variants={fadeSlideUp}
       initial="initial"
@@ -345,7 +345,7 @@ export default function PacksPage() {
             </p>
           </div>
         ) : (
-          <motion.div
+          <m.div
             className="space-y-3"
             variants={staggerContainer}
             initial="hidden"
@@ -354,7 +354,7 @@ export default function PacksPage() {
             {openablePacks.map((item) => {
               const product = getProductById(item.productId)!;
               return (
-                <motion.div
+                <m.div
                   key={item.productId}
                   className="border-card-border bg-card-background flex items-center justify-between rounded-xl border p-4"
                   variants={staggerItem}
@@ -366,17 +366,17 @@ export default function PacksPage() {
                       available
                     </p>
                   </div>
-                  <motion.button
+                  <m.button
                     onClick={() => handleOpenPack(item.productId)}
                     className="bg-accent-primary hover:bg-accent-primary-hover min-h-[44px] rounded-lg px-5 py-2.5 text-sm font-medium text-white transition-colors"
                     whileTap={{ scale: 0.95 }}
                   >
                     Open
-                  </motion.button>
-                </motion.div>
+                  </m.button>
+                </m.div>
               );
             })}
-          </motion.div>
+          </m.div>
         )}
       </section>
 
@@ -404,7 +404,7 @@ export default function PacksPage() {
           </div>
         </div>
       </section>
-    </motion.div>
+    </m.div>
   );
 }
 

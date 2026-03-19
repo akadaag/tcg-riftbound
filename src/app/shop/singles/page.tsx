@@ -13,6 +13,7 @@ import {
 import type { ListableCard } from "@/features/singles";
 import type { Rarity } from "@/types/game";
 import Link from "next/link";
+import Image from "next/image";
 
 // ── Rarity styling ──────────────────────────────────────────────────
 
@@ -200,9 +201,11 @@ export default function SinglesCounterPage() {
               >
                 {/* Card thumbnail */}
                 <div className="h-14 w-10 flex-shrink-0 overflow-hidden rounded-md bg-black/30">
-                  <img
+                  <Image
                     src={card.imageUrl}
                     alt={card.name}
+                    width={40}
+                    height={56}
                     className="h-full w-full object-cover"
                   />
                 </div>
@@ -342,9 +345,11 @@ function ListableCardRow({
       >
         {/* Thumbnail */}
         <div className="h-14 w-10 flex-shrink-0 overflow-hidden rounded-md bg-black/30">
-          <img
+          <Image
             src={lc.card.imageUrl}
             alt={lc.card.name}
+            width={40}
+            height={56}
             className="h-full w-full object-cover"
           />
         </div>

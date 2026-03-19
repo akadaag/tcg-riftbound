@@ -24,6 +24,7 @@ import {
   canPurchaseUpgrade,
   getOwnedLevel,
   getDisplayCaseCapacity,
+  getTotalInventoryCapacity,
 } from "@/features/upgrades";
 import { applyXP } from "@/features/engine/economy";
 
@@ -70,7 +71,7 @@ export function createInitialSave(): SaveGame {
 
     // Shop
     shopLevel: 1,
-    softCurrency: 500,
+    softCurrency: 750, // Bumped from 500 G → 750 G for healthier early-game economy
     reputation: 0,
     currentDay: 1,
     xp: 0,
@@ -97,6 +98,7 @@ export function createInitialSave(): SaveGame {
     upgrades: [],
     missions: [],
     unlockedProducts: [],
+    completedSets: [],
 
     // Today tracking
     todayReport: createEmptyDayReport(1),
@@ -418,6 +420,15 @@ export const useGameStore = create<GameState>()((set, get) => ({
   ) =>
     set((state) => {
       if (state.save.softCurrency < totalCost) return state;
+
+      // Enforce inventory capacity
+      const capacity = getTotalInventoryCapacity(state.save.upgrades);
+      const currentTotal = state.save.inventory.reduce(
+        (acc, i) => acc + i.ownedQuantity,
+        0,
+      );
+      const wouldAdd = packsProductId ? quantity * 24 : quantity;
+      if (currentTotal + wouldAdd > capacity) return state;
 
       let inventory = [...state.save.inventory];
 

@@ -22,6 +22,7 @@ import type {
   MissionDefinition,
   CardGameplayMeta,
   CardDefinition,
+  SetDefinition,
 } from "@/types/game";
 import { MAX_OFFLINE_HOURS } from "@/types/game";
 
@@ -249,6 +250,8 @@ export interface EndDayResult {
   updatedSave: SaveGame;
   /** Mission progress updates for end-of-day summary. */
   completedMissions: string[];
+  /** Sets newly completed today (with name and currency reward). */
+  setCompletions: Array<{ setCode: string; setName: string; reward: number }>;
 }
 
 /**
@@ -262,13 +265,16 @@ export interface EndDayResult {
  * 5. Decay hype
  * 6. Clean up expired events
  * 7. Maybe schedule a new event
- * 8. Evaluate and update mission progress
- * 9. Reset daily/weekly missions as needed; generate new ones
- * 10. Reset daily tracking
- * 11. Advance day counter
+ * 8. Check for newly completed sets and award rewards
+ * 9. Auto-populate unlockedProducts for newly reached level
+ * 10. Evaluate and update mission progress
+ * 11. Reset daily/weekly missions as needed; generate new ones
+ * 12. Reset daily tracking
+ * 13. Advance day counter
  *
  * @param getMetaFn — optional function to look up gameplay meta for display case bonus and singles
  * @param cardLookupFn — optional function to look up card definitions for singles
+ * @param sets — optional set definitions array (for set completion rewards)
  */
 export function advanceDay(
   save: SaveGame,
@@ -277,6 +283,7 @@ export function advanceDay(
   cardLookupFn?: (cardId: string) => CardDefinition | undefined,
   metaLookupFn?: (cardId: string) => CardGameplayMeta | undefined,
   productSetMap?: Map<string, string>,
+  sets?: SetDefinition[],
 ): EndDayResult {
   const currentDay = save.currentDay;
   const nextDay = currentDay + 1;
@@ -419,17 +426,76 @@ export function advanceDay(
 
   if (shouldScheduleEvent(nextDay, lastEventDay, xpResult.level)) {
     const recentTypes = getRecentEventTypes(remainingEvents);
+    // Pass available set codes so set-specific events can target them
+    const availableSetCodes = save.setHype.map((h) => h.setCode);
     newEvent = rollNewEvent(
       nextDay,
       xpResult.level,
       updatedPastIds,
       recentTypes,
+      availableSetCodes,
     );
   }
 
   const allEvents = newEvent ? [...remainingEvents, newEvent] : remainingEvents;
 
-  // 8. Evaluate and update mission progress
+  // 8. Check for newly completed sets and award currency rewards.
+  //    A set is "complete" when the player owns at least 1 copy of every card
+  //    in that set (totalCardCount includes showcase variants). We track which
+  //    sets are already marked completed in save.completedSets so we only award
+  //    once per save file.
+  const setCompletions: Array<{
+    setCode: string;
+    setName: string;
+    reward: number;
+  }> = [];
+  let setCompletionBonus = 0;
+  const alreadyCompleted = new Set(save.completedSets ?? []);
+  const newlyCompleted: string[] = [...alreadyCompleted];
+
+  if (sets && cardLookupFn) {
+    const ownedCardIds = new Set(save.collection.map((c) => c.cardId));
+    for (const setDef of sets) {
+      if (alreadyCompleted.has(setDef.setCode)) continue;
+      // Count how many of this set's cards the player owns
+      let owned = 0;
+      let total = 0;
+      for (const entry of save.collection) {
+        const card = cardLookupFn(entry.cardId);
+        if (card && card.setCode === setDef.setCode) owned++;
+      }
+      // Use totalCardCount as the completion target (includes showcase variants)
+      total = setDef.totalCardCount;
+      if (owned >= total && total > 0) {
+        newlyCompleted.push(setDef.setCode);
+        const reward = setDef.completionReward.value;
+        setCompletions.push({
+          setCode: setDef.setCode,
+          setName: setDef.setName,
+          reward,
+        });
+        setCompletionBonus += reward;
+      }
+    }
+  }
+
+  // 9. Auto-populate unlockedProducts for the newly reached level.
+  //    Scan all products and unlock any whose unlockRequirement matches
+  //    "shop_level_N" where N <= new level.
+  const alreadyUnlocked = new Set(save.unlockedProducts);
+  const newUnlockedProducts = [...save.unlockedProducts];
+  for (const [, product] of products) {
+    if (alreadyUnlocked.has(product.id)) continue;
+    if (!product.unlockRequirement) continue;
+    const match = product.unlockRequirement.match(/^shop_level_(\d+)$/);
+    if (match) {
+      const requiredLevel = parseInt(match[1], 10);
+      if (xpResult.level >= requiredLevel) {
+        newUnlockedProducts.push(product.id);
+        alreadyUnlocked.add(product.id);
+      }
+    }
+  }
   const completedMissions: string[] = [];
   let updatedMissions = [...save.missions];
 
@@ -551,14 +617,19 @@ export function advanceDay(
     xp: xpResult.xp,
     xpToNextLevel: xpResult.xpToNextLevel,
     reputation: save.reputation + reputationGain,
+    // Add singles revenue delta + set completion bonuses
     softCurrency:
-      save.softCurrency + (singlesRevenue - save.todayReport.singlesRevenue),
+      save.softCurrency +
+      (singlesRevenue - save.todayReport.singlesRevenue) +
+      setCompletionBonus,
     collection: updatedCollection,
     singlesListings: updatedSinglesListings,
     setHype: updatedHype,
     activeEvents: allEvents,
     pastEventIds: updatedPastIds,
     missions: nextDayMissions,
+    completedSets: newlyCompleted,
+    unlockedProducts: newUnlockedProducts,
     todayReport: freshReport,
     lastPlayedAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -576,6 +647,7 @@ export function advanceDay(
     nextDayEvent: newEvent,
     updatedSave,
     completedMissions,
+    setCompletions,
   };
 }
 

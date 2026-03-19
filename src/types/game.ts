@@ -516,6 +516,8 @@ export interface SaveGame {
   missions: MissionProgress[];
   /** Product IDs the player has unlocked access to. */
   unlockedProducts: string[];
+  /** Set codes for which the player has already received the completion reward. */
+  completedSets: string[];
 
   // --- Today tracking ---
   /** Tracks what happened today (reset on day advance). */
