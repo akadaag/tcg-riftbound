@@ -37,13 +37,13 @@ Creare un'esperienza che unisca:
 
 ## Current Status
 
-- Overall phase: `[-] PWA Shell + Content Pipeline`
-- Current milestone: `[x] M2 — PWA Shell`
+- Overall phase: `[-] Content Pipeline → Core Gameplay`
+- Current milestone: `[x] M3 — Content Pipeline`
 - App shell: `[x]`
 - Authentication: `[x]`
 - Cloud save sync: `[x]`
 - PWA installability: `[x]` (manifest + icons + service worker via @serwist/turbopack, offline fallback, caching strategy)
-- Catalog import pipeline: `[ ]`
+- Catalog import pipeline: `[x]` (656 cards, 3 sets, 5 products, 2 drop tables, typed catalog module)
 - Core gameplay loop: `[ ]`
 - Collection/Binder: `[ ]`
 - Customers: `[ ]`
@@ -66,19 +66,20 @@ Creare un'esperienza che unisca:
 - .env.example with Supabase placeholders
 - M1 Auth + Cross-Device Persistence: Supabase Auth (email+password), proxy JWT refresh, login/signup page, email confirmation, cloud save (Supabase JSONB), local save (IndexedDB), auto-save orchestration (2s local, 30s cloud), sync status indicator, AuthProvider + SaveProvider, settings page with account info + logout
 - M2 PWA Shell: Service worker via @serwist/turbopack (route handler at /serwist/sw.js), defaultCache runtime caching, offline fallback page (/~offline), SerwistProvider registration in root layout, proxy excludes /serwist/ paths, tsconfig excludes sw.ts from main compilation (esbuild compiles separately)
+- M3 Content Pipeline: Types aligned with real Riftbound TCG (5 rarities: common/uncommon/rare/epic/showcase, 6 card types, 4 supertypes, 7 domains). Import script fetches from RiftCodex API (656 cards, 3 sets). Normalised JSON data files: sets.json (3 sets with gameplay tuning), cards.json (656 cards with full metadata), gameplay-meta.json (derived baseValue/pullWeight/collectorScore). Products/drop tables for OGN + SFD boosters (14 cards: 7C+3U+2R+1foil+1token) and boxes (24 packs). OGS starter product. Typed catalog accessor module with Map-based indices for fast lookups.
 
 ## In Progress
 
-- M3 — Content Pipeline (card/set/product catalog import + normalization)
+- M4 — Core Gameplay Loop (dashboard, inventory, stock purchase, pack opening, economy)
 
 ## Next Up
 
-1. M3: Script to import card data from external source
-2. M3: Normalize sets + products into internal format
-3. M3: Data model for internal catalog (cards, sets, products, drop tables)
-4. M3: Catalog versioning
-5. M3: Seed data ready for gameplay
-6. M4: Core gameplay loop (dashboard, inventory, stock purchase, pack opening, economy)
+1. M4: Core gameplay loop (dashboard, inventory, stock purchase, pack opening, economy)
+2. M5: Collection / Binder system
+3. M6: Customer system
+4. M7: Economy balancing
+5. M8: Upgrades system
+6. M9: Events / Missions
 
 ## Blockers / Decisions
 
@@ -91,6 +92,8 @@ Creare un'esperienza che unisca:
 - Decisione assunta: progetto PWA, non Swift nativo
 - Decisione assunta: supporto cross-device con login semplice e salvataggi cloud
 - Pending: User must run SQL migration `scripts/migrations/001_profiles_and_savegames.sql` in Supabase SQL Editor and configure Site URL + Redirect URL in Supabase dashboard.
+- Decision (RESOLVED): Riftbound pack structure — 14 cards per pack (7 common, 3 uncommon, 2 rare-or-better, 1 foil wildcard, 1 token/rune). 24 packs per box. "Showcase" rarity = alt-art/overnumbered/signature variants. Rarities: common/uncommon/rare/epic/showcase. Drop rates: rare-or-better slots have 70% rare, 23% epic, 7% showcase chance. Based on real Riftbound TCG research.
+- Decision (RESOLVED): RiftCodex API data source — fetches from api.riftcodex.com (/sets, /cards paginated). API uses `items`/`total`/`page`/`size`/`pages` response shape. Set label for SFD is "SFD" (use `name` field "Spiritforged" instead). tcgplayer_id is string not number.
 
 ---
 

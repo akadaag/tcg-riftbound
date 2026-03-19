@@ -1,0 +1,197 @@
+{
+  "catalogVersion": "2026-03-19T11:41:36.545Z",
+  "dropTables": [
+    {
+      "id": "dt-ogn-booster",
+      "name": "Origins Booster Pack",
+      "slots": [
+        {
+          "label": "Common slot",
+          "count": 7,
+          "pool": {
+            "setCodes": ["OGN"],
+            "rarities": ["common"],
+            "excludeShowcase": true
+          },
+          "rarityWeights": { "common": 100 }
+        },
+        {
+          "label": "Uncommon slot",
+          "count": 3,
+          "pool": {
+            "setCodes": ["OGN"],
+            "rarities": ["uncommon"],
+            "excludeShowcase": true
+          },
+          "rarityWeights": { "uncommon": 100 }
+        },
+        {
+          "label": "Rare-or-better slot",
+          "count": 2,
+          "pool": {
+            "setCodes": ["OGN"],
+            "rarities": ["rare", "epic", "showcase"],
+            "excludeShowcase": false
+          },
+          "rarityWeights": {
+            "rare": 700,
+            "epic": 230,
+            "showcase": 70
+          }
+        },
+        {
+          "label": "Foil wildcard slot",
+          "count": 1,
+          "pool": {
+            "setCodes": ["OGN"],
+            "rarities": ["common", "uncommon", "rare", "epic"],
+            "excludeShowcase": true
+          },
+          "rarityWeights": {
+            "common": 400,
+            "uncommon": 350,
+            "rare": 200,
+            "epic": 50
+          }
+        },
+        {
+          "label": "Token / Rune slot",
+          "count": 1,
+          "pool": {
+            "setCodes": ["OGN"],
+            "supertypes": ["token", "basic"],
+            "excludeShowcase": true
+          },
+          "rarityWeights": { "common": 100 }
+        }
+      ]
+    },
+    {
+      "id": "dt-sfd-booster",
+      "name": "Spiritforged Booster Pack",
+      "slots": [
+        {
+          "label": "Common slot",
+          "count": 7,
+          "pool": {
+            "setCodes": ["SFD"],
+            "rarities": ["common"],
+            "excludeShowcase": true
+          },
+          "rarityWeights": { "common": 100 }
+        },
+        {
+          "label": "Uncommon slot",
+          "count": 3,
+          "pool": {
+            "setCodes": ["SFD"],
+            "rarities": ["uncommon"],
+            "excludeShowcase": true
+          },
+          "rarityWeights": { "uncommon": 100 }
+        },
+        {
+          "label": "Rare-or-better slot",
+          "count": 2,
+          "pool": {
+            "setCodes": ["SFD"],
+            "rarities": ["rare", "epic", "showcase"],
+            "excludeShowcase": false
+          },
+          "rarityWeights": {
+            "rare": 700,
+            "epic": 230,
+            "showcase": 70
+          }
+        },
+        {
+          "label": "Foil wildcard slot",
+          "count": 1,
+          "pool": {
+            "setCodes": ["SFD"],
+            "rarities": ["common", "uncommon", "rare", "epic"],
+            "excludeShowcase": true
+          },
+          "rarityWeights": {
+            "common": 400,
+            "uncommon": 350,
+            "rare": 200,
+            "epic": 50
+          }
+        },
+        {
+          "label": "Token / Rune slot",
+          "count": 1,
+          "pool": {
+            "setCodes": ["SFD"],
+            "supertypes": ["token", "basic"],
+            "excludeShowcase": true
+          },
+          "rarityWeights": { "common": 100 }
+        }
+      ]
+    }
+  ],
+  "products": [
+    {
+      "id": "prod-ogn-booster",
+      "name": "Origins Booster Pack",
+      "setCode": "OGN",
+      "productType": "booster_pack",
+      "buyPrice": 120,
+      "sellPriceBase": 150,
+      "cardsPerUnit": 14,
+      "packsPerUnit": null,
+      "unlockRequirement": null,
+      "dropTableId": "dt-ogn-booster"
+    },
+    {
+      "id": "prod-ogn-box",
+      "name": "Origins Booster Box",
+      "setCode": "OGN",
+      "productType": "booster_box",
+      "buyPrice": 2500,
+      "sellPriceBase": 3200,
+      "cardsPerUnit": 336,
+      "packsPerUnit": 24,
+      "unlockRequirement": "shop_level_2",
+      "dropTableId": null
+    },
+    {
+      "id": "prod-sfd-booster",
+      "name": "Spiritforged Booster Pack",
+      "setCode": "SFD",
+      "productType": "booster_pack",
+      "buyPrice": 130,
+      "sellPriceBase": 160,
+      "cardsPerUnit": 14,
+      "packsPerUnit": null,
+      "unlockRequirement": null,
+      "dropTableId": "dt-sfd-booster"
+    },
+    {
+      "id": "prod-sfd-box",
+      "name": "Spiritforged Booster Box",
+      "setCode": "SFD",
+      "productType": "booster_box",
+      "buyPrice": 2700,
+      "sellPriceBase": 3500,
+      "cardsPerUnit": 336,
+      "packsPerUnit": 24,
+      "unlockRequirement": "shop_level_2",
+      "dropTableId": null
+    },
+    {
+      "id": "prod-ogs-starter",
+      "name": "Proving Grounds Starter Box",
+      "setCode": "OGS",
+      "productType": "starter",
+      "buyPrice": 80,
+      "sellPriceBase": 100,
+      "cardsPerUnit": 24,
+      "packsPerUnit": null,
+      "unlockRequirement": null,
+      "dropTableId": null
+    }
+  ]
+}

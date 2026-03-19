@@ -1,0 +1,50 @@
+{
+  "catalogVersion": "2026-03-19T11:41:36.545Z",
+  "sets": [
+    {
+      "setCode": "OGS",
+      "setName": "Proving Grounds",
+      "baseCardCount": 24,
+      "totalCardCount": 24,
+      "releaseOrder": 0,
+      "publishDate": "2025-10-31T00:00:00Z",
+      "tcgplayerId": 24439,
+      "hypeBase": 0.6,
+      "completionReward": {
+        "type": "currency",
+        "value": 200,
+        "description": "Complete the Proving Grounds set"
+      }
+    },
+    {
+      "setCode": "OGN",
+      "setName": "Origins",
+      "baseCardCount": 298,
+      "totalCardCount": 352,
+      "releaseOrder": 1,
+      "publishDate": "2025-10-31T00:00:00Z",
+      "tcgplayerId": 24344,
+      "hypeBase": 1,
+      "completionReward": {
+        "type": "currency",
+        "value": 1000,
+        "description": "Complete the Origins set"
+      }
+    },
+    {
+      "setCode": "SFD",
+      "setName": "Spiritforged",
+      "baseCardCount": 222,
+      "totalCardCount": 280,
+      "releaseOrder": 2,
+      "publishDate": "2026-02-13T00:00:00Z",
+      "tcgplayerId": 24519,
+      "hypeBase": 1.2,
+      "completionReward": {
+        "type": "currency",
+        "value": 1500,
+        "description": "Complete the Spiritforged set"
+      }
+    }
+  ]
+}

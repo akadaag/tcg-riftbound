@@ -1,0 +1,5253 @@
+{
+  "catalogVersion": "2026-03-19T11:41:36.545Z",
+  "meta": [
+    {
+      "cardId": "c20f1d1e-c1e9-4340-8e10-34b8ba6cbf4b",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8bb4cd9e-4377-4c0b-b92b-398934b5b6d1",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c67e85ec-8df3-4585-a1c2-d7c2f999dae3",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7beb6a8e-7c1d-433f-ba5f-325a31e3f528",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "3346a8a7-1b3d-46df-949f-35a2db355614",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e813aca1-2464-484a-8bcd-31ccd9933d31",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "400c39b5-222a-4974-8edc-09f057c9c3bc",
+      "baseValue": 300,
+      "collectorScore": 50,
+      "playableScore": 3,
+      "displayScore": 9,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "06935be6-6be6-431a-9a5e-b8f039e42d8b",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 3,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "1f501883-4deb-4c2d-ad84-75c1749fbc6e",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "eaf60358-88ea-4947-b629-e7bf53bfc2ee",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7ef10f85-9858-4907-a45a-0f1d6e568fbd",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "26a3c6ed-3027-445f-9fb7-acdc10b3ef63",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "eacd25f8-102e-458e-924d-6c9ae55e0e6b",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e271e31c-b0d4-4d1c-82c7-349054a7f568",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "4e82829c-105c-4de6-99d0-5d9323e6945b",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "d02be92e-b888-49c5-88bb-f4fe89143174",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "bf6fa034-9f40-44e8-90e4-04ed85dd606b",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7ee474eb-e362-475f-a724-983f7f2569b6",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "98afb5d5-c20e-4cb4-a429-ac588862fb61",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "89e32e17-6b06-40f4-ae74-3235cdf9282c",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "0019cc23-4a4b-47f8-b116-1a50e2fd1578",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "bf1bafdc-2739-469b-bde6-c24a868f4979",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "fa5336c8-449a-4815-bf90-9e7c3071df82",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "0dc13d87-9a1c-478e-b390-ad6cd5103d4a",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "6ee4313a-825a-427c-a529-756678e1b8b2",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "6e99cb6b-1b3d-4334-83e7-e7196a4f5765",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "fb79e7e5-ab05-4493-874f-0409847abce7",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "d6d9248b-f73a-4173-8433-ae3757869903",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "5429a388-f243-48d1-a1a6-400ee08cef36",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "6a0ff793-6bde-4bdb-a2e8-2040140b759b",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "3cbb577b-7a8e-41e1-9ab2-b3a2a00da64f",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "b59fae01-c42b-4b2f-915d-e74165c8c6f0",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "d90c82c5-215f-4032-9bef-58ba29208abf",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "a714fa84-2195-43b6-9c4a-d8d7536f9841",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "ccae7463-5b2d-4d04-8b3a-25e1b5d5aefa",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "21d324d7-7b23-4d90-89d2-311acea8f6ac",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "96d2789c-e6da-4df1-85d9-4cc5415c801b",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "20567d45-ca8c-44c0-ab60-7d09f53dd867",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "fa2781a1-d145-4e16-9acb-15263bf4c2d6",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "1a37df2d-5092-42b6-93be-58df6c677654",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 9,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "ff3e06f7-8090-4468-af0d-93f578a02603",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 9,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "236d0836-3112-4744-b630-587f4ebb0e8f",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "4c05e66e-a23c-4dd0-ad0f-80db175a30a5",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "a4ff2513-9d2a-4e4e-8831-878c5d033b55",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 7,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "b356ac12-d64f-464c-a023-dc05832ceeb3",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "6ef0ffc5-bb31-47f6-a133-13acc1183cb9",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "45618ff5-4ed5-47fb-8585-e611f9209627",
+      "baseValue": 300,
+      "collectorScore": 50,
+      "playableScore": 3,
+      "displayScore": 9,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "590c61b2-6072-4469-97ec-f0c2dd9b4fdf",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 3,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "1435abee-3b70-406a-90ab-000a0e24ac02",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "b1f97cbb-ac21-4d88-a4ad-618ec5689d62",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "6e6df901-c806-4e44-87da-aa294f7edf52",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "538c9308-b596-4ff5-872c-1bff3c205c1b",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "ac8a6e3f-f13c-4576-b994-9fb1def79bfe",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "897a24cb-6ad6-45dd-b850-de65d46951bb",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e14eda1c-9d0e-4844-a428-cd0f9eeeedec",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "91452c4d-5091-4437-8224-22507d4bc402",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "01636b31-f7ec-4562-b001-7eb78c09f3fc",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "9d874135-ed0d-49fe-9a9c-9d65e87a8edc",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "b37576be-dd56-4eaa-a392-631b0a58f3d0",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "cf3e47dc-4005-4c11-b54a-23afdd27f148",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "bdc41527-fe36-4a33-9133-4a7f58406950",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "62a87b17-f9a5-4848-b96c-733b9a49bce1",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "d270ef96-65e6-4f8d-b5f9-18510338e22a",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "66e7c643-8848-4dda-861d-e176a9a66e05",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "bcc140ef-d8bd-49c6-81fa-053e8424f0c7",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c61dd400-aacc-47ef-9fc9-6f5e3e31d194",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "55801451-8143-4490-abe6-59e11ad85926",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "27aaacaf-7a8a-4301-9c93-873a76e85a02",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "45108264-0019-4c1e-8b69-8b5ac1277fe5",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "9bd0cc5d-f22d-45fa-bddc-1f797aa02da6",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e5da3032-13ab-418f-83f8-fa89684b9baa",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "1ff324b8-0b61-41ea-8c14-12ced9619495",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "2a96c20c-64d3-47b5-accf-cc1811943df6",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "f75fb6cd-4451-472c-9f5b-6d2be86a4d3a",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "209af277-71cc-488f-9288-ea6fa2737446",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "67d0b4ce-cbb8-4f74-9830-4cb38a8f7925",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c65313b6-4f3e-4f88-80d0-a717a5fbcdfa",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "124d5bac-3b3f-47d7-a0c2-4ab3fe3f0e24",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "89a77862-cad3-484b-8ea3-717308ac234e",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "89f37aca-db06-4c0a-bb2c-93c004700cf7",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "adf414f7-209a-4a92-baca-a917ce6e1f39",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "5ea9f4bf-319e-4ba6-8a1f-9fb8c1bcc9d7",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "df718996-d1fa-4620-be1f-de4437b3cffe",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8c1112c4-c1f4-4d42-8f6e-baeadf9f1331",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "f35e48f5-d01b-4a2a-b0da-831523782ce1",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e051285d-913b-4bcd-a24d-29c732203553",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "acb13a22-c708-4eb8-a2f4-00b54e59251d",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "e90484c8-fdfc-43e5-9285-dc26349774fc",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "1fa44275-83ae-407e-829d-27255e3b5bfa",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2875bb4d-e686-4cd2-b421-68c76391e47f",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "5db3489f-83e2-40ba-80f6-1745a160afad",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 7,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e400a7c2-fd4a-40ab-9811-2371b020483e",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 9,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2349d444-7c41-48b4-ae93-301e400de89a",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "9ab934b5-e321-416a-8ae5-1603e34e2f49",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "452fab01-2268-46c3-a4d5-5717fffa4869",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "1b35904d-c8a2-4584-86c6-dafbb93f9794",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8404040b-a73b-44a9-9e22-b54a713883bf",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "03c93c60-f089-452b-9574-ae9a9f35970b",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "f6a06d30-3443-4467-acbc-0a17bf785b26",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 3,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c2fb6f61-b114-4113-850b-7757984d3a16",
+      "baseValue": 300,
+      "collectorScore": 50,
+      "playableScore": 3,
+      "displayScore": 9,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "0839cfd8-1321-4abd-969d-9aabbfef0656",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "0ee38ac0-6325-41af-b311-699b83dbeac3",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "d2603310-eabd-4bd3-bceb-bab43b5cfaf6",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "128755b4-824b-4299-84a9-873e876f58ec",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "6c8cfb4e-f74b-4d8d-aad0-9fa07c91aec6",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "449e6ffc-9d33-4f80-996c-3642edfde751",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "3b5dbed9-b196-443e-b59e-23edb2b382a5",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2cb6daae-8cfa-471a-be5e-2c6537198ea1",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e29e692e-109a-443e-a86b-af13ab07ae4f",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7efee9e6-dc27-4f70-a1e6-bcc965468cc4",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "5a9a9310-5d7e-4a28-acdf-437b188a7140",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "1a279d56-da30-4a1f-b859-43295139d762",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2631eeec-a988-46bd-9b33-f442ab32e362",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "bcaeeb87-705b-4498-9077-e192184b9dac",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "91580e68-af78-4a6e-883f-da76a8f994bb",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "672e193e-9dbf-474f-9702-ead4f786c3e1",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "56bbd56e-cbbc-4c0e-8195-1524c69373cf",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "28f6a71c-26f4-424e-8fc1-ae7d97233a4a",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "f6f5f824-ed7b-4992-a430-def5403028bd",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e97f094a-85f5-4902-904a-6a0942753b48",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "f6967682-6d83-40d1-bb28-1f2c3080a69f",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "da600754-f1fd-48c3-acb1-456fcdf005f4",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "ff9c5dc9-4836-40d0-8757-9d211d71bf5f",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "20ce0892-f5a8-4b13-a51e-8434250d57ee",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "a4030d84-c508-4dfe-a083-cf59770330aa",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "cc5bc498-d2d2-40f9-8a84-69b3b67505e2",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "0ed838f8-d635-4dff-b3d1-ddaf5c02e0e9",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "b69f888d-eb02-4201-bd2f-f9056e141d3c",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "d01299ff-7eab-4777-a2ca-f1b31ebae7df",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "3d9957a2-2f79-45ef-930e-36eefe653e0c",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "3aa985c6-dfb5-4b3e-88f5-b5ed980c5428",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "20a5462b-8c62-4035-abe0-8a207e48aeb7",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "6a9cab10-e09a-4080-b0a9-b4d581bc6b37",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "5cb5fa67-825c-4a33-8af7-15edb0de4bf9",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 7,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "26ab12dc-a044-4180-8ed7-602f3b4b3e02",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "82fd6e08-bf96-4bd4-b59e-1d4644ea2232",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "fc864b86-e208-48c0-a4b3-d7c93cd34d13",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "a766f15e-ce9f-4c43-964e-79a65d98e903",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e65777de-06be-47fb-9d5a-300b3782a7f6",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "fc0c7182-d5ae-4c5e-905b-104198fca203",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "eae90d10-c1d0-44d2-b825-b8dffc99e15e",
+      "baseValue": 300,
+      "collectorScore": 50,
+      "playableScore": 3,
+      "displayScore": 9,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "76abdff9-5a27-44c1-990c-4c7b935faf99",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 3,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "5a1de05b-a77c-45eb-ae2e-678a2738e05e",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "101b0642-eda5-45e9-8188-43000dd5cfe7",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "4c0f5e42-d05b-451d-ace7-2295db179227",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "520c7490-3cfb-4065-b7bb-f88f468b1643",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "64ebfadf-a58b-4259-883a-947ec125f63c",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "df843fc6-ff92-4f90-8760-6ee390662ed6",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7462fab9-f54c-4ec8-a923-396ce3ec0a02",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "dc61b059-5202-4e12-bf07-331aef0136bc",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "93222b89-524e-4faf-8016-5a5087370e2b",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "1daf8405-6340-4286-815d-732a727c9b3c",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "55b29580-f7b8-4bdf-88cd-b6278e31056f",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "f2b6be7b-2cfe-4e3a-961f-fbae0a240582",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e55e96ca-e34a-43cb-a8a2-d15397bf7053",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "50edee5b-f77b-45ea-b1b5-b3f105699517",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "903eb8cd-0dce-4616-83e2-7e53473adddd",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2be808f2-6cd3-4450-96a9-8279f9b522d2",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "750dc245-d89a-4f47-8b1b-849c95d1ee1a",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "a0238169-5250-4366-b4a8-79d59caea0ce",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c04d7e3b-7289-4329-a8e9-d1679d9ae676",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "60d1eda5-49f2-4d3e-923a-c465b2a6295b",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "9e78c46e-220e-4e69-ba51-42e7adce4876",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "5abd2d2b-88f3-42e5-85de-14a203ceb7fd",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "112e820e-4eab-4a2e-808a-c6e5c473a191",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "855d1224-19c2-46ec-b5f0-831e2166081d",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "fcb729b0-f1ba-4394-826d-a39eeb443dfe",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "94d21c7f-1654-4f78-8bff-412fbcbc6d12",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "3cf874dc-f4d6-4269-a36b-e2713179711d",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "fbadf458-7534-4675-aa65-e87b42f98417",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8cb4827a-feaa-4198-8dd2-a0220690e892",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "95e83d45-f913-45a2-9abc-86e62e112454",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "bbd0eac9-27ba-4104-83b6-d4360b74c0c1",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "40cb2800-4ade-4090-9189-e8e0eccf27d6",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7c6d0032-5fc5-47b5-9e5a-adfb1eff6fcf",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "05b8a2e1-07ad-4621-880d-62cebf225b8a",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "45d12bab-3640-4b36-8547-b8c18338ee3a",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "95208536-679d-4835-af75-c9081974df6d",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 7,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7347a50b-0a8e-4a65-b482-d209918e783b",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 9,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "cfc1e36d-a866-4ff1-9697-d35184d5ad24",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8bcc5801-e5c1-4020-af16-5c48f132edab",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "b0c92150-9c9c-4113-a9d9-9a3420f943d7",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 7,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "4425a515-7a77-4ab2-bc9b-bf3fc255abbe",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "d17db363-58ee-4786-9b31-2cf0079b0009",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2e071a51-bf18-45a4-880d-d84719c5743a",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "349e01b0-ded7-4798-98e1-cdb5032bbc67",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 3,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "78fb0465-6011-413a-87c0-8a29d1c58dcb",
+      "baseValue": 300,
+      "collectorScore": 50,
+      "playableScore": 3,
+      "displayScore": 9,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "1c91e2ea-70a0-465f-a4f3-ae1fbe85a2a1",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e0e6e65c-bce3-43f4-8117-342522c7f4df",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "20630191-10af-40ab-96db-d602503db05c",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "25cdc964-fe9e-41e9-b133-26c416078174",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "d4626158-b75f-41c8-a402-fd90a2789647",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "dd337d2f-0cf4-4c85-8490-3119c3c58881",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "50c312b6-e04f-4b03-ae26-2a581ea921f2",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "6a85bd20-d27d-4f67-8ed9-3067425b3c23",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "ec915815-ea03-4105-98ea-4f112a0ef870",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "5e45d768-f74f-45bc-bc92-bf7e759171a9",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7b86bb98-2c3e-4a0d-bc1b-01f474b344cd",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8b5e9e5e-a08f-488c-90e3-d983eec9421c",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e4a6a34f-0d58-4a96-af1a-d576f80961db",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "14f6da17-b17c-4ec7-9344-46f72273c410",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "6be0b2bb-2efc-416a-8d57-8b0a07978da9",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "1802156d-1899-4f28-8fef-eb2b212186f4",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "9350edcc-fe4f-4126-956b-21cff7f41c3a",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "011cf9d5-5e56-4e17-904e-2f35d6ac4cb2",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2211dbc9-49dd-4d1a-92f1-322c7b66a5be",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "900fe756-08a7-4e9f-87c1-a24ec8c78e94",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "536424af-e44f-4ef3-91df-c355d319ea7f",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "4a105e6d-e22c-4127-8e07-956606ce6a03",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "331896ab-0762-493e-b3f4-915f159058f6",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "05a1a286-4d09-4b13-aae1-bd8509aac92a",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "3a5585a8-15f2-4779-af8e-f5e4db4736a7",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "788b4311-1c81-4281-8a35-fc3b25970bb6",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2a2fe0bb-a414-4024-9455-62dc9f9fcd42",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "32cc4cd1-a83b-4865-9816-a8a4956b7baa",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "d109b951-fbf5-41e9-b7b8-7403b2701a97",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "b65f124a-a9bf-412a-889a-a4b6b1f43ecf",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2205e234-b960-4368-a856-be63e312d71d",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "1070675e-9d1a-4c38-9d8e-34e8136d9c9b",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "07c8caf6-6de3-4afc-9500-af87a154e648",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "916ddd39-76ac-4750-a030-403fb843fb78",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "683dfdad-89e6-49f3-b471-64b8bd87f6dc",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8f81fa49-de04-43c2-abeb-b39f5f2d026c",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "26e6d481-c66b-4e14-9200-98dccb0fd498",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "147de5cd-8c86-4c66-823c-388add387de3",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "21f898e1-93b5-411a-8734-3d8cd30c7a24",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "f610f946-5ba1-4260-a1a5-c84f0f139f8c",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "45fd3b22-9c5b-4c68-be29-0e0ef8ffc9f2",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 7,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8583b817-c02b-48f7-9253-cbc4804f4e2b",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "05626a61-186a-4f12-b720-a5aa135be590",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "333e0609-ba4d-4599-8c09-3e60efadef45",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "50f4a829-5b19-4f37-926c-cb1fd4b456fb",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2b2fecf5-568d-4470-9d37-122885894ced",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2f0b30e5-8adf-4613-81d5-b17dfbd14a47",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "b9c139cb-1cd3-407f-933c-880d10c2f728",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "d5281aad-5a71-43f6-af41-fca5a8d7f24d",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2ab95ceb-d8de-4287-8834-72457755517f",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "6e3c9ac1-8de9-428f-8550-185fcfcfb528",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "f926a190-a517-4fd0-ad52-69983c8099e2",
+      "baseValue": 300,
+      "collectorScore": 50,
+      "playableScore": 3,
+      "displayScore": 9,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "d51766d4-6214-4bec-b4bf-a0e194f6a2f7",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 3,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "00c1848b-cb52-4ff4-8941-037985505208",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "62adedd7-754f-4191-b6c5-e9b3626847c2",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "80b267dc-8304-4108-bed0-d63256a61b32",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c88f7c77-50f5-4a67-95a2-90ce6331f9ca",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "a27d94d9-efbb-496d-b9bf-0bf2af23446b",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "6c838687-053f-434f-8886-cd08ff179524",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "207dfafc-5ad9-4e10-9d08-a3d3a5c012b4",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c4642a42-8f72-418d-bbbe-d162caadb4ef",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "fa6eca42-64aa-4550-a178-1913c8aadb01",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "ab9d4792-56b9-49c5-ad0c-cfb49451c394",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "a28ea330-4bad-404e-86e5-f0294609bdaa",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c12531d1-86a8-4793-8b0a-98a4a42a8e63",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "59627882-0674-472f-bb3d-27b78f320f15",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2044e450-9aaf-4260-9c4a-641fcce2180b",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e4a15a48-dbe9-4c68-90d4-984386e1bc9d",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "70cf0ac2-d548-42ac-b744-55c2ff40b70c",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c8aaf0a3-4625-4dd0-9841-21772a3ab2a9",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "486cfe8f-8a5f-4b24-a4e6-e653397aa3e7",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7088e494-2887-4cba-bf51-cbca4142dfaa",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "5252feec-2907-474b-81c2-f424bb466df1",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7c1d2585-1003-487b-a882-c1635a319ebb",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "bbe08de1-5cc8-436a-aba1-ef3fcb5800bc",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "0759820e-2b54-4bb0-bb5f-dc86ed667c37",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "273528dc-592b-4e6e-9c73-2c999dde28f2",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "47c1f45e-bd76-4f02-88e7-dca4c9c37811",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "3705cccf-4ffb-4881-837c-977144c7581f",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "1d234e76-3aa3-41ef-9f8a-996fd7f7c8b7",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "9f67b89c-01c5-4385-adf9-e0549d1d2212",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "fb4ef9db-4482-4611-9659-acda5791a12b",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "6d1a9ff1-d306-415f-9052-a102a826e797",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 7,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "89673cbd-8cea-435a-969f-12f68b5a7a24",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "6ac9ba48-949f-46dc-856f-7a487bb4709a",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2d6e877b-29b7-476b-9789-4b5f305f6a2e",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "f3ac7637-34dd-447a-871d-a5fb12bfb882",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 7,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "af619959-b8b9-4dae-a9f7-701ab18824d7",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8f6e0764-f1bb-403e-81f6-e54503267958",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "0d353f87-5986-4e26-89a1-c6052b3465e2",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "46a9752c-e526-42bc-ad96-c18d015f3bdf",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "36ab38f7-fca3-4a6a-851e-103fedcf7fc2",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "908d9b93-6ee4-4c21-845e-3f87a43c106d",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "6af58403-13a3-4ffd-9b26-efa1a5ad7be3",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "dea7a8db-aace-4ace-bfbf-918c00a50867",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "ebed3b09-24cf-444c-bbe5-6f2ef5c0e7c2",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "3c86e28f-e3b6-4755-ba17-b3d0e68fdc2a",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e5d86871-f763-404d-b099-9ef7ab0e0649",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "74a3af70-dda3-4c95-a34c-aae9c15babff",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2b1b64ea-2c87-4837-8c90-d9b4b9885818",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "bb537e01-3cc0-4b66-9168-4a1a58cbef05",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "29d36e65-091d-44cc-b339-9b253c45f322",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "fbdcfca0-3634-46b5-8dcd-90b635f4d035",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "335999c2-a26b-4a53-9ad8-b50994b1827a",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "984d0ef5-fa35-449c-a2d2-c638253fe7f1",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "291b1203-2740-4cc0-bba2-4da3d15177c3",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "6cae6e6d-50b2-4340-81d2-47d0e86a2efc",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e71b9e49-2c5e-4cce-bafc-5a0dd874ebe9",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "1cc43d43-391a-4461-81ff-580bb58e8ed6",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "99ba5e1e-6566-48b5-bddf-379ac088e200",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "4eb2cfef-4bf9-48bc-bd42-4c57c8db60e4",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "22712381-21b2-4165-b6da-b4efc62e005f",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c6a260f5-9de6-4b18-a733-b5b138ae5eb4",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "acc0240d-1b37-489e-be94-1072dac7a653",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "edc8bf52-f73f-4d20-baeb-79a7787de3fe",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "9af148d0-b923-47b8-af46-98c020997777",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "a4e6f15f-6b23-473f-84c4-e51dc6490bdf",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8abc88c9-4966-43d0-9e4c-ca2a8bd6a9bf",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "a2144eca-235e-4b9e-89c0-c195bf37149b",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2fc7d8cb-fd92-4e70-a940-7fb2072fa1c6",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "570fe2b6-0f44-4878-a2b6-053255892b3c",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "d5cc888c-adff-44f7-99cb-acc651e6fbef",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "768b92e2-6379-49e8-ad1d-9af82ab143b5",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "634e9ff3-f5c8-4ad1-bebb-90e7dd7c269d",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "03c21e83-7181-4e2d-98ae-913ac2904d12",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "3f6dedb7-cc96-4391-8032-374010168a24",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "ef580ef4-a013-4a00-834d-20c1add01c3f",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "62e45534-9b00-41dd-aa81-f5c03e217a88",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c3746a68-78eb-4f48-9ad2-69e28a57133b",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "cfc805a5-1ef1-459f-bf56-354c576f25ad",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "5d8c1717-bdf9-441e-bd3a-ce8d313d4200",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "77f3f0d5-9320-49c7-8d21-60a181c9c443",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2a971fc8-9167-48f0-8acb-148fa3f755ca",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8ffa553a-f05a-4878-970c-b89f677589f9",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e990677a-cac6-449d-9504-9741c259f091",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "3984ed9a-7628-4601-ac5e-23aea42254f3",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "6ef3ee37-4c0f-47c3-b414-42b87794a4c2",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2a33584f-a0e5-42ae-8620-a4279bd50089",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "527eb1be-3283-4289-b3e8-e16b1fab936d",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "f2a5966c-b587-46e2-b072-137e56d7e969",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "1ddcdea9-2525-4620-a52e-ab0b157d11ab",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "a6f931e3-b102-470d-a88a-e77cd94239e6",
+      "baseValue": 1000,
+      "collectorScore": 200,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 1
+    },
+    {
+      "cardId": "3d45890d-6ab3-48c9-b5fb-95257db0c1ed",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "6a944b70-a0e2-46a2-b6ee-a4fa7d1debb5",
+      "baseValue": 1000,
+      "collectorScore": 200,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 1
+    },
+    {
+      "cardId": "2c70fdbe-afb2-47a3-a574-6f0d07ab5c6a",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "a45ed232-024e-4e99-8117-4284f418ba3a",
+      "baseValue": 1000,
+      "collectorScore": 200,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 1
+    },
+    {
+      "cardId": "caff202f-084f-4a44-aee6-382456978ba4",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "828bf4e5-93cc-4abd-9cfa-c9f212350d09",
+      "baseValue": 1000,
+      "collectorScore": 200,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 1
+    },
+    {
+      "cardId": "e6b5b635-c4d0-481b-b8c7-129df2a42a20",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "c105866d-ec27-417b-9926-5326f92567e8",
+      "baseValue": 1000,
+      "collectorScore": 200,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 1
+    },
+    {
+      "cardId": "aba29e57-29cf-41ed-a482-4ca728009d15",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "e7267daf-0555-413c-be0e-d7d6b711845b",
+      "baseValue": 1000,
+      "collectorScore": 200,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 1
+    },
+    {
+      "cardId": "41fde7de-4a80-4681-b21a-fad837c8080a",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "32e89878-efc3-43aa-942a-7d4d5585eb43",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "c7510b53-74e2-4224-9a02-3c695981e310",
+      "baseValue": 1000,
+      "collectorScore": 200,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 1
+    },
+    {
+      "cardId": "a338abab-4676-427b-915a-9b5ddc0e6f9e",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "f46cf752-adfa-4b35-91a0-ce08ffa53213",
+      "baseValue": 1000,
+      "collectorScore": 200,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 1
+    },
+    {
+      "cardId": "37ce2209-ddc8-4701-ad11-d9d63bcf308a",
+      "baseValue": 1000,
+      "collectorScore": 200,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 1
+    },
+    {
+      "cardId": "342fca5c-5cc6-47aa-8fe1-3f20d9500a98",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "e92bf40d-40bc-4b75-a3f9-944ab98e5d95",
+      "baseValue": 1000,
+      "collectorScore": 200,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 1
+    },
+    {
+      "cardId": "53402af9-baec-42b3-9962-701d74f78cb2",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "b5574108-9a48-490e-8d01-532ae714a54a",
+      "baseValue": 1000,
+      "collectorScore": 200,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 1
+    },
+    {
+      "cardId": "ad5c4176-ab50-47d0-82d9-7d62e305bbbb",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "24c7aa82-2e40-4dd6-8ebd-346fd1561fdd",
+      "baseValue": 1000,
+      "collectorScore": 200,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 1
+    },
+    {
+      "cardId": "56ea8752-2c37-4aa1-8234-12302c22b0c6",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "a4658ad3-2540-43a9-8d2d-0108c64848b8",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "84ae4762-09fb-414b-a4af-f72c996c3c33",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "72379165-4e6a-42a0-be85-b60f4e9e491b",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "38052469-6e48-46ae-b0e9-acb9012a71bd",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "93608125-32e5-41d4-8623-a3f26ec22186",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e91c4ec4-a19b-4e28-8e94-d1ba85dcb62e",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "cf7196a6-8d8c-40a3-a692-62ab9b6e8d10",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "b8594cb7-e9f2-479e-871b-b3c2cd0a578a",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "09397732-5f8d-412c-ae14-c8d84ed02ee6",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "4118a71c-c841-4b45-ab7a-af92e24b48f1",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "93f1e74f-35fc-49e2-a997-a8fe23e832b9",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "f55e5090-af45-45d5-8a14-32a12f7b8e2f",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7b419775-97ce-4b49-80c1-9785c7c2a3d2",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "adbc306c-99e5-44e6-89d5-2520908cc986",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "1556594f-8470-4dfd-8be4-aae5045185d8",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "fd8e48a1-2341-48d0-93b5-3f2dd32a80f8",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "b15344ec-e5dd-43f9-a34b-4e7eefa25084",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "980742ee-5f47-483b-9409-6d4d067aa9e7",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 9,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "cfa62e26-900a-4562-a408-7959a695893a",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "effeefb5-4276-4cf7-9be2-a7b84df0633c",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "85ce2468-4628-4c2c-960d-286728e81afa",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7a85c39c-c96c-45d5-8120-ad063f352c0a",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "fda78980-b4db-4efb-986d-5446b03d021e",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "535c45d3-1fb9-4227-993e-576444b70bfd",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8f0af435-d0f5-4a40-ad2b-20a90de30d77",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e95aabc4-9fad-4891-903d-019b9cdad903",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c31d7b60-e460-458d-9faf-cfdfe08a666e",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "b412d54d-4a96-4b88-bb74-d40281331f8d",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "bbf6efe3-8f5c-4418-af52-aac4a632923f",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7b239b2e-2d62-4a95-b4f0-a2877e3af358",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "4934de4d-ac8f-4bb6-a171-d1861ac4a7ab",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c778df68-0821-4312-8963-253ba7c91db7",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "b2b23e5e-7838-46f7-899b-786f3b91a932",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "ac5921ce-c657-44fc-957d-4ec505bdd764",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "a743a88c-2d6c-44f1-a8ae-2e1dff35e629",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "3547c3a4-feb6-487b-b242-ca5723248d97",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "f85d0d34-8967-465a-a529-03bc8394b2e1",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "1a7ed732-b173-4215-8a69-f060a6b740c9",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "050f04af-5509-440e-87e1-de1251c17b22",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e2260a9d-f105-4074-b589-c1145a1c94d6",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8ac80146-7993-4646-b5c5-f60fac84f531",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "1e9c2ef6-738a-4da8-a2c8-76f00448aa09",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "bb03a3ee-b577-4984-8588-b34cdd1bac01",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7a8bf6c4-1ff6-4c73-860a-65d8712bcd23",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "ef77da29-ceea-48a7-8463-9372fe317dc8",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "533f4bd4-2c3f-4700-b32c-c02dd39dc95d",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "9d73e694-c619-446c-affb-699ebda1bdf2",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "6d0e9f19-f1ed-4b83-bb42-0f5a74efa168",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "057815b6-9dfb-44e7-9200-0f15bb7fede1",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "20434ff2-3e8c-43be-8cf5-e9254f1a256f",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "fc839a13-d2ed-4827-9e3d-4e6b81aaf23d",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "078b3777-2faf-4e27-b0fc-267ceffe9edd",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "d4ca0af4-f534-41a9-9cb9-ff6618c3d9e1",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "b798f981-49a7-4625-93e4-391079048db9",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 9,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c8980b20-dd1e-491c-ae1a-5245bd99aba6",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "b1853992-af10-42a9-a6fa-5752819df2cd",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "4b9a40b2-8562-4d29-be1e-98ff592394ac",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "3bd9114e-2a12-487b-8dea-f775078c4ea2",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "0b9d8849-1f53-4964-8f2d-6c1adbdea267",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 7,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "14d302bb-237f-4605-bd09-6838257044f1",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "743053e3-09a6-40ee-8f99-29101cd50375",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e4e333b3-6f51-4837-a5b2-8538417babfa",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "6f85c980-37c0-46ed-8c49-0e4ec5ca1c51",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2957ce36-9fc0-439d-bf8b-9a483e322ce7",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "081b4fb1-4368-487d-a6f4-b5ad0881ff87",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7e2a422f-c1bf-47b3-aff2-39e96dc8f4bf",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7f0e0f62-d134-4b85-aac1-0def3535a383",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2cd141e4-4fa3-4361-a594-0f8019da23cf",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "5206aa7e-2a1d-46c2-a8c3-d8de824b4a6c",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "0aff0c6f-7e9e-4249-b364-ea508dbb2949",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "81db2e11-ee65-48e2-b8cd-59c6faa04254",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "6f3ac2be-be07-4275-984c-91971a342f5d",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "94ae49c8-d870-4881-8906-950a3e002be9",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "92ccf312-f43f-429c-800f-c371a55d36ab",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "fd6dccac-7ced-46ca-bcef-beb9de690165",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "b90eabae-c9f2-475f-89ef-63bec869a4b5",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "9de26fa7-5c22-4bb6-b887-9716913d8d19",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "3b2df98a-de47-489f-bad0-daddc4abceed",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "1296335b-6dba-48c4-a719-e5edad54e092",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "7ec2b77e-46f5-4e9e-a3a4-cd472e168128",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "012e677e-c89d-4031-bddd-098ecc40c729",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "828ae93a-32bd-48a6-aba8-a6b53bef500a",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "1ddd6384-18ab-4a10-9b4c-d331d5d56706",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "26843c61-3d3f-454c-9910-2af7b1027acb",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "63e30274-c44b-4fd8-b494-f4ce4f8b5851",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "ac046510-8770-4446-a16d-f636e870f5ad",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "645c3ced-f5de-409a-90c1-c98414d3bc7b",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7e2a0378-53a3-43ab-8f5f-81cdff6eb54a",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "798be38b-9c98-4cfb-b42a-9a7cc4f1c6f7",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c5d8f9ee-732b-4318-a087-ae4e99497aed",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "92abdf1a-b2e8-4e74-bc2b-885c7ee8304d",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8320aad5-a5ec-404d-9962-42f34b8173ce",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 7,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "97dc3286-47ac-4740-8b5d-e1a18ac3b7bd",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 9,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "98454abe-9d6d-458f-ae0b-768c6fa2c748",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "44d419ab-0fcd-48ff-91e4-e5df36ad6c0e",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "df3fcbf2-d20e-4684-99a9-977116140921",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "39c2bbd8-dee9-4175-bcd0-62152547a091",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "644e411e-4014-4ac0-8eb2-696db03765f0",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "ec036067-dd42-4c3e-8112-41c9a08af73e",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "561bfabd-81f1-4658-9247-59aa512d3913",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "d2c7e0af-f36f-482f-a69c-35ca3a28bac6",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "25dda924-c51c-4001-b7d0-25ecd12ad992",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "b872bafe-f732-49b9-b658-d6ab96344256",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "bb9574b3-5276-4fa8-aae7-f0fcfc83e128",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "f187583b-45d5-4fa4-b260-b54a7323963c",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "449f9ec3-42d2-415f-9271-b9cd125aed60",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8b0f5d65-c80e-48a7-b417-323dcde78840",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "9367ea53-ba7f-40d3-9cfd-f1f012876066",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "5dfdaadd-abcf-47fc-8c85-af1cd3f835a2",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "5d100019-35b4-450e-b4b7-c3bbd460b802",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "146605b9-3930-4863-9a40-e0a426bb770a",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "f8b37791-19e2-4ca6-8069-92d254df96f5",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c29dddfa-3809-4168-a501-5284dfbd8cf0",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "4d4abbb2-aff4-44d5-bd22-f8d2339c3d52",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "79a1ccd2-57d3-44eb-b770-0330a0f96217",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "288637fc-29c0-4b87-8f2b-ffc063ef82f5",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "0458e235-22e6-4346-91e1-54efa8e46f7b",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "d5792e8f-cbc4-4980-8ae7-017951c3af04",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "551f4e6c-c355-4cad-8db9-6f234c879296",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c8ff4eca-c408-458a-8933-76bbbe97971c",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "a08bb081-f544-4807-82b4-b24680463208",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "39a7ccaa-70f1-49f0-a897-058730529856",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "1c7a32a1-8c0f-4894-a428-b291f9bb56c2",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "cd7c14e5-cef0-4ce8-b911-51743b57e1bd",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "90e7297b-7eeb-432d-8e70-e42eb790fdeb",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "97872486-944d-4fa4-aad1-9d542580ce69",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "565fa461-cc9d-4179-b6fa-7f43743ca71e",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 7,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7829e0fb-3238-4f02-92ac-927ceec3e439",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "0b80500a-428d-488d-9356-ba2135c9f7ab",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "9207cb11-7558-4c3c-8664-1646f9caeb8b",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "25362f4d-2e84-4158-9b08-b66ad6826d36",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8033ae3c-a962-4fcf-8725-c3a8376a85ac",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "05724a05-dca3-45e1-b1b4-f72b275186e4",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "1f1eef82-a716-43c1-b7ab-1ae2b0c8d994",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "6c8b8544-f8dd-4ea2-adf9-c8605308eed9",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c68a61dd-74cf-407e-9049-1ce44e46d268",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "5f3d12c8-03bd-49ba-b432-e83199b537b8",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "536a5f4c-8248-4656-ae1d-9a8c3203806b",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "b4f95e51-d3b2-444b-8b88-47239084e17b",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "39c8daec-d4d6-439a-a589-6158d4d04d0b",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "f422a33b-7a41-4232-b00b-21c65edaf26f",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "5a3b2f96-09de-4b8d-8da0-ebb49df405ce",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "cd5b3001-e7b4-4f23-bbb3-c5b14333255a",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "ade6e0b9-f601-4973-9ca2-57cdd66695ef",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8bf402c3-0863-44e9-8efa-da660665467e",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "06278663-bd9f-4570-a6cb-c5f7075991bd",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "564aa873-d96f-4488-ae69-83521711f6cf",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "9714a0b2-5b28-4385-8cc0-9baee10a09f2",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "4999f448-ebb1-4f2a-9bf8-0123c5d32207",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8aeec2ed-ca29-4e29-9ca4-cca3a397bbd1",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "4784dbc1-ebea-4dba-bb08-1bd6cfc9582b",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "83b71618-970d-43f5-acc3-8faba31feaf5",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "9cad6229-736b-4388-8170-6556d7ccdfd5",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "cb89aefa-51f3-4502-a6c8-85e6f37d2e88",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "484b023c-cad3-4c1b-b784-67fd3f4004cd",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "b8da645a-8b05-46d3-85c5-4a10ca571ece",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 7,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8d31b787-b3d1-4e5d-b730-424582e52f55",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 7,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "0557994b-f591-4721-a962-7f0e696b3e1a",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "848996c4-16a2-4004-8a39-5bb1a0f9e36d",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "de05374d-8f41-4b2d-9363-44e4bdbdff93",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "2f880a8f-9a7b-49b0-8192-cd3b150397bf",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "dfe5b335-2b6c-494f-88e0-25f566946399",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c55d5e5e-71fa-4154-b3c9-2a99aa71e634",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "57392cd5-4aa1-4cd8-8c44-28806e5cb60d",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "0fc02e2e-da3f-4a06-ae43-e89f77ab5710",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8738fe69-8d7c-4680-bfb5-1ada19a86d2b",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "93a5ca41-5bb0-4485-959c-a482bb08f4ac",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "a012349e-371d-4790-96c0-56fda150a135",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "550e3819-f973-4750-93ca-1fb1fa65299b",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "fcfe0279-b115-4b36-87af-a5e95332cb0a",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "46d472dd-6483-4d0b-9b6f-1f41592a246f",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "113cd9fd-8304-431e-bc4b-7ed2dcdd6e87",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "0b41462b-318b-4d57-89b3-f72f32820623",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "319cba62-4e74-4dcd-a85b-c7a8d792650f",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "87a475d6-3f29-4960-ad2a-311343022c72",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "530f73c0-a317-4a16-9d53-4a49fc40ed64",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "a7d45f0d-623b-49d3-9da5-ecb599d5f239",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "867a69a3-86c2-429a-96c5-05978f743e04",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "af8caa7d-05d1-463e-97de-3efcf30157e0",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "a924d5cd-6cdb-4325-8314-250d41c42971",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7683e2b5-44b0-4ffc-8adf-d8005325549c",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "5505d2f1-eb36-49fe-8bf6-5b579aaaad3e",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "10d896da-708d-4d75-9b7a-b35f02c17a46",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "14c7b868-d1ad-4178-be19-06486db380e0",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8f75c732-bb19-4f78-9bbc-7e09a110b4e9",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "08febcfe-b909-4e3b-a93f-f5d4a328dc59",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "74ac6eb9-0700-4411-a9fa-70e042464658",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2613a0cc-2a04-4152-b550-867628e2f226",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "54f4b92f-4793-4e12-a75c-af77d0bb016f",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "993b1a7d-8490-4fb3-8255-c2d27cfa86be",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "229a6af7-4259-4260-b77c-e2b84120ad37",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "17a5b780-b093-45c5-8089-ea31b1aadbd0",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "8e98bc9e-ecaa-4938-b5c6-096d38040f4e",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "8c402561-031f-4f82-a0b4-918a6b4b6136",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "cd478c64-818a-4ad1-ab36-b51b0703f07a",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 7,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "6ed2a908-9e67-448b-a558-267812b500cb",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "2bb91b68-437e-48e9-a531-14ae75639246",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "51bc6955-25e3-4f44-a98e-394e5ebe5b79",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "aea892c6-aa11-4429-b66b-793d57dccacc",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "371729b3-519c-4ae4-8605-92944adbac13",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "78356549-59f7-4b9d-853a-1f269e8595c4",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8a22effa-f897-4a95-86d7-86d1d32007c0",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "5bc98fc6-3ca7-4ce6-8184-5a1953881d3a",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e1e7f317-f568-40eb-9fcc-a9555eb9c375",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c8d66fd6-3d08-4271-a01d-77f34ff54f32",
+      "baseValue": 5,
+      "collectorScore": 1,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c13ac91a-119c-4f02-9d69-b1a54446a196",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "eb507afc-5f20-4716-95f1-3c4280a825a5",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "0ac0e9cc-be67-4f4c-a193-10919cd1d7d0",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "b153208c-b254-44ff-b7e9-f30a014c5c9a",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "844ad06e-a2e6-4d4b-b351-c8e0704c845e",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "0703f01f-5bc2-4ff4-b742-f9982bd387e9",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "d06e2b61-073b-4636-9129-66c431279260",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 7,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "a1ad2a3b-1d6b-4b94-aaa9-5e7e65bff5df",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 5,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7609c890-3ae7-4266-bf57-e2b86cf1c52d",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "56b90cc2-503d-4e59-a793-31e5918b24a1",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "d215227d-4785-41da-90cc-1f3856faef2e",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "c40816f2-3712-49da-b41e-ab64c0f3a99f",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "b08c3404-b545-43fa-a27d-216bc88bc5c0",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "dc46cdd1-102b-477a-af9b-b86369a55dc3",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 6,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "6a679cac-4f3f-4941-87a0-aee11e71ecdc",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8a7704b3-022e-4819-b62a-96c509adce04",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "5c5da9a2-ec48-4d72-9f88-c33b12ac21b3",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 8,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "d11f128e-a0ef-43cb-9187-d65f2cd7b0a0",
+      "baseValue": 75,
+      "collectorScore": 8,
+      "playableScore": 10,
+      "displayScore": 6,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "04bc108a-ae92-404d-9534-9996549837e1",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7ea1d205-a94b-4ba6-a796-afd3381df2d6",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "208881e6-9193-443d-92aa-9cc376f3d324",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 7,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "a1575f66-0a62-4adb-a356-f63af10052ee",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 9,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "e9434995-83e2-4c5c-a274-496b31d18a1d",
+      "baseValue": 450,
+      "collectorScore": 50,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 20
+    },
+    {
+      "cardId": "9532f6cf-c5ad-4620-bf3b-d6df86b85f60",
+      "baseValue": 225,
+      "collectorScore": 20,
+      "playableScore": 10,
+      "displayScore": 8,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "acf8e1a0-806d-4bbc-b9c7-e8d9348249c5",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "5e79536b-47a7-4ce5-9c98-e7e895295c89",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "9c785fd5-3cd3-4f6b-b495-10ce82914cb3",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "848ec481-6a6a-4b9b-828a-b05e24646419",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "3f591ddb-d046-47a6-a9f6-af4486428e78",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "0c0f90d8-83f4-4bb1-a4a7-04445d084234",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 7,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "b77895d5-34ed-4edb-b4ee-4a198ed1f9e6",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "84795003-865b-4c75-9543-8aadcc939965",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "3f2bf419-d73a-4d97-957c-51c609d1a74b",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "43c1ffbf-f071-494c-bd44-256b2167084b",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 7,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "58b7c153-89d7-4336-bf67-10616212102b",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 7,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "467fafb7-a7dd-4730-94b0-35cd2c3f7716",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 7,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "6532bcda-d92c-45a4-ae31-babf9b34b26b",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "657a2a93-49ca-4f8a-98c2-8a53e32fe06f",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "3ad2ebba-6d5d-4d96-8c7d-c0b42a099628",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "92e89fe4-7601-4be8-a8bf-36ab5483c558",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "eb443232-e716-47be-b642-2230680628b2",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "f5c2fc0a-a825-4585-9835-914ae34ad802",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "0ff50e98-f731-4147-8365-951186f6c11c",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "74502e9b-4358-4333-9746-f76b2e8aead9",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "00d4a50f-a907-4670-b85f-1347ab982d88",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "41e59733-e4bd-482c-907a-08175680213f",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "c6ee9c3b-43c2-49ad-a80e-3449c734cbba",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "d4ba7a3b-7c14-4157-a303-8edd0538ab5c",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "8003f1ae-f164-4d79-af8b-61f2cf630aac",
+      "baseValue": 50,
+      "collectorScore": 8,
+      "playableScore": 9,
+      "displayScore": 5,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "16b28b46-41c3-4bde-89f8-32f45cba4aa4",
+      "baseValue": 150,
+      "collectorScore": 20,
+      "playableScore": 8,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "29d87f95-af5d-49d4-ab99-366372bc19f6",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "5b352e20-83b2-4c75-98c3-36130a98b105",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7d0a7ad8-8688-4e70-886c-ad7a7cb3807b",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "55236964-97c2-4bd4-98d3-78053a1dd47b",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "1518f047-8ad6-4520-8954-8b36685dcb72",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7c79b9e6-624e-430e-8f1f-8df0507b03e6",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "323503b3-b79d-4814-8925-941e24e58dba",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "b0bfe36c-9891-404f-9c37-b91f27b75fa4",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "74614dc2-86a0-4e1e-911f-e7e65ed84429",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "b2255ff3-fda4-407c-ae11-be8ef03de81b",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "7dd3ce40-baf7-4de4-80fd-d104813a277a",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "9297a55e-5aa0-405e-bea6-b95d929f6f96",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "5a154988-9666-452e-8d9b-afbbebf0bb87",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "a2c77355-581c-4fa1-a97a-1f95d36dcdd0",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "5975b423-2e08-497a-9f96-07f25399ab9b",
+      "baseValue": 15,
+      "collectorScore": 3,
+      "playableScore": 4,
+      "displayScore": 7,
+      "pullWeight": 100
+    },
+    {
+      "cardId": "63b6f77b-e1d9-4630-bb6e-0eb6d6423f58",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 5,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "0a66c309-ca2b-48c8-8e3f-b7672115a83c",
+      "baseValue": 1500,
+      "collectorScore": 200,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 1
+    },
+    {
+      "cardId": "81eb0d7f-29d1-4c87-bdd7-03b69b81d126",
+      "baseValue": 750,
+      "collectorScore": 100,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "c0f1f6ae-104d-4a28-94bb-b392d5ecfec8",
+      "baseValue": 1500,
+      "collectorScore": 200,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 1
+    },
+    {
+      "cardId": "b0251710-4cd9-43c5-998d-71f0564a3fa8",
+      "baseValue": 750,
+      "collectorScore": 100,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "f9a48946-49ac-4f20-9ec8-1b656958682b",
+      "baseValue": 750,
+      "collectorScore": 100,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "dffb8d6b-f06d-4d2f-98b6-e6864af458f9",
+      "baseValue": 1500,
+      "collectorScore": 200,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 1
+    },
+    {
+      "cardId": "5c5b90f8-5dff-464b-af29-14ae34f6fd28",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 5,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "a80aabd5-cecc-4881-9d52-217c01a90842",
+      "baseValue": 1500,
+      "collectorScore": 200,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 1
+    },
+    {
+      "cardId": "a3ce7b81-fa98-4602-bfa8-f2b54e8307bb",
+      "baseValue": 750,
+      "collectorScore": 100,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "86311337-f8e0-4d1e-a378-4ac222943d0b",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 5,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "6eb5dcad-5c9c-48a8-b722-78cf98e23abc",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 5,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "a48a595a-5a76-4bf9-b3e1-23d90fc5c158",
+      "baseValue": 750,
+      "collectorScore": 100,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "4b61b96b-865e-4f49-9b4e-a2154b5bd71f",
+      "baseValue": 1500,
+      "collectorScore": 200,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 1
+    },
+    {
+      "cardId": "b3b3a484-47a4-42ba-b9a9-c2a40a158125",
+      "baseValue": 750,
+      "collectorScore": 100,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "102ed88f-5334-4831-893b-f24fe89828a6",
+      "baseValue": 1500,
+      "collectorScore": 200,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 1
+    },
+    {
+      "cardId": "2ce8597a-3015-4954-987b-5ef47046edcf",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 5,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "5be393b4-e251-4ce3-b97a-0f6aeeace2bf",
+      "baseValue": 750,
+      "collectorScore": 100,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "cfe48d2f-1872-4efa-b101-591be4787fbb",
+      "baseValue": 1500,
+      "collectorScore": 200,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 1
+    },
+    {
+      "cardId": "e5652a0f-bf42-4a15-b9c4-7346f41d76e4",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 5,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "be789689-689d-4e4c-874d-b2da6200fcb6",
+      "baseValue": 750,
+      "collectorScore": 100,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "711de270-d889-4b3c-94ba-05db53a405b2",
+      "baseValue": 1500,
+      "collectorScore": 200,
+      "playableScore": 10,
+      "displayScore": 10,
+      "pullWeight": 1
+    },
+    {
+      "cardId": "9065ed98-ee70-4f40-9eea-5dd65dfa9ea4",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "09a29316-408f-4c23-8940-06b749b2c209",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "0d825f61-ee0c-4b5f-8b1a-87a0faed3088",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "466fc01d-205c-457e-888b-3923c4dafbb6",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "5b535805-0799-4239-a858-3915b19b469e",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "61207b72-669d-4150-be02-f71aae0d9a5a",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "c2ee6dd8-e042-4fe6-ac45-6923931d76b0",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "2e0d9890-b74d-4cac-bc2e-6eea959f2fa4",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "40ca8a81-e716-4488-809a-1228112d2a47",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "8b750fe9-da2d-4e91-912c-52ee893e8c2d",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "3b28efa8-1f11-46a0-8058-34516fa17500",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    },
+    {
+      "cardId": "312d1793-1a6c-4f47-a577-cce37b211bd6",
+      "baseValue": 500,
+      "collectorScore": 100,
+      "playableScore": 8,
+      "displayScore": 9,
+      "pullWeight": 5
+    }
+  ]
+}
