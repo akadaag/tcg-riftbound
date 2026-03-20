@@ -1023,6 +1023,7 @@ export const useGameStore = create<GameState>()((set, get) => ({
       currentLevel,
       state.save.shopLevel,
       state.save.softCurrency,
+      state.save.upgrades,
     );
     if (!check.canBuy) return { success: false, reason: check.reason };
 

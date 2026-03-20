@@ -198,9 +198,11 @@ export function calculateOfflineProgress(
   }
 
   const totalOfflineRevenue = simResult.revenue + offlineSinglesRevenue;
-  // Passive income scaled by days simulated
+  // Passive income scaled by days simulated (areas + upgrades)
   const passiveIncome =
-    Math.floor(areaFx.passiveIncomePerDay) * simResult.daysSimulated;
+    (Math.floor(areaFx.passiveIncomePerDay) +
+      Math.floor(upgradeMods.passiveIncome)) *
+    simResult.daysSimulated;
 
   const report: OfflineReport = {
     hoursElapsed: Math.round(hours * 10) / 10,
@@ -427,8 +429,8 @@ export function advanceDay(
     xpEarned,
   );
 
-  // 4. Decay hype
-  let updatedHype = decayHype(save.setHype);
+  // 4. Decay hype (with upgrade-based reduction)
+  let updatedHype = decayHype(save.setHype, upgradeMods.hypeDecayReduction);
 
   // 5. Clean up expired events
   const { activeEvents: remainingEvents, expiredIds } = cleanupExpiredEvents(
@@ -463,6 +465,22 @@ export function advanceDay(
       areaEffects.reputationPerDay +
       eventPlannerResult.reputationReward,
   );
+
+  // 3c. Calculate event revenue bonus (upgrade effect applied to completed player events)
+  let eventRevenueBonus = 0;
+  if (upgradeMods.eventRevenueBonus > 0 && eventPlannerResult.newlyHosted > 0) {
+    // Sum estimated revenue from events that just completed
+    for (const pe of eventPlannerResult.updatedPlannedEvents) {
+      if (pe.status === "completed" && pe.result) {
+        eventRevenueBonus += Math.floor(
+          pe.result.revenueBonus * upgradeMods.eventRevenueBonus,
+        );
+      }
+    }
+  }
+
+  // 3d. Calculate upgrade passive income
+  const upgradePassiveIncome = Math.floor(upgradeMods.passiveIncome);
 
   // 7. Maybe schedule a new event
   let newEvent: GameEvent | null = null;
@@ -665,7 +683,9 @@ export function advanceDay(
     save.softCurrency +
       (singlesRevenue - save.todayReport.singlesRevenue) +
       setCompletionBonus +
-      Math.floor(areaEffects.passiveIncomePerDay) >=
+      Math.floor(areaEffects.passiveIncomePerDay) +
+      upgradePassiveIncome +
+      eventRevenueBonus >=
     payroll;
   const staffDayResult = applyDayToStaff(save.staff ?? [], canPayStaff);
   const staffPayrollDeduction = canPayStaff ? payroll : 0;
@@ -686,12 +706,14 @@ export function advanceDay(
     xp: xpResult.xp,
     xpToNextLevel: xpResult.xpToNextLevel,
     reputation: save.reputation + reputationGain,
-    // Add singles revenue delta + set completion bonuses + area passive income − staff payroll
+    // Add singles revenue delta + set completion bonuses + area passive income + upgrade passive income + event revenue bonus − staff payroll
     softCurrency:
       save.softCurrency +
       (singlesRevenue - save.todayReport.singlesRevenue) +
       setCompletionBonus +
-      Math.floor(areaEffects.passiveIncomePerDay) -
+      Math.floor(areaEffects.passiveIncomePerDay) +
+      upgradePassiveIncome +
+      eventRevenueBonus -
       staffPayrollDeduction,
     collection: updatedCollection,
     singlesListings: updatedSinglesListings,

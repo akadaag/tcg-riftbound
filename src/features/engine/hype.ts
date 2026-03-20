@@ -38,11 +38,17 @@ export function initializeHype(sets: SetDefinition[]): SetHype[] {
 /**
  * Apply daily hype decay. Hype decays toward baseHype.
  * If hype > base, it decreases. If hype < base (after event boost ends), it slowly recovers.
+ *
+ * @param reductionFactor — 0-1 value that reduces decay speed (e.g. 0.3 = 30% slower decay)
  */
-export function decayHype(setHype: SetHype[]): SetHype[] {
+export function decayHype(
+  setHype: SetHype[],
+  reductionFactor: number = 0,
+): SetHype[] {
+  const effectiveDecayRate = DECAY_RATE * (1 - Math.min(reductionFactor, 0.9));
   return setHype.map((h) => {
     const diff = h.currentHype - h.baseHype;
-    const decay = diff * DECAY_RATE;
+    const decay = diff * effectiveDecayRate;
     const newHype = h.currentHype - decay;
 
     return {

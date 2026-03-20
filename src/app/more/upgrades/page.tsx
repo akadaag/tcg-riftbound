@@ -9,37 +9,35 @@ import {
   getUpgradeCost,
   canPurchaseUpgrade,
   getUpgradeModifiers,
-  getDisplayCaseCapacity,
+  getUpgradeById,
+  arePrerequisitesMet,
   type UpgradeModifiers,
 } from "@/features/upgrades";
 import type { UpgradeDefinition, UpgradeCategory } from "@/types/game";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 const CATEGORY_LABELS: Record<UpgradeCategory, string> = {
-  shelves: "Shelves",
-  traffic: "Traffic",
-  reputation: "Reputation",
-  xp: "Experience",
-  wholesale: "Wholesale",
-  display_case: "Display Case",
-  tolerance: "Pricing",
-  storage: "Storage",
+  operations: "Operations",
+  customer_experience: "Customers",
+  business: "Business",
 };
 
 const CATEGORY_ORDER: UpgradeCategory[] = [
-  "shelves",
-  "traffic",
-  "reputation",
-  "wholesale",
-  "tolerance",
-  "display_case",
-  "xp",
-  "storage",
+  "operations",
+  "customer_experience",
+  "business",
 ];
+
+const CATEGORY_DESCRIPTIONS: Record<UpgradeCategory, string> = {
+  operations: "Shelves, storage, and supply chain",
+  customer_experience: "Traffic, reputation, and shopping experience",
+  business: "XP growth, passive income, and events",
+};
 
 export default function UpgradesPage() {
   const { save, purchaseUpgrade } = useGameStore();
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState<UpgradeCategory>("operations");
 
   const catalog = getUpgradeCatalog();
   const mods = useMemo(
@@ -47,24 +45,11 @@ export default function UpgradesPage() {
     [save.upgrades],
   );
 
-  // Group upgrades by category
-  const groupedUpgrades = useMemo(() => {
-    const groups: {
-      category: UpgradeCategory;
-      upgrades: UpgradeDefinition[];
-    }[] = [];
-    for (const cat of CATEGORY_ORDER) {
-      const upgrades = getUpgradesByCategory(cat);
-      if (upgrades.length > 0) {
-        groups.push({ category: cat, upgrades });
-      }
-    }
-    return groups;
-  }, []);
-
   // Count total owned levels
   const totalLevels = save.upgrades.reduce((acc, u) => acc + u.levelOwned, 0);
   const maxLevels = catalog.reduce((acc, u) => acc + u.maxLevel, 0);
+
+  const upgrades = useMemo(() => getUpgradesByCategory(activeTab), [activeTab]);
 
   function handlePurchase(upgradeId: string) {
     const result = purchaseUpgrade(upgradeId);
@@ -110,26 +95,40 @@ export default function UpgradesPage() {
       {/* Active bonuses summary */}
       <ActiveBonusSummary mods={mods} upgrades={save.upgrades} />
 
-      {/* Upgrade cards grouped by category */}
-      <div className="space-y-6">
-        {groupedUpgrades.map(({ category, upgrades }) => (
-          <section key={category}>
-            <h2 className="text-foreground-secondary mb-3 text-sm font-semibold tracking-wide uppercase">
-              {CATEGORY_LABELS[category]}
-            </h2>
-            <div className="space-y-3">
-              {upgrades.map((upgrade) => (
-                <UpgradeCard
-                  key={upgrade.id}
-                  upgrade={upgrade}
-                  currentLevel={getOwnedLevel(upgrade.id, save.upgrades)}
-                  shopLevel={save.shopLevel}
-                  currency={save.softCurrency}
-                  onPurchase={handlePurchase}
-                />
-              ))}
-            </div>
-          </section>
+      {/* Category tabs */}
+      <div className="mb-4 flex gap-1 rounded-xl bg-black/20 p-1">
+        {CATEGORY_ORDER.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setActiveTab(cat)}
+            className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+              activeTab === cat
+                ? "bg-accent-primary text-white"
+                : "text-foreground-secondary hover:text-foreground-primary"
+            }`}
+          >
+            {CATEGORY_LABELS[cat]}
+          </button>
+        ))}
+      </div>
+
+      {/* Category description */}
+      <p className="text-foreground-muted mb-4 text-xs">
+        {CATEGORY_DESCRIPTIONS[activeTab]}
+      </p>
+
+      {/* Upgrade cards for active tab */}
+      <div className="space-y-3">
+        {upgrades.map((upgrade) => (
+          <UpgradeCard
+            key={upgrade.id}
+            upgrade={upgrade}
+            currentLevel={getOwnedLevel(upgrade.id, save.upgrades)}
+            shopLevel={save.shopLevel}
+            currency={save.softCurrency}
+            ownedUpgrades={save.upgrades}
+            onPurchase={handlePurchase}
+          />
         ))}
       </div>
     </div>
@@ -184,6 +183,21 @@ function ActiveBonusSummary({
       label: "Storage",
       value: `+${mods.extraInventoryCapacity}`,
     });
+  if (mods.passiveIncome > 0)
+    bonuses.push({
+      label: "Passive",
+      value: `+${Math.floor(mods.passiveIncome)} G/day`,
+    });
+  if (mods.hypeDecayReduction > 0)
+    bonuses.push({
+      label: "Hype Decay",
+      value: `-${Math.round(mods.hypeDecayReduction * 100)}%`,
+    });
+  if (mods.eventRevenueBonus > 0)
+    bonuses.push({
+      label: "Event Rev.",
+      value: `+${Math.round(mods.eventRevenueBonus * 100)}%`,
+    });
 
   if (bonuses.length === 0) return null;
 
@@ -209,27 +223,43 @@ function UpgradeCard({
   currentLevel,
   shopLevel,
   currency,
+  ownedUpgrades,
   onPurchase,
 }: {
   upgrade: UpgradeDefinition;
   currentLevel: number;
   shopLevel: number;
   currency: number;
+  ownedUpgrades: { upgradeId: string; levelOwned: number }[];
   onPurchase: (id: string) => void;
 }) {
   const isMaxed = currentLevel >= upgrade.maxLevel;
   const cost = getUpgradeCost(upgrade, currentLevel);
-  const check = canPurchaseUpgrade(upgrade, currentLevel, shopLevel, currency);
+  const check = canPurchaseUpgrade(
+    upgrade,
+    currentLevel,
+    shopLevel,
+    currency,
+    ownedUpgrades,
+  );
+
+  // Prerequisite info
+  const prereqCheck = arePrerequisitesMet(upgrade, ownedUpgrades);
+  const prereqLocked = !prereqCheck.met;
 
   // Effect description
   const effectText = getEffectDescription(upgrade, currentLevel);
 
   return (
-    <div className="border-card-border bg-card-background rounded-xl border p-4">
+    <div
+      className={`border-card-border bg-card-background rounded-xl border p-4 ${
+        prereqLocked && !isMaxed ? "opacity-60" : ""
+      }`}
+    >
       <div className="flex items-start gap-3">
         {/* Icon */}
         <div className="bg-card-hover flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-xl">
-          {upgrade.icon}
+          {prereqLocked && !isMaxed ? "🔒" : upgrade.icon}
         </div>
 
         {/* Info */}
@@ -247,7 +277,15 @@ function UpgradeCard({
           {currentLevel > 0 && (
             <p className="mt-1 text-xs text-green-400">{effectText}</p>
           )}
-          {!isMaxed && shopLevel < upgrade.minShopLevel && (
+          {prereqLocked && !isMaxed && (
+            <p className="mt-1 text-xs text-orange-400">
+              Requires:{" "}
+              {prereqCheck.missing
+                .map((id) => getUpgradeById(id)?.name ?? id)
+                .join(", ")}
+            </p>
+          )}
+          {!prereqLocked && !isMaxed && shopLevel < upgrade.minShopLevel && (
             <p className="mt-1 text-xs text-yellow-400">
               Requires Shop Level {upgrade.minShopLevel}
             </p>
@@ -329,6 +367,12 @@ function getEffectDescription(
       return `+${Math.round(total * 100)}% price tolerance`;
     case "inventory_capacity":
       return `+${total} inventory capacity`;
+    case "passive_income":
+      return `+${Math.floor(total)} G per day`;
+    case "hype_decay_reduction":
+      return `-${Math.round(total * 100)}% hype decay`;
+    case "event_revenue_bonus":
+      return `+${Math.round(total * 100)}% event revenue`;
     default:
       return "";
   }

@@ -341,15 +341,7 @@ export interface OfflineReport {
 // Upgrade System
 // ============================================
 
-export type UpgradeCategory =
-  | "shelves"
-  | "traffic"
-  | "reputation"
-  | "xp"
-  | "wholesale"
-  | "display_case"
-  | "tolerance"
-  | "storage";
+export type UpgradeCategory = "operations" | "customer_experience" | "business";
 
 export type UpgradeEffectType =
   | "shelf_slot"
@@ -359,7 +351,10 @@ export type UpgradeEffectType =
   | "wholesale_discount"
   | "display_case_slots"
   | "tolerance_bonus"
-  | "inventory_capacity";
+  | "inventory_capacity"
+  | "passive_income"
+  | "hype_decay_reduction"
+  | "event_revenue_bonus";
 
 export interface UpgradeDefinition {
   id: string;
@@ -378,6 +373,8 @@ export interface UpgradeDefinition {
   minShopLevel: number;
   /** Icon hint for the UI (emoji). */
   icon: string;
+  /** Upgrade IDs that must be owned (level >= 1) before this upgrade is available. */
+  prerequisites?: string[];
 }
 
 // ============================================

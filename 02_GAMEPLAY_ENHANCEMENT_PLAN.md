@@ -451,19 +451,18 @@ src/features/engine/
 - [x] 17.10 Preserve existing random events as "community events" that stack with player events
 - [x] 17.11 Save migration + typecheck + build
 
-### M18 — Deep Upgrade Tree
+### M18 — Deep Upgrade Tree (Simplified)
 
-> 30+ upgrades with specialization branches.
+> Expanded from 8 to 20 upgrades in 3 categories with prerequisite chains. Simplified per user request — no specialization branches, only 3 new easy-to-wire effect types.
 
-- [ ] 18.1 Design full upgrade tree structure: 4 categories, prerequisite chains, specialization branches, cost formulas
-- [ ] 18.2 Define all ~30 upgrade definitions with costs per level, effects per level, prerequisites, unlock requirements
-- [ ] 18.3 Refactor `upgrade-tree.ts` engine: support prerequisites, categories, specialization exclusivity, effect aggregation
-- [ ] 18.4 Implement specialization system: branch selection at L10, exclusive upgrades per branch, confirmation dialog
-- [ ] 18.5 Wire all new upgrade effects into simulation, areas, staff, supplier, and event systems
-- [ ] 18.6 Build new Upgrades UI: category tabs, tree visualization with prerequisite indicators, specialization branch picker, locked/available/owned states
-- [ ] 18.7 Migrate existing 8 upgrades into new tree (preserve purchased levels, map to new IDs)
-- [ ] 18.8 Balance pass: verify cost curves, effect scaling, progression pacing across L1-L20
-- [ ] 18.9 Save migration + typecheck + build
+- [x] 18.1 Update types: add `passive_income`, `hype_decay_reduction`, `event_revenue_bonus` to `UpgradeEffectType`; add `prerequisites?: string[]` to `UpgradeDefinition`; change `UpgradeCategory` to 3 categories (operations, customer_experience, business)
+- [x] 18.2 Expand upgrade catalog from 8 → 20 upgrades across 3 categories with prerequisite chains; add `passiveIncome`, `hypeDecayReduction`, `eventRevenueBonus` to `UpgradeModifiers` and `getUpgradeModifiers`
+- [x] 18.3 Add `arePrerequisitesMet()` function; update `canPurchaseUpgrade` with optional `ownedUpgrades` param for prerequisite validation
+- [x] 18.4 Update `game-store.ts` `purchaseUpgrade` to pass `ownedUpgrades` to `canPurchaseUpgrade`
+- [x] 18.5 Wire new effects into `advanceDay`: upgrade passive income added to softCurrency alongside area passive income, hype decay reduction passed to `decayHype()`, event revenue bonus applied as gold bonus from completed player events; offline progress includes upgrade passive income
+- [x] 18.6 Rebuild Upgrades UI with 3 category tabs, prerequisite lock indicators, new effect descriptions in bonus summary
+- [x] 18.7 No save migration needed — same `UpgradeState[]` format, new upgrade IDs return 0 from `getOwnedLevel`
+- [x] 18.8 Typecheck + build clean
 
 ### M19 — Enhanced Progression & Polish
 

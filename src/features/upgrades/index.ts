@@ -1,5 +1,5 @@
 /**
- * Upgrades Engine — catalog, cost calculation, effect aggregation.
+ * Upgrades Engine — catalog, cost calculation, prerequisite validation, effect aggregation.
  *
  * All functions are pure — no side effects, no store access.
  * @module features/upgrades
@@ -12,12 +12,18 @@ import type {
 } from "@/types/game";
 
 // ── Upgrade Catalog ──────────────────────────────────────────────────
+//
+// 3 categories, ~20 upgrades with prerequisite chains.
+// All 8 original upgrade IDs are preserved for backward compatibility.
 
 const UPGRADE_CATALOG: UpgradeDefinition[] = [
-  // --- Shelves ---
+  // ═══════════════════════════════════════════════════════════════════
+  //  OPERATIONS — shelves, storage, wholesale, inventory management
+  // ═══════════════════════════════════════════════════════════════════
+
   {
     id: "extra_shelf",
-    category: "shelves",
+    category: "operations",
     name: "Extra Shelf",
     description: "Add a new shelf slot to display more products.",
     costs: [300, 800, 2000],
@@ -27,11 +33,78 @@ const UPGRADE_CATALOG: UpgradeDefinition[] = [
     minShopLevel: 1,
     icon: "🗄️",
   },
+  {
+    id: "stock_room",
+    category: "operations",
+    name: "Stock Room",
+    description: "Expand your back-room storage capacity. +50 per level.",
+    costs: [300, 800, 2000, 4500],
+    maxLevel: 4,
+    effectType: "inventory_capacity",
+    effectPerLevel: 50,
+    minShopLevel: 2,
+    icon: "📦",
+  },
+  {
+    id: "supplier_contacts",
+    category: "operations",
+    name: "Supplier Contacts",
+    description: "Negotiate better wholesale prices. -5% cost per level.",
+    costs: [500, 1500, 4000],
+    maxLevel: 3,
+    effectType: "wholesale_discount",
+    effectPerLevel: 0.05,
+    minShopLevel: 3,
+    icon: "🤝",
+  },
+  {
+    id: "bulk_ordering",
+    category: "operations",
+    name: "Bulk Ordering",
+    description:
+      "Deeper supplier relationships unlock even better rates. -5% cost per level.",
+    costs: [3000, 6000],
+    maxLevel: 2,
+    effectType: "wholesale_discount",
+    effectPerLevel: 0.05,
+    minShopLevel: 5,
+    icon: "🚚",
+    prerequisites: ["supplier_contacts"],
+  },
+  {
+    id: "warehouse_expansion",
+    category: "operations",
+    name: "Warehouse Expansion",
+    description: "Serious storage for serious volume. +100 capacity per level.",
+    costs: [3500, 7000],
+    maxLevel: 2,
+    effectType: "inventory_capacity",
+    effectPerLevel: 100,
+    minShopLevel: 5,
+    icon: "🏗️",
+    prerequisites: ["stock_room"],
+  },
+  {
+    id: "efficient_shelving",
+    category: "operations",
+    name: "Efficient Shelving",
+    description: "Better shelf organization. +1 shelf slot per level.",
+    costs: [4000, 8000],
+    maxLevel: 2,
+    effectType: "shelf_slot",
+    effectPerLevel: 1,
+    minShopLevel: 6,
+    icon: "📐",
+    prerequisites: ["extra_shelf"],
+  },
 
-  // --- Traffic ---
+  // ═══════════════════════════════════════════════════════════════════
+  //  CUSTOMER EXPERIENCE — traffic, display case, tolerance, reputation
+  // ═══════════════════════════════════════════════════════════════════
+
   {
     id: "better_signage",
-    category: "traffic",
+    category: "customer_experience",
     name: "Better Signage",
     description:
       "Attract more customers with eye-catching signs. +10% traffic per level.",
@@ -42,11 +115,9 @@ const UPGRADE_CATALOG: UpgradeDefinition[] = [
     minShopLevel: 1,
     icon: "🪧",
   },
-
-  // --- Reputation ---
   {
     id: "loyalty_program",
-    category: "reputation",
+    category: "customer_experience",
     name: "Loyalty Program",
     description: "Build customer loyalty. +5 reputation per day.",
     costs: [400, 1000, 2500],
@@ -56,39 +127,9 @@ const UPGRADE_CATALOG: UpgradeDefinition[] = [
     minShopLevel: 2,
     icon: "⭐",
   },
-
-  // --- XP ---
-  {
-    id: "training_manual",
-    category: "xp",
-    name: "Training Manual",
-    description: "Learn faster from experience. +15% XP per level.",
-    costs: [350, 900, 2000],
-    maxLevel: 3,
-    effectType: "xp_multiplier",
-    effectPerLevel: 0.15,
-    minShopLevel: 2,
-    icon: "📖",
-  },
-
-  // --- Wholesale ---
-  {
-    id: "supplier_contacts",
-    category: "wholesale",
-    name: "Supplier Contacts",
-    description: "Negotiate better wholesale prices. -5% cost per level.",
-    costs: [500, 1500, 4000],
-    maxLevel: 3,
-    effectType: "wholesale_discount",
-    effectPerLevel: 0.05,
-    minShopLevel: 3,
-    icon: "🤝",
-  },
-
-  // --- Display Case ---
   {
     id: "display_case_expansion",
-    category: "display_case",
+    category: "customer_experience",
     name: "Display Case Expansion",
     description: "Showcase more cards. +2 display slots per level.",
     costs: [250, 700, 1800],
@@ -98,11 +139,9 @@ const UPGRADE_CATALOG: UpgradeDefinition[] = [
     minShopLevel: 3,
     icon: "🏆",
   },
-
-  // --- Tolerance ---
   {
     id: "premium_lighting",
-    category: "tolerance",
+    category: "customer_experience",
     name: "Premium Lighting",
     description:
       "Make your shop feel premium. Customers tolerate +5% higher prices.",
@@ -113,19 +152,143 @@ const UPGRADE_CATALOG: UpgradeDefinition[] = [
     minShopLevel: 4,
     icon: "💡",
   },
-
-  // --- Storage ---
   {
-    id: "stock_room",
-    category: "storage",
-    name: "Stock Room",
-    description: "Expand your back-room storage capacity.",
-    costs: [300, 800, 2000, 4500],
-    maxLevel: 4,
-    effectType: "inventory_capacity",
-    effectPerLevel: 50,
+    id: "social_media_presence",
+    category: "customer_experience",
+    name: "Social Media",
+    description: "Online visibility draws more foot traffic. +10% per level.",
+    costs: [1500, 3500, 7000],
+    maxLevel: 3,
+    effectType: "traffic_multiplier",
+    effectPerLevel: 0.1,
+    minShopLevel: 4,
+    icon: "📱",
+    prerequisites: ["better_signage"],
+  },
+  {
+    id: "vip_membership",
+    category: "customer_experience",
+    name: "VIP Membership",
+    description: "Regulars feel special and spend more. +5 rep/day per level.",
+    costs: [2000, 5000],
+    maxLevel: 2,
+    effectType: "reputation_per_day",
+    effectPerLevel: 5,
+    minShopLevel: 5,
+    icon: "💳",
+    prerequisites: ["loyalty_program"],
+  },
+  {
+    id: "curated_showcase",
+    category: "customer_experience",
+    name: "Curated Showcase",
+    description:
+      "Premium display fixtures. +2 display slots and better presentation.",
+    costs: [2500, 5500],
+    maxLevel: 2,
+    effectType: "display_case_slots",
+    effectPerLevel: 2,
+    minShopLevel: 5,
+    icon: "✨",
+    prerequisites: ["display_case_expansion"],
+  },
+  {
+    id: "comfort_amenities",
+    category: "customer_experience",
+    name: "Comfort Amenities",
+    description:
+      "Seating, AC, and free coffee. Customers linger and tolerate +5% higher prices.",
+    costs: [2000, 4500],
+    maxLevel: 2,
+    effectType: "tolerance_bonus",
+    effectPerLevel: 0.05,
+    minShopLevel: 6,
+    icon: "☕",
+    prerequisites: ["premium_lighting"],
+  },
+  {
+    id: "hype_management",
+    category: "customer_experience",
+    name: "Hype Management",
+    description:
+      "Community engagement slows hype decay. -15% hype decay per level.",
+    costs: [3000, 6000],
+    maxLevel: 2,
+    effectType: "hype_decay_reduction",
+    effectPerLevel: 0.15,
+    minShopLevel: 6,
+    icon: "🔥",
+    prerequisites: ["social_media_presence"],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════
+  //  BUSINESS — XP, passive income, event revenue
+  // ═══════════════════════════════════════════════════════════════════
+
+  {
+    id: "training_manual",
+    category: "business",
+    name: "Training Manual",
+    description: "Learn faster from experience. +15% XP per level.",
+    costs: [350, 900, 2000],
+    maxLevel: 3,
+    effectType: "xp_multiplier",
+    effectPerLevel: 0.15,
     minShopLevel: 2,
-    icon: "📦",
+    icon: "📖",
+  },
+  {
+    id: "passive_income_stream",
+    category: "business",
+    name: "Online Sales Channel",
+    description:
+      "Earn a trickle of gold from online orders. +25 G/day per level.",
+    costs: [1000, 2500, 5000],
+    maxLevel: 3,
+    effectType: "passive_income",
+    effectPerLevel: 25,
+    minShopLevel: 3,
+    icon: "🌐",
+  },
+  {
+    id: "advanced_training",
+    category: "business",
+    name: "Advanced Training",
+    description:
+      "Workshops and mentoring accelerate growth. +15% XP per level.",
+    costs: [3000, 7000],
+    maxLevel: 2,
+    effectType: "xp_multiplier",
+    effectPerLevel: 0.15,
+    minShopLevel: 5,
+    icon: "🎓",
+    prerequisites: ["training_manual"],
+  },
+  {
+    id: "event_sponsorship",
+    category: "business",
+    name: "Event Sponsorship",
+    description:
+      "Sponsor community events for a revenue boost. +15% event revenue per level.",
+    costs: [3500, 7000],
+    maxLevel: 2,
+    effectType: "event_revenue_bonus",
+    effectPerLevel: 0.15,
+    minShopLevel: 5,
+    icon: "🎪",
+  },
+  {
+    id: "dropshipping",
+    category: "business",
+    name: "Dropshipping",
+    description: "Automated online fulfilment. +50 G/day per level.",
+    costs: [5000, 10000],
+    maxLevel: 2,
+    effectType: "passive_income",
+    effectPerLevel: 50,
+    minShopLevel: 7,
+    icon: "📮",
+    prerequisites: ["passive_income_stream"],
   },
 ];
 
@@ -163,6 +326,26 @@ export function getUpgradeCost(
 }
 
 /**
+ * Check whether all prerequisite upgrades are owned (level >= 1).
+ */
+export function arePrerequisitesMet(
+  upgrade: UpgradeDefinition,
+  ownedUpgrades: UpgradeState[],
+): { met: boolean; missing: string[] } {
+  if (!upgrade.prerequisites || upgrade.prerequisites.length === 0) {
+    return { met: true, missing: [] };
+  }
+  const missing: string[] = [];
+  for (const reqId of upgrade.prerequisites) {
+    const owned = ownedUpgrades.find((u) => u.upgradeId === reqId);
+    if (!owned || owned.levelOwned <= 0) {
+      missing.push(reqId);
+    }
+  }
+  return { met: missing.length === 0, missing };
+}
+
+/**
  * Check if a player can purchase the next level of an upgrade.
  */
 export function canPurchaseUpgrade(
@@ -170,6 +353,7 @@ export function canPurchaseUpgrade(
   currentLevel: number,
   shopLevel: number,
   currency: number,
+  ownedUpgrades?: UpgradeState[],
 ): { canBuy: boolean; reason: string | null } {
   if (currentLevel >= upgrade.maxLevel) {
     return { canBuy: false, reason: "Already at max level" };
@@ -180,6 +364,21 @@ export function canPurchaseUpgrade(
       reason: `Requires Shop Level ${upgrade.minShopLevel}`,
     };
   }
+
+  // Check prerequisites
+  if (ownedUpgrades && upgrade.prerequisites?.length) {
+    const prereqCheck = arePrerequisitesMet(upgrade, ownedUpgrades);
+    if (!prereqCheck.met) {
+      const missingNames = prereqCheck.missing
+        .map((id) => getUpgradeById(id)?.name ?? id)
+        .join(", ");
+      return {
+        canBuy: false,
+        reason: `Requires: ${missingNames}`,
+      };
+    }
+  }
+
   const cost = getUpgradeCost(upgrade, currentLevel);
   if (cost === null) {
     return { canBuy: false, reason: "Already at max level" };
@@ -223,6 +422,12 @@ export interface UpgradeModifiers {
   toleranceBonus: number;
   /** Additional inventory capacity (additive). */
   extraInventoryCapacity: number;
+  /** Passive income per day in gold (additive). */
+  passiveIncome: number;
+  /** Hype decay reduction factor (multiplicative, e.g. 0.30 = 30% slower decay). */
+  hypeDecayReduction: number;
+  /** Event revenue bonus (multiplicative, e.g. 0.30 = +30% event revenue). */
+  eventRevenueBonus: number;
 }
 
 /**
@@ -240,6 +445,9 @@ export function getUpgradeModifiers(
     extraDisplaySlots: 0,
     toleranceBonus: 0,
     extraInventoryCapacity: 0,
+    passiveIncome: 0,
+    hypeDecayReduction: 0,
+    eventRevenueBonus: 0,
   };
 
   for (const owned of upgrades) {
@@ -272,6 +480,15 @@ export function getUpgradeModifiers(
         break;
       case "inventory_capacity":
         mods.extraInventoryCapacity += totalEffect;
+        break;
+      case "passive_income":
+        mods.passiveIncome += totalEffect;
+        break;
+      case "hype_decay_reduction":
+        mods.hypeDecayReduction += totalEffect;
+        break;
+      case "event_revenue_bonus":
+        mods.eventRevenueBonus += totalEffect;
         break;
     }
   }
