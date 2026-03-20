@@ -159,6 +159,20 @@ export default function ShopPage() {
             </div>
           </div>
         )}
+
+        {/* Shop Areas Link */}
+        <Link
+          href="/shop/areas"
+          className="border-card-border bg-card-background hover:bg-card-hover flex items-center justify-between rounded-xl border p-4 transition-colors"
+        >
+          <div>
+            <p className="font-medium">Shop Areas</p>
+            <p className="text-foreground-secondary text-sm">
+              Expand and upgrade your shop
+            </p>
+          </div>
+          <span className="text-foreground-muted">&rarr;</span>
+        </Link>
       </section>
     </div>
   );

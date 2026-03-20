@@ -543,6 +543,10 @@ export interface SaveGame {
   // --- Preferences ---
   /** Whether the player has opted in to local push notifications. */
   notificationPreference: boolean;
+
+  // --- Shop Areas (M14) ---
+  /** All known shop areas (built and unbuilt). Missing = not yet revealed to player. */
+  shopAreas: ShopArea[];
 }
 
 // ============================================
@@ -625,6 +629,62 @@ export interface ShopNotification {
 
 /** Day-of-week cycle length. */
 export const WEEK_LENGTH = 7;
+
+// ============================================
+// Shop Areas (M14)
+// ============================================
+
+/**
+ * The eight area types a shop can have.
+ * sales_floor, singles_counter, and storage_room exist from the start (level 1)
+ * as built-in areas; others must be explicitly built.
+ */
+export type ShopAreaType =
+  | "sales_floor"
+  | "singles_counter"
+  | "storage_room"
+  | "tournament_hall"
+  | "lounge"
+  | "premium_vault"
+  | "workshop"
+  | "online_store";
+
+/**
+ * Current state of a single shop area in the player's save.
+ * Built areas can be upgraded through tiers.
+ */
+export interface ShopArea {
+  /** Matches a ShopAreaDefinition.id */
+  areaId: ShopAreaType;
+  /** Whether the area has been built (false = just unlocked/visible, not yet built). */
+  isBuilt: boolean;
+  /** Current upgrade tier (1 = base, up to AreaDefinition.maxTier). */
+  tier: number;
+}
+
+/** Aggregate effects provided by all built areas. */
+export interface AreaEffects {
+  /** Extra shelf slots from areas. */
+  extraShelfSlots: number;
+  /** Additive traffic multiplier bonus (e.g. 0.2 = +20%). */
+  trafficBonus: number;
+  /** Additive tolerance bonus. */
+  toleranceBonus: number;
+  /** Additive reputation gained per day. */
+  reputationPerDay: number;
+  /** Flat passive income per day (G). */
+  passiveIncomePerDay: number;
+  /** Bonus to competitive/collector customer type weight. */
+  competitiveCustomerBonus: number;
+  /** Bonus to whale customer weight (Premium Vault). */
+  whaleCustomerBonus: number;
+  /** Additive remote traffic (Online Store customers per day). */
+  remoteTraffic: number;
+  /** Extra singles slots provided by Workshop/Vault. */
+  extraSinglesSlots: number;
+  /** Flat inventory capacity bonus. */
+  inventoryCapacityBonus: number;
+}
 
 // ============================================
 // UI / Misc Types

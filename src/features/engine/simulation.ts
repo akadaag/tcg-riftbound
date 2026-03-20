@@ -169,9 +169,11 @@ export interface TickCustomerVisit {
  * @param reputation      Current reputation
  * @param activeEvents    Active game events
  * @param productSetMap   Maps productId → setCode
- * @param upgradeTrafficBonus  Additive traffic bonus from upgrades
+ * @param upgradeTrafficBonus  Additive traffic bonus from upgrades (and areas)
  * @param displayCaseBonus     Flat traffic bonus from display case
- * @param toleranceBonus       Additive tolerance bonus from upgrades
+ * @param toleranceBonus       Additive tolerance bonus from upgrades (and areas)
+ * @param competitiveCustomerBonus  Additive weight bonus for competitive customer type (from areas)
+ * @param whaleCustomerBonus        Additive weight bonus for whale customer type (from areas)
  */
 export function processTick(
   now: number,
@@ -187,6 +189,8 @@ export function processTick(
   upgradeTrafficBonus: number = 0,
   displayCaseBonus: number = 0,
   toleranceBonus: number = 0,
+  competitiveCustomerBonus: number = 0,
+  whaleCustomerBonus: number = 0,
 ): TickResult {
   // Advance day elapsed time by one tick
   const newDayElapsedMs = dayElapsedMs + TICK_INTERVAL_MS;
@@ -272,6 +276,14 @@ export function processTick(
     number,
   ][]) {
     effectiveBonuses[ct] = (effectiveBonuses[ct] ?? 0) + bias;
+  }
+  // Apply area bonuses for competitive and whale customer types
+  if (competitiveCustomerBonus > 0) {
+    effectiveBonuses.competitive =
+      (effectiveBonuses.competitive ?? 0) + competitiveCustomerBonus;
+  }
+  if (whaleCustomerBonus > 0) {
+    effectiveBonuses.whale = (effectiveBonuses.whale ?? 0) + whaleCustomerBonus;
   }
 
   const eventAffectedSets = activeEvents.flatMap((e) => e.affectedSets);

@@ -43,6 +43,7 @@ import {
   getUpgradeModifiers,
   calculateDisplayCaseBonus,
 } from "@/features/upgrades";
+import { getAreaEffects } from "@/features/engine/areas";
 import {
   generateDailyMissions,
   generateWeeklyMissions,
@@ -119,6 +120,8 @@ export function calculateOfflineProgress(
   const dcBonus = getMetaFn
     ? calculateDisplayCaseBonus(save.displayCase, getMetaFn)
     : { trafficBonus: 0, totalDisplayScore: 0 };
+  // Calculate area effects for offline period
+  const areaFx = getAreaEffects(save.shopAreas);
 
   // Use tick-based simulation engine (M13)
   const simResult = simulateOfflineTicks(
@@ -189,10 +192,13 @@ export function calculateOfflineProgress(
   }
 
   const totalOfflineRevenue = simResult.revenue + offlineSinglesRevenue;
+  // Passive income scaled by days simulated
+  const passiveIncome =
+    Math.floor(areaFx.passiveIncomePerDay) * simResult.daysSimulated;
 
   const report: OfflineReport = {
     hoursElapsed: Math.round(hours * 10) / 10,
-    revenue: totalOfflineRevenue,
+    revenue: totalOfflineRevenue + passiveIncome,
     productsSold: simResult.productsSold,
     totalItemsSold: simResult.totalItemsSold + offlineSinglesSold,
     customersServed: simResult.customersServed,
@@ -202,7 +208,7 @@ export function calculateOfflineProgress(
   const now = new Date().toISOString();
   const updatedSave: SaveGame = {
     ...save,
-    softCurrency: save.softCurrency + totalOfflineRevenue,
+    softCurrency: save.softCurrency + totalOfflineRevenue + passiveIncome,
     reputation: save.reputation + simResult.reputationGained,
     shelves: simResult.updatedShelves,
     collection: offlineCollection,
@@ -216,7 +222,8 @@ export function calculateOfflineProgress(
     stats: {
       ...save.stats,
       totalSales: save.stats.totalSales + simResult.totalItemsSold,
-      totalRevenue: save.stats.totalRevenue + totalOfflineRevenue,
+      totalRevenue:
+        save.stats.totalRevenue + totalOfflineRevenue + passiveIncome,
       totalCustomersServed:
         save.stats.totalCustomersServed + simResult.customersServed,
       totalSinglesRevenue:
@@ -226,7 +233,7 @@ export function calculateOfflineProgress(
     // Update today report with offline sales
     todayReport: {
       ...save.todayReport,
-      revenue: save.todayReport.revenue + totalOfflineRevenue,
+      revenue: save.todayReport.revenue + totalOfflineRevenue + passiveIncome,
       customersVisited:
         save.todayReport.customersVisited + simResult.customersServed,
       customersPurchased:
@@ -300,6 +307,8 @@ export function advanceDay(
 
   // Get upgrade modifiers
   const upgradeMods = getUpgradeModifiers(save.upgrades);
+  // Get area effects
+  const areaEffects = getAreaEffects(save.shopAreas);
 
   // 1. Simulate singles sales for today's customer wave
   let singlesRevenue = save.todayReport.singlesRevenue;
@@ -410,8 +419,10 @@ export function advanceDay(
     xpEarned,
   );
 
-  // 3. Apply reputation-per-day from upgrades
-  const reputationGain = Math.floor(upgradeMods.reputationPerDay);
+  // 3. Apply reputation-per-day from upgrades + areas
+  const reputationGain = Math.floor(
+    upgradeMods.reputationPerDay + areaEffects.reputationPerDay,
+  );
 
   // 4. Decay hype
   let updatedHype = decayHype(save.setHype);
@@ -627,11 +638,12 @@ export function advanceDay(
     xp: xpResult.xp,
     xpToNextLevel: xpResult.xpToNextLevel,
     reputation: save.reputation + reputationGain,
-    // Add singles revenue delta + set completion bonuses
+    // Add singles revenue delta + set completion bonuses + area passive income
     softCurrency:
       save.softCurrency +
       (singlesRevenue - save.todayReport.singlesRevenue) +
-      setCompletionBonus,
+      setCompletionBonus +
+      Math.floor(areaEffects.passiveIncomePerDay),
     collection: updatedCollection,
     singlesListings: updatedSinglesListings,
     setHype: updatedHype,

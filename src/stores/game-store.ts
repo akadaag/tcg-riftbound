@@ -18,6 +18,8 @@ import type {
   Rarity,
   DayPhase,
   ShopNotification,
+  ShopArea,
+  ShopAreaType,
 } from "@/types/game";
 import { XP_THRESHOLDS, STARTING_SHELVES } from "@/types/game";
 import {
@@ -29,6 +31,13 @@ import {
   getTotalInventoryCapacity,
 } from "@/features/upgrades";
 import { applyXP } from "@/features/engine/economy";
+import {
+  createInitialShopAreas,
+  getAreaDefinition,
+  canBuildArea,
+  canUpgradeArea,
+  getAreaEffects,
+} from "@/features/engine/areas";
 
 // ============================================
 // Game Store — Zustand
@@ -125,6 +134,9 @@ export function createInitialSave(): SaveGame {
 
     // Preferences
     notificationPreference: false,
+
+    // Shop Areas (M14)
+    shopAreas: createInitialShopAreas(),
   };
 }
 
@@ -272,6 +284,16 @@ interface GameState {
 
   // Actions — Preferences
   setNotificationPreference: (enabled: boolean) => void;
+
+  // Actions — Shop Areas (M14)
+  buildArea: (areaId: ShopAreaType) => {
+    success: boolean;
+    reason: string | null;
+  };
+  upgradeArea: (areaId: ShopAreaType) => {
+    success: boolean;
+    reason: string | null;
+  };
 
   // Actions — UI
   setLoading: (loading: boolean) => void;
@@ -459,8 +481,11 @@ export const useGameStore = create<GameState>()((set, get) => ({
     set((state) => {
       if (state.save.softCurrency < totalCost) return state;
 
-      // Enforce inventory capacity
-      const capacity = getTotalInventoryCapacity(state.save.upgrades);
+      // Enforce inventory capacity (upgrades + area bonus)
+      const areaFx = getAreaEffects(state.save.shopAreas);
+      const capacity =
+        getTotalInventoryCapacity(state.save.upgrades) +
+        areaFx.inventoryCapacityBonus;
       const currentTotal = state.save.inventory.reduce(
         (acc, i) => acc + i.ownedQuantity,
         0,
@@ -767,8 +792,9 @@ export const useGameStore = create<GameState>()((set, get) => ({
     if (state.save.singlesListings.some((l) => l.cardId === cardId))
       return false;
 
-    // Slot limit: 5 base (fixed for now)
-    const MAX_SINGLES_SLOTS = 5;
+    // Slot limit: 5 base + area bonuses
+    const areaEffects = getAreaEffects(state.save.shopAreas);
+    const MAX_SINGLES_SLOTS = 5 + areaEffects.extraSinglesSlots;
     if (state.save.singlesListings.length >= MAX_SINGLES_SLOTS) return false;
 
     set({
@@ -1194,6 +1220,64 @@ export const useGameStore = create<GameState>()((set, get) => ({
         updatedAt: new Date().toISOString(),
       },
     })),
+
+  // ── Shop Areas (M14) ─────────────────────────────
+
+  buildArea: (areaId: ShopAreaType) => {
+    const state = get();
+    const check = canBuildArea(
+      state.save.shopAreas,
+      areaId,
+      state.save.softCurrency,
+      state.save.shopLevel,
+    );
+    if (!check.canBuild) return { success: false, reason: check.reason };
+
+    const def = getAreaDefinition(areaId)!;
+    const cost = def.buildCost;
+
+    // Add or update the area entry as built at tier 1
+    const existing = state.save.shopAreas.find((a) => a.areaId === areaId);
+    const shopAreas: ShopArea[] = existing
+      ? state.save.shopAreas.map((a) =>
+          a.areaId === areaId ? { ...a, isBuilt: true, tier: 1 } : a,
+        )
+      : [...state.save.shopAreas, { areaId, isBuilt: true, tier: 1 }];
+
+    set({
+      save: {
+        ...state.save,
+        softCurrency: state.save.softCurrency - cost,
+        shopAreas,
+        updatedAt: new Date().toISOString(),
+      },
+    });
+    return { success: true, reason: null };
+  },
+
+  upgradeArea: (areaId: ShopAreaType) => {
+    const state = get();
+    const check = canUpgradeArea(
+      state.save.shopAreas,
+      areaId,
+      state.save.softCurrency,
+    );
+    if (!check.canUpgrade) return { success: false, reason: check.reason };
+
+    const shopAreas: ShopArea[] = state.save.shopAreas.map((a) =>
+      a.areaId === areaId ? { ...a, tier: a.tier + 1 } : a,
+    );
+
+    set({
+      save: {
+        ...state.save,
+        softCurrency: state.save.softCurrency - check.cost,
+        shopAreas,
+        updatedAt: new Date().toISOString(),
+      },
+    });
+    return { success: true, reason: null };
+  },
 
   // ── UI ───────────────────────────────────────────
 

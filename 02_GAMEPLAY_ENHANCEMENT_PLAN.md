@@ -385,21 +385,21 @@ src/features/engine/
 
 > Transform the shop from flat shelves to multi-area business.
 
-- [ ] 14.1 Design area data model: `ShopArea { id, type, tier, staffSlots, isBuilt, upgradeTier }`
-- [ ] 14.2 Create area definitions JSON: 8 areas with costs, unlock levels, tier upgrades, capacity, effects
-- [ ] 14.3 Build `areas.ts` engine: buildArea, upgradeArea, getAreaEffects, calculateAreaRevenue
-- [ ] 14.4 Refactor existing shelves into Sales Floor area (backward compatible, no player-facing regression)
-- [ ] 14.5 Refactor existing Singles Counter into area-based system
-- [ ] 14.6 Refactor existing Storage Room into area with expansion tiers
-- [ ] 14.7 Implement Tournament Hall area: tournament hosting capability, competitive customer routing
-- [ ] 14.8 Implement Lounge area: passive income generation, customer dwell time bonus
-- [ ] 14.9 Implement Premium Vault area: high-value singles display, whale customer routing
-- [ ] 14.10 Implement Workshop area: accessories/grading product category
-- [ ] 14.11 Implement Online Store area: remote customer pool, separate traffic calculation
-- [ ] 14.12 Build Shop Areas UI: area overview hub, area detail pages, build/upgrade buttons, tier indicators
-- [ ] 14.13 Wire area effects into simulation engine: area-specific customer routing, area-specific revenue
-- [ ] 14.14 Update navigation: Shop page becomes area hub with sub-navigation
-- [ ] 14.15 Save migration + typecheck + build
+- [x] 14.1 Design area data model: `ShopArea { id, type, tier, staffSlots, isBuilt, upgradeTier }`
+- [x] 14.2 Create area definitions JSON: 8 areas with costs, unlock levels, tier upgrades, capacity, effects
+- [x] 14.3 Build `areas.ts` engine: buildArea, upgradeArea, getAreaEffects, calculateAreaRevenue
+- [x] 14.4 Refactor existing shelves into Sales Floor area (backward compatible, no player-facing regression)
+- [x] 14.5 Refactor existing Singles Counter into area-based system
+- [x] 14.6 Refactor existing Storage Room into area with expansion tiers
+- [x] 14.7 Implement Tournament Hall area: tournament hosting capability, competitive customer routing
+- [x] 14.8 Implement Lounge area: passive income generation, customer dwell time bonus
+- [x] 14.9 Implement Premium Vault area: high-value singles display, whale customer routing
+- [x] 14.10 Implement Workshop area: accessories/grading product category
+- [x] 14.11 Implement Online Store area: remote customer pool, separate traffic calculation
+- [x] 14.12 Build Shop Areas UI: area overview hub, area detail pages, build/upgrade buttons, tier indicators
+- [x] 14.13 Wire area effects into simulation engine: area-specific customer routing, area-specific revenue
+- [x] 14.14 Update navigation: Shop page becomes area hub with sub-navigation
+- [x] 14.15 Save migration + typecheck + build
 
 ### M15 — Staff System
 

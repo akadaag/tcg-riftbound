@@ -29,6 +29,7 @@ import {
   calculateDisplayCaseBonus,
 } from "@/features/upgrades";
 import { getActiveEvents } from "@/features/engine/events";
+import { getAreaEffects } from "@/features/engine/areas";
 import { TICK_INTERVAL_MS } from "@/types/game";
 
 export function useSimulation() {
@@ -54,6 +55,7 @@ export function useSimulation() {
       currentSave.displayCase,
       getGameplayMeta,
     );
+    const areaEffects = getAreaEffects(currentSave.shopAreas);
 
     const activeEvents = getActiveEvents(
       currentSave.activeEvents,
@@ -71,9 +73,11 @@ export function useSimulation() {
       currentSave.reputation,
       activeEvents,
       productSetMapData,
-      upgradeMods.trafficBonus,
+      upgradeMods.trafficBonus + areaEffects.trafficBonus,
       dcBonus.trafficBonus,
-      upgradeMods.toleranceBonus,
+      upgradeMods.toleranceBonus + areaEffects.toleranceBonus,
+      areaEffects.competitiveCustomerBonus,
+      areaEffects.whaleCustomerBonus,
     );
 
     // Night→Morning: advance the day

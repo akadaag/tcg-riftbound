@@ -22,6 +22,7 @@ import {
   getCardById,
 } from "@/features/catalog";
 import { buildActiveMissions } from "@/features/missions";
+import { createInitialShopAreas } from "@/features/engine/areas";
 import type { User } from "@supabase/supabase-js";
 
 interface AuthContextValue {
@@ -147,6 +148,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               lastTickAt: null,
               currentPhase: "morning",
               dayElapsedMs: 0,
+            };
+          }
+
+          // 3f. Initialize M14 shop areas if missing (legacy save)
+          if (!resolvedSave.shopAreas) {
+            resolvedSave = {
+              ...resolvedSave,
+              shopAreas: createInitialShopAreas(),
             };
           }
 
