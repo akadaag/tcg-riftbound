@@ -405,18 +405,18 @@ src/features/engine/
 
 > Hire, manage, and level up employees.
 
-- [ ] 15.1 Design staff data model: `StaffMember { id, name, role, level, xp, salary, morale, assignedAreaId, hiredDay }`
-- [ ] 15.2 Create staff role definitions: 6 roles with base stats, salary ranges, XP curves, per-level bonuses
-- [ ] 15.3 Build `staff.ts` engine: generateCandidates, hireStaff, fireStaff, assignToArea, calculatePayroll, updateMorale, levelUpStaff
-- [ ] 15.4 Implement hiring pool: 3-5 daily candidates with randomized stats and salary demands, daily refresh
-- [ ] 15.5 Wire staff effects into simulation: cashier checkout speed, stocker auto-restock, buyer auto-order triggers
-- [ ] 15.6 Implement payroll system: daily salary deduction at night phase, negative cash flow warning, insufficient funds handling
-- [ ] 15.7 Implement morale system: work hours affect morale, underpay penalty, raise/bonus mechanics, quit threshold at 30
-- [ ] 15.8 Implement staff leveling: XP from working, level-up stat improvements, level-up notification
-- [ ] 15.9 Build Staff Management UI: staff roster page, hiring page (candidate cards with stats), assignment page, staff detail view
-- [ ] 15.10 Staff slot scaling: max slots increase with shop level (1→10 across L1→L20)
-- [ ] 15.11 Name generation: random name pool for staff candidates
-- [ ] 15.12 Save migration + typecheck + build
+- [x] 15.1 Design staff data model: `StaffMember { id, name, role, level, xp, salary, morale, assignedAreaId, hiredDay }`
+- [x] 15.2 Create staff role definitions: 6 roles with base stats, salary ranges, XP curves, per-level bonuses
+- [x] 15.3 Build `staff.ts` engine: generateCandidates, hireStaff, fireStaff, assignToArea, calculatePayroll, updateMorale, levelUpStaff
+- [x] 15.4 Implement hiring pool: 3-5 daily candidates with randomized stats and salary demands, daily refresh
+- [x] 15.5 Wire staff effects into simulation: cashier checkout speed, stocker auto-restock, buyer auto-order triggers
+- [x] 15.6 Implement payroll system: daily salary deduction at night phase, negative cash flow warning, insufficient funds handling
+- [x] 15.7 Implement morale system: work hours affect morale, underpay penalty, raise/bonus mechanics, quit threshold at 30
+- [x] 15.8 Implement staff leveling: XP from working, level-up stat improvements, level-up notification
+- [x] 15.9 Build Staff Management UI: staff roster page, hiring page (candidate cards with stats), assignment page, staff detail view
+- [x] 15.10 Staff slot scaling: max slots increase with shop level (1→10 across L1→L20)
+- [x] 15.11 Name generation: random name pool for staff candidates
+- [x] 15.12 Save migration + typecheck + build
 
 ### M16 — Supplier System
 

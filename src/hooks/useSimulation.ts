@@ -30,6 +30,7 @@ import {
 } from "@/features/upgrades";
 import { getActiveEvents } from "@/features/engine/events";
 import { getAreaEffects } from "@/features/engine/areas";
+import { getStaffEffects } from "@/features/engine/staff";
 import { TICK_INTERVAL_MS } from "@/types/game";
 
 export function useSimulation() {
@@ -56,6 +57,7 @@ export function useSimulation() {
       getGameplayMeta,
     );
     const areaEffects = getAreaEffects(currentSave.shopAreas);
+    const staffEffects = getStaffEffects(currentSave.staff ?? []);
 
     const activeEvents = getActiveEvents(
       currentSave.activeEvents,
@@ -73,10 +75,15 @@ export function useSimulation() {
       currentSave.reputation,
       activeEvents,
       productSetMapData,
-      upgradeMods.trafficBonus + areaEffects.trafficBonus,
+      upgradeMods.trafficBonus +
+        areaEffects.trafficBonus +
+        staffEffects.trafficBonus,
       dcBonus.trafficBonus,
-      upgradeMods.toleranceBonus + areaEffects.toleranceBonus,
-      areaEffects.competitiveCustomerBonus,
+      upgradeMods.toleranceBonus +
+        areaEffects.toleranceBonus +
+        staffEffects.toleranceBonus,
+      areaEffects.competitiveCustomerBonus +
+        staffEffects.competitiveCustomerBonus,
       areaEffects.whaleCustomerBonus,
     );
 

@@ -59,6 +59,11 @@ import {
   simulateDaySinglesSales,
   SINGLES_UNLOCK_LEVEL,
 } from "@/features/singles";
+import {
+  calculatePayroll,
+  applyDayToStaff,
+  refreshCandidatesIfNeeded,
+} from "@/features/engine/staff";
 
 // ── Offline Progress ─────────────────────────────────────────────────
 
@@ -630,6 +635,25 @@ export function advanceDay(
     activeEvents: getActiveEvents(allEvents, nextDay).map((e) => e.id),
   };
 
+  // Staff payroll + daily update
+  const payroll = calculatePayroll(save.staff ?? []);
+  const canPayStaff =
+    save.softCurrency +
+      (singlesRevenue - save.todayReport.singlesRevenue) +
+      setCompletionBonus +
+      Math.floor(areaEffects.passiveIncomePerDay) >=
+    payroll;
+  const staffDayResult = applyDayToStaff(save.staff ?? [], canPayStaff);
+  const staffPayrollDeduction = canPayStaff ? payroll : 0;
+
+  // Refresh candidate pool for the new day
+  const candidateRefresh = refreshCandidatesIfNeeded(
+    save.staffCandidates ?? [],
+    save.staffCandidatesRefreshedDay ?? 0,
+    nextDay,
+    xpResult.level,
+  );
+
   // 11. Build updated save
   const updatedSave: SaveGame = {
     ...save,
@@ -638,12 +662,13 @@ export function advanceDay(
     xp: xpResult.xp,
     xpToNextLevel: xpResult.xpToNextLevel,
     reputation: save.reputation + reputationGain,
-    // Add singles revenue delta + set completion bonuses + area passive income
+    // Add singles revenue delta + set completion bonuses + area passive income − staff payroll
     softCurrency:
       save.softCurrency +
       (singlesRevenue - save.todayReport.singlesRevenue) +
       setCompletionBonus +
-      Math.floor(areaEffects.passiveIncomePerDay),
+      Math.floor(areaEffects.passiveIncomePerDay) -
+      staffPayrollDeduction,
     collection: updatedCollection,
     singlesListings: updatedSinglesListings,
     setHype: updatedHype,
@@ -660,6 +685,10 @@ export function advanceDay(
     dayElapsedMs: 0,
     updatedAt: new Date().toISOString(),
     stats: updatedStats,
+    // Staff updates
+    staff: staffDayResult.updatedStaff,
+    staffCandidates: candidateRefresh.candidates,
+    staffCandidatesRefreshedDay: candidateRefresh.refreshedDay,
   };
 
   // Record the completed day's XP in the report

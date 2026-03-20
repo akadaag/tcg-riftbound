@@ -11,3 +11,4 @@ export * from "./customers";
 export * from "./day-cycle";
 export * from "./simulation";
 export * from "./areas";
+export * from "./staff";

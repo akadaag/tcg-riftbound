@@ -20,6 +20,8 @@ import type {
   ShopNotification,
   ShopArea,
   ShopAreaType,
+  StaffMember,
+  StaffCandidate,
 } from "@/types/game";
 import { XP_THRESHOLDS, STARTING_SHELVES } from "@/types/game";
 import {
@@ -38,6 +40,12 @@ import {
   canUpgradeArea,
   getAreaEffects,
 } from "@/features/engine/areas";
+import {
+  hireStaff as engineHireStaff,
+  fireStaff as engineFireStaff,
+  giveRaise as engineGiveRaise,
+  generateCandidates,
+} from "@/features/engine/staff";
 
 // ============================================
 // Game Store — Zustand
@@ -137,6 +145,11 @@ export function createInitialSave(): SaveGame {
 
     // Shop Areas (M14)
     shopAreas: createInitialShopAreas(),
+
+    // Staff (M15)
+    staff: [],
+    staffCandidates: [],
+    staffCandidatesRefreshedDay: 0,
   };
 }
 
@@ -294,6 +307,21 @@ interface GameState {
     success: boolean;
     reason: string | null;
   };
+
+  // Actions — Staff (M15)
+  hireStaffMember: (candidateId: string) => {
+    success: boolean;
+    reason: string | null;
+  };
+  fireStaffMember: (staffId: string) => void;
+  giveStaffRaise: (
+    staffId: string,
+    raiseAmount: number,
+  ) => {
+    success: boolean;
+    reason: string | null;
+  };
+  refreshStaffCandidates: () => void;
 
   // Actions — UI
   setLoading: (loading: boolean) => void;
@@ -1284,4 +1312,83 @@ export const useGameStore = create<GameState>()((set, get) => ({
   setLoading: (loading: boolean) => set({ isLoading: loading }),
 
   setHydrated: (hydrated: boolean) => set({ hasHydrated: hydrated }),
+
+  // ── Staff (M15) ───────────────────────────────────
+
+  hireStaffMember: (candidateId: string) => {
+    const state = get();
+    const candidate = state.save.staffCandidates.find(
+      (c) => c.id === candidateId,
+    );
+    if (!candidate) return { success: false, reason: "Candidate not found" };
+
+    const member = engineHireStaff(
+      candidate,
+      state.save.staff,
+      state.save.shopLevel,
+      state.save.currentDay,
+    );
+    if (!member) {
+      return { success: false, reason: "No staff slots available" };
+    }
+
+    if (state.save.softCurrency < candidate.salary) {
+      return {
+        success: false,
+        reason: "Not enough G to cover first day's salary",
+      };
+    }
+
+    set({
+      save: {
+        ...state.save,
+        staff: [...state.save.staff, member],
+        // Remove hired candidate from pool
+        staffCandidates: state.save.staffCandidates.filter(
+          (c) => c.id !== candidateId,
+        ),
+        updatedAt: new Date().toISOString(),
+      },
+    });
+    return { success: true, reason: null };
+  },
+
+  fireStaffMember: (staffId: string) =>
+    set((state) => ({
+      save: {
+        ...state.save,
+        staff: engineFireStaff(state.save.staff, staffId),
+        updatedAt: new Date().toISOString(),
+      },
+    })),
+
+  giveStaffRaise: (staffId: string, raiseAmount: number) => {
+    const state = get();
+    const member = state.save.staff.find((s) => s.id === staffId);
+    if (!member) return { success: false, reason: "Staff member not found" };
+    if (raiseAmount <= 0)
+      return { success: false, reason: "Raise must be positive" };
+
+    set({
+      save: {
+        ...state.save,
+        staff: engineGiveRaise(state.save.staff, staffId, raiseAmount),
+        updatedAt: new Date().toISOString(),
+      },
+    });
+    return { success: true, reason: null };
+  },
+
+  refreshStaffCandidates: () =>
+    set((state) => ({
+      save: {
+        ...state.save,
+        staffCandidates: generateCandidates(
+          state.save.currentDay,
+          state.save.shopLevel,
+        ),
+        staffCandidatesRefreshedDay: state.save.currentDay,
+        updatedAt: new Date().toISOString(),
+      },
+    })),
 }));

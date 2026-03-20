@@ -159,6 +159,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             };
           }
 
+          // 3g. Initialize M15 staff fields if missing (legacy save)
+          if (!resolvedSave.staff) {
+            resolvedSave = {
+              ...resolvedSave,
+              staff: [],
+              staffCandidates: [],
+              staffCandidatesRefreshedDay: 0,
+            };
+          }
+
           // 4. Calculate offline progress
           const productMap = getProductMap();
           const productSetMap = getProductSetMap();

@@ -547,6 +547,17 @@ export interface SaveGame {
   // --- Shop Areas (M14) ---
   /** All known shop areas (built and unbuilt). Missing = not yet revealed to player. */
   shopAreas: ShopArea[];
+
+  // --- Staff (M15) ---
+  /** All hired staff members. */
+  staff: StaffMember[];
+  /**
+   * Daily candidate pool (3–5 candidates). Refreshes each morning.
+   * Stored so the player can review/hire throughout the day.
+   */
+  staffCandidates: StaffCandidate[];
+  /** ISO date string (YYYY-MM-DD) of the last day the candidate pool was refreshed. */
+  staffCandidatesRefreshedDay: number;
 }
 
 // ============================================
@@ -631,11 +642,76 @@ export interface ShopNotification {
 export const WEEK_LENGTH = 7;
 
 // ============================================
+// Staff System (M15)
+// ============================================
+
+export type StaffRole =
+  | "cashier"
+  | "stocker"
+  | "buyer"
+  | "greeter"
+  | "security"
+  | "specialist";
+
+export interface StaffMember {
+  id: string;
+  name: string;
+  role: StaffRole;
+  /** Current staff level (1–5). Higher level = stronger effect. */
+  level: number;
+  /** XP accumulated toward the next level. */
+  xp: number;
+  /** XP needed to reach the next level. */
+  xpToNextLevel: number;
+  /** Daily salary cost in soft currency. */
+  salary: number;
+  /**
+   * Morale (0–100). Starts at 80.
+   * +5 if paid on time, -10 if not paid, -2 natural decay per day.
+   * Falls below 30 = staff quits.
+   */
+  morale: number;
+  /** Area ID the staff member is assigned to (null = unassigned). */
+  assignedAreaId: string | null;
+  /** Game day the staff member was hired. */
+  hiredDay: number;
+  /** Whether the staff member is actively working. */
+  isActive: boolean;
+}
+
+export interface StaffCandidate {
+  id: string;
+  name: string;
+  role: StaffRole;
+  /** Starting level (1–3). */
+  level: number;
+  /** Daily salary cost. */
+  salary: number;
+  /** Starting morale. */
+  morale: number;
+  /** Short flavour description. */
+  description: string;
+}
+
+/** Aggregate bonuses from all hired staff. */
+export interface StaffEffects {
+  /** Additive traffic multiplier bonus (e.g. 0.15 = +15% from greeters). */
+  trafficBonus: number;
+  /** Additive tolerance bonus from cashiers/security. */
+  toleranceBonus: number;
+  /** Additive wholesale discount fraction (0.05 = 5% off) from buyers. */
+  wholesaleDiscount: number;
+  /** Flat reputation gained per day from staff. */
+  reputationPerDay: number;
+  /** Bonus to competitive/collector customer weight from specialists. */
+  competitiveCustomerBonus: number;
+}
+
+// ============================================
 // Shop Areas (M14)
 // ============================================
 
 /**
- * The eight area types a shop can have.
  * sales_floor, singles_counter, and storage_room exist from the start (level 1)
  * as built-in areas; others must be explicitly built.
  */

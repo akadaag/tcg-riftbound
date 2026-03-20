@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useGameStore } from "@/stores/game-store";
 import { TRADER_UNLOCK_LEVEL } from "@/features/trader";
+import { STAFF_UNLOCK_LEVEL } from "@/features/engine/staff";
 
 interface MenuItem {
   label: string;
@@ -22,6 +23,12 @@ const menuItems: MenuItem[] = [
     description: "Trade 5 duplicate cards for 1 of the next rarity",
     href: "/more/trader",
     unlockLevel: TRADER_UNLOCK_LEVEL,
+  },
+  {
+    label: "Staff",
+    description: "Hire and manage your team to boost shop performance",
+    href: "/more/staff",
+    unlockLevel: STAFF_UNLOCK_LEVEL,
   },
   {
     label: "Missions",
