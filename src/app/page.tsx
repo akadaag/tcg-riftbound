@@ -1,49 +1,50 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { m } from "framer-motion";
 import { useGameStore } from "@/stores/game-store";
 import { useAuth } from "@/features/auth/auth-provider";
 import { SyncIndicator } from "@/components/ui/sync-indicator";
-import { EndDayModal } from "@/components/ui/end-day-modal";
 import { getActiveEvents } from "@/features/engine/events";
-import { advanceDay, type EndDayResult } from "@/features/engine/day-cycle";
 import {
   getProductMap,
-  getProductSetMap,
   getGameplayMeta,
   getCardById,
-  getAllSets,
 } from "@/features/catalog";
 import {
   calculateDisplayCaseBonus,
   getDisplayCaseCapacity,
 } from "@/features/upgrades";
-import { XP_THRESHOLDS } from "@/types/game";
+import {
+  getDayProgress,
+  getPhaseAtElapsed,
+} from "@/features/engine/simulation";
+import { useSimulation } from "@/hooks/useSimulation";
 import Link from "next/link";
-import type { DayReport } from "@/types/game";
-import { notifyDayStart, notifySetComplete } from "@/lib/notifications";
+import type { DayPhase, ShopNotification } from "@/types/game";
 
-const emptyDayReport: DayReport = {
-  day: 0,
-  revenue: 0,
-  costOfGoodsSold: 0,
-  profit: 0,
-  customersVisited: 0,
-  customersPurchased: 0,
-  productsSold: {},
-  packsOpened: 0,
-  newCardsDiscovered: 0,
-  xpEarned: 0,
-  singlesRevenue: 0,
-  singlesSold: 0,
-  activeEvents: [],
+// Phase display config
+const PHASE_LABELS: Record<DayPhase, string> = {
+  morning: "Morning",
+  afternoon: "Afternoon",
+  evening: "Evening",
+  night: "Night — Shop Closed",
+};
+
+const PHASE_COLORS: Record<DayPhase, string> = {
+  morning: "text-yellow-300",
+  afternoon: "text-orange-300",
+  evening: "text-purple-300",
+  night: "text-blue-300",
 };
 
 export default function HomePage() {
-  const { save, offlineReport, setOfflineReport, applySave } = useGameStore();
+  // Drive the simulation
+  useSimulation();
+
+  const { save, offlineReport, setOfflineReport, notifications } =
+    useGameStore();
   const { displayName } = useAuth();
-  const [endDayResult, setEndDayResult] = useState<EndDayResult | null>(null);
 
   const greeting = displayName
     ? `Welcome back, ${displayName}.`
@@ -70,50 +71,20 @@ export default function HomePage() {
   );
   const displayCaseCapacity = getDisplayCaseCapacity(save.upgrades);
 
-  function handleEndDay() {
-    const productMap = getProductMap();
-    const productSetMapData = getProductSetMap();
-    const result = advanceDay(
-      save,
-      productMap,
-      getGameplayMeta,
-      getCardById,
-      getGameplayMeta,
-      productSetMapData,
-      getAllSets(),
-    );
-    setEndDayResult(result);
-    // Don't apply save yet — wait for modal dismiss
-  }
+  // Day progress
+  const dayProgress = getDayProgress(save.dayElapsedMs);
+  const { phase: currentPhase, phaseProgressPct } = getPhaseAtElapsed(
+    save.dayElapsedMs,
+  );
 
-  function handleEndDayClose() {
-    if (endDayResult) {
-      applySave(endDayResult.updatedSave);
+  const isNight = currentPhase === "night";
 
-      const notifEnabled =
-        endDayResult.updatedSave.notificationPreference ?? false;
-
-      // Notify: new day started
-      notifyDayStart(notifEnabled, endDayResult.updatedSave.currentDay);
-
-      // Notify: set completions
-      if (
-        endDayResult.setCompletions &&
-        endDayResult.setCompletions.length > 0
-      ) {
-        notifySetComplete(
-          notifEnabled,
-          endDayResult.setCompletions.map((sc) => sc.setName),
-        );
-      }
-
-      setEndDayResult(null);
-    }
-  }
+  // Shelf stock gauges — compute max per shelf (rough max = 24)
+  const productMap = getProductMap();
 
   return (
     <div className="flex flex-1 flex-col px-4 pt-6 pb-4">
-      {/* Offline Report Modal */}
+      {/* Offline Report Banner */}
       {offlineReport && (
         <div className="border-accent-primary/30 bg-accent-primary/5 mb-4 rounded-xl border p-4">
           <h3 className="text-accent-primary mb-2 font-semibold">
@@ -121,6 +92,8 @@ export default function HomePage() {
           </h3>
           <p className="text-foreground-secondary mb-3 text-sm">
             {offlineReport.hoursElapsed.toFixed(1)} hours elapsed
+            {offlineReport.daysSimulated > 0 &&
+              ` — ${offlineReport.daysSimulated} day${offlineReport.daysSimulated > 1 ? "s" : ""} simulated`}
           </p>
           <div className="mb-3 grid grid-cols-2 gap-2 text-sm">
             <div>
@@ -148,7 +121,7 @@ export default function HomePage() {
       )}
 
       {/* Header */}
-      <div className="mb-6">
+      <div className="mb-4">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Riftbound Shop</h1>
           <SyncIndicator />
@@ -176,6 +149,81 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* Day Phase Indicator */}
+      <section className="mb-4">
+        <div className="border-card-border bg-card-background rounded-xl border p-3">
+          <div className="mb-2 flex items-center justify-between">
+            <span
+              className={`text-sm font-semibold ${PHASE_COLORS[currentPhase]}`}
+            >
+              {PHASE_LABELS[currentPhase]}
+            </span>
+            <span className="text-foreground-muted text-xs">
+              Day {Math.round(dayProgress * 100)}% complete
+            </span>
+          </div>
+
+          {/* Day progress bar */}
+          <div className="bg-card-border h-1.5 overflow-hidden rounded-full">
+            <div
+              className="h-full rounded-full bg-yellow-500/70 transition-all duration-1000"
+              style={{ width: `${Math.round(dayProgress * 100)}%` }}
+            />
+          </div>
+
+          {/* Phase dots */}
+          <div className="mt-2 flex justify-between text-xs">
+            {(["morning", "afternoon", "evening", "night"] as DayPhase[]).map(
+              (p) => (
+                <span
+                  key={p}
+                  className={
+                    currentPhase === p
+                      ? PHASE_COLORS[p]
+                      : "text-foreground-muted"
+                  }
+                >
+                  {p.charAt(0).toUpperCase() + p.slice(1, 4)}
+                </span>
+              ),
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Night — daily summary */}
+      {isNight && (
+        <section className="mb-4">
+          <div className="rounded-xl border border-blue-500/30 bg-blue-500/5 p-4">
+            <h2 className="mb-2 text-sm font-semibold text-blue-300">
+              Day {save.currentDay} Summary
+            </h2>
+            <div className="grid grid-cols-2 gap-y-2 text-sm">
+              <span className="text-foreground-secondary">Revenue</span>
+              <span className="text-currency-gold text-right font-medium">
+                {save.todayReport.revenue.toLocaleString()} G
+              </span>
+              <span className="text-foreground-secondary">Customers</span>
+              <span className="text-right font-medium">
+                {save.todayReport.customersPurchased}/
+                {save.todayReport.customersVisited}
+              </span>
+              <span className="text-foreground-secondary">Packs Opened</span>
+              <span className="text-right font-medium">
+                {save.todayReport.packsOpened}
+              </span>
+              <span className="text-foreground-secondary">New Cards</span>
+              <span className="text-right font-medium text-green-400">
+                {save.todayReport.newCardsDiscovered}
+              </span>
+            </div>
+            <p className="text-foreground-muted mt-3 text-center text-xs">
+              Morning begins soon — use this time to restock and plan.
+            </p>
+          </div>
+        </section>
+      )}
+
       {/* Active Events */}
       {activeEvents.length > 0 && (
         <div className="mb-4 space-y-2">
@@ -201,7 +249,7 @@ export default function HomePage() {
       )}
 
       {/* Quick Stats */}
-      <div className="mb-6 grid grid-cols-2 gap-3">
+      <div className="mb-4 grid grid-cols-2 gap-3">
         <StatCard
           label="Balance"
           value={`${save.softCurrency.toLocaleString()} G`}
@@ -209,11 +257,63 @@ export default function HomePage() {
         />
         <StatCard label="Shop Level" value={`Lv. ${save.shopLevel}`} />
         <StatCard
-          label="Cards Collected"
-          value={`${save.stats.uniqueCardsOwned}`}
+          label="Today's Revenue"
+          value={`${save.todayReport.revenue.toLocaleString()} G`}
         />
         <StatCard label="Reputation" value={save.reputation.toLocaleString()} />
       </div>
+
+      {/* Shelf Stock Gauges */}
+      {save.shelves.some((s) => s.productId) && (
+        <section className="mb-4">
+          <h2 className="mb-2 text-sm font-semibold">Shelf Stock</h2>
+          <div className="border-card-border bg-card-background space-y-2 rounded-xl border p-3">
+            {save.shelves.map((shelf, i) => {
+              if (!shelf.productId) return null;
+              const product = productMap.get(shelf.productId);
+              const name = product?.name ?? shelf.productId;
+              const maxQty = 24;
+              const pct = Math.min(100, (shelf.quantity / maxQty) * 100);
+              const color =
+                pct > 50
+                  ? "bg-green-500"
+                  : pct > 20
+                    ? "bg-yellow-500"
+                    : "bg-red-500";
+              return (
+                <div key={i}>
+                  <div className="mb-0.5 flex items-center justify-between text-xs">
+                    <span className="text-foreground-secondary max-w-[70%] truncate">
+                      {name}
+                    </span>
+                    <span className="text-foreground-muted">
+                      {shelf.quantity}
+                    </span>
+                  </div>
+                  <div className="bg-card-border h-1 overflow-hidden rounded-full">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${color}`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Live Notification Feed */}
+      {notifications.length > 0 && (
+        <section className="mb-4">
+          <h2 className="mb-2 text-sm font-semibold">Live Feed</h2>
+          <div className="border-card-border bg-card-background max-h-40 space-y-1 overflow-y-auto rounded-xl border p-3">
+            {notifications.slice(0, 20).map((n) => (
+              <NotificationRow key={n.id} notification={n} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Display Case Summary */}
       {save.displayCase.length > 0 && (
@@ -225,31 +325,33 @@ export default function HomePage() {
         />
       )}
 
-      {/* Today's Progress */}
-      <section className="mb-6">
-        <h2 className="mb-3 text-lg font-semibold">Today</h2>
-        <div className="border-card-border bg-card-background rounded-xl border p-4">
-          <div className="grid grid-cols-2 gap-y-2 text-sm">
-            <span className="text-foreground-secondary">Revenue</span>
-            <span className="text-currency-gold text-right font-medium">
-              {save.todayReport.revenue.toLocaleString()} G
-            </span>
-            <span className="text-foreground-secondary">Customers</span>
-            <span className="text-right font-medium">
-              {save.todayReport.customersPurchased}/
-              {save.todayReport.customersVisited}
-            </span>
-            <span className="text-foreground-secondary">Packs Opened</span>
-            <span className="text-right font-medium">
-              {save.todayReport.packsOpened}
-            </span>
-            <span className="text-foreground-secondary">New Cards</span>
-            <span className="text-right font-medium text-green-400">
-              {save.todayReport.newCardsDiscovered}
-            </span>
+      {/* Today's Progress (when not night) */}
+      {!isNight && (
+        <section className="mb-4">
+          <h2 className="mb-3 text-lg font-semibold">Today</h2>
+          <div className="border-card-border bg-card-background rounded-xl border p-4">
+            <div className="grid grid-cols-2 gap-y-2 text-sm">
+              <span className="text-foreground-secondary">Revenue</span>
+              <span className="text-currency-gold text-right font-medium">
+                {save.todayReport.revenue.toLocaleString()} G
+              </span>
+              <span className="text-foreground-secondary">Customers</span>
+              <span className="text-right font-medium">
+                {save.todayReport.customersPurchased}/
+                {save.todayReport.customersVisited}
+              </span>
+              <span className="text-foreground-secondary">Packs Opened</span>
+              <span className="text-right font-medium">
+                {save.todayReport.packsOpened}
+              </span>
+              <span className="text-foreground-secondary">New Cards</span>
+              <span className="text-right font-medium text-green-400">
+                {save.todayReport.newCardsDiscovered}
+              </span>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Quick Actions */}
       <section className="mb-6">
@@ -267,30 +369,30 @@ export default function HomePage() {
           <ActionButton label="Collection" href="/collection" />
         </div>
       </section>
+    </div>
+  );
+}
 
-      {/* End Day Button */}
-      <section className="mb-6">
-        <m.button
-          onClick={handleEndDay}
-          className="min-h-[44px] w-full rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-4 text-sm font-medium text-yellow-300 transition-colors hover:bg-yellow-500/20 active:bg-yellow-500/30"
-          whileTap={{ scale: 0.97 }}
-        >
-          End Day {save.currentDay}
-        </m.button>
-      </section>
+// ── Notification Row ──────────────────────────────
 
-      {/* End Day Modal */}
-      <EndDayModal
-        isOpen={!!endDayResult}
-        dayReport={endDayResult?.dayReport ?? emptyDayReport}
-        xpEarned={endDayResult?.xpEarned ?? 0}
-        levelsGained={endDayResult?.levelsGained ?? 0}
-        newLevel={endDayResult?.newLevel ?? save.shopLevel}
-        nextDayEvent={endDayResult?.nextDayEvent ?? null}
-        completedMissions={endDayResult?.completedMissions}
-        setCompletions={endDayResult?.setCompletions}
-        onClose={handleEndDayClose}
-      />
+function NotificationRow({ notification }: { notification: ShopNotification }) {
+  const color =
+    notification.type === "sale"
+      ? "text-green-400"
+      : notification.type === "event"
+        ? "text-yellow-300"
+        : "text-foreground-secondary";
+
+  const time = new Date(notification.at).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+
+  return (
+    <div className="flex items-start justify-between gap-2 text-xs">
+      <span className={`${color} flex-1`}>{notification.message}</span>
+      <span className="text-foreground-muted shrink-0">{time}</span>
     </div>
   );
 }
@@ -308,16 +410,15 @@ function DisplayCaseSummary({
   trafficBonus: number;
   totalScore: number;
 }) {
-  // Get card names for display
   const cardNames = cardIds
     .map((id) => {
       const card = getCardById(id);
       return card?.name ?? "Unknown";
     })
-    .slice(0, 5); // Show first 5
+    .slice(0, 5);
 
   return (
-    <section className="mb-6">
+    <section className="mb-4">
       <h2 className="mb-3 text-lg font-semibold">Display Case</h2>
       <div className="border-rarity-showcase/30 bg-rarity-showcase/5 rounded-xl border p-4">
         <div className="mb-3 flex items-center justify-between">
@@ -331,7 +432,6 @@ function DisplayCaseSummary({
           )}
         </div>
 
-        {/* Card names */}
         <div className="space-y-1">
           {cardNames.map((name, i) => (
             <p key={i} className="text-foreground-secondary truncate text-xs">
@@ -345,7 +445,6 @@ function DisplayCaseSummary({
           )}
         </div>
 
-        {/* Link to collection */}
         <Link
           href="/collection"
           className="text-rarity-showcase mt-3 block text-center text-xs font-medium"

@@ -27,6 +27,7 @@ import type {
 import { MAX_OFFLINE_HOURS } from "@/types/game";
 
 import { simulateOfflinePeriod, generateCustomerWave } from "./customers";
+import { simulateOfflineTicks } from "./simulation";
 import { calculateDayXP, applyXP } from "./economy";
 import { decayHype, applyEventHype } from "./hype";
 import {
@@ -100,10 +101,12 @@ export function calculateOfflineProgress(
         productsSold: {},
         totalItemsSold: 0,
         customersServed: 0,
+        daysSimulated: 0,
       },
       updatedSave: {
         ...save,
         lastPlayedAt: new Date().toISOString(),
+        lastTickAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       },
     };
@@ -117,7 +120,8 @@ export function calculateOfflineProgress(
     ? calculateDisplayCaseBonus(save.displayCase, getMetaFn)
     : { trafficBonus: 0, totalDisplayScore: 0 };
 
-  const simResult = simulateOfflinePeriod(
+  // Use tick-based simulation engine (M13)
+  const simResult = simulateOfflineTicks(
     hours,
     save.shelves,
     save.shopLevel,
@@ -192,8 +196,10 @@ export function calculateOfflineProgress(
     productsSold: simResult.productsSold,
     totalItemsSold: simResult.totalItemsSold + offlineSinglesSold,
     customersServed: simResult.customersServed,
+    daysSimulated: simResult.daysSimulated,
   };
 
+  const now = new Date().toISOString();
   const updatedSave: SaveGame = {
     ...save,
     softCurrency: save.softCurrency + totalOfflineRevenue,
@@ -201,8 +207,12 @@ export function calculateOfflineProgress(
     shelves: simResult.updatedShelves,
     collection: offlineCollection,
     singlesListings: offlineSinglesListings,
-    lastPlayedAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    lastPlayedAt: now,
+    lastTickAt: now,
+    // Reset to morning of the current day after offline period
+    currentPhase: "morning",
+    dayElapsedMs: 0,
+    updatedAt: now,
     stats: {
       ...save.stats,
       totalSales: save.stats.totalSales + simResult.totalItemsSold,
@@ -632,6 +642,10 @@ export function advanceDay(
     unlockedProducts: newUnlockedProducts,
     todayReport: freshReport,
     lastPlayedAt: new Date().toISOString(),
+    lastTickAt: new Date().toISOString(),
+    // Reset time simulation to start of new morning
+    currentPhase: "morning",
+    dayElapsedMs: 0,
     updatedAt: new Date().toISOString(),
     stats: updatedStats,
   };

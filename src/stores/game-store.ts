@@ -16,6 +16,8 @@ import type {
   MissionDefinition,
   SinglesListing,
   Rarity,
+  DayPhase,
+  ShopNotification,
 } from "@/types/game";
 import { XP_THRESHOLDS, STARTING_SHELVES } from "@/types/game";
 import {
@@ -77,6 +79,11 @@ export function createInitialSave(): SaveGame {
     xp: 0,
     xpToNextLevel: XP_THRESHOLDS[2],
     lastPlayedAt: now,
+
+    // Real-time simulation (M13)
+    lastTickAt: null,
+    currentPhase: "morning" as DayPhase,
+    dayElapsedMs: 0,
 
     // Shelves
     shelves: createInitialShelves(),
@@ -142,6 +149,8 @@ interface GameState {
 
   // Transient UI state (not persisted)
   offlineReport: OfflineReport | null;
+  /** Live notification feed — capped at 50 entries. Not persisted. */
+  notifications: ShopNotification[];
 
   // Actions — Auth
   setAuthenticated: (userId: string) => void;
@@ -230,6 +239,28 @@ interface GameState {
     mission: MissionDefinition,
   ) => boolean;
 
+  // Actions — Tick dispatch (called by useSimulation hook each tick)
+  applyTickResult: (patch: {
+    dayElapsedMs: number;
+    lastTickAt: string;
+    currentPhase: DayPhase;
+    /** Revenue from a sale this tick (0 if no sale). */
+    revenue: number;
+    costOfGoods: number;
+    productId: string | null;
+    quantity: number;
+    customerVisited: boolean;
+    customerPurchased: boolean;
+    updatedShelves: ShelfSlot[] | null;
+    notification: ShopNotification | null;
+  }) => void;
+  /** Advance to the next day (called when night→morning transition fires). */
+  applyDayTransition: (updatedSave: SaveGame) => void;
+
+  // Actions — Notifications
+  addNotification: (n: ShopNotification) => void;
+  clearNotifications: () => void;
+
   // Actions — Stats
   updateStats: (changes: Partial<ShopStats>) => void;
 
@@ -260,6 +291,7 @@ export const useGameStore = create<GameState>()((set, get) => ({
   isLoading: true,
   hasHydrated: false,
   offlineReport: null,
+  notifications: [],
 
   // ── Auth ─────────────────────────────────────────
 
@@ -1044,6 +1076,93 @@ export const useGameStore = create<GameState>()((set, get) => ({
     set({ save: newSave });
     return true;
   },
+
+  // ── Tick dispatch ────────────────────────────────
+
+  applyTickResult: (patch) =>
+    set((state) => {
+      const {
+        dayElapsedMs,
+        lastTickAt,
+        currentPhase,
+        revenue,
+        costOfGoods,
+        productId,
+        quantity,
+        customerVisited,
+        customerPurchased,
+        updatedShelves,
+        notification,
+      } = patch;
+
+      const now = new Date().toISOString();
+      let newSave: SaveGame = {
+        ...state.save,
+        dayElapsedMs,
+        lastTickAt,
+        currentPhase,
+        updatedAt: now,
+      };
+
+      // Apply sale
+      if (revenue > 0 && productId) {
+        newSave = {
+          ...newSave,
+          softCurrency: newSave.softCurrency + revenue,
+          shelves: updatedShelves ?? newSave.shelves,
+          todayReport: {
+            ...newSave.todayReport,
+            revenue: newSave.todayReport.revenue + revenue,
+            costOfGoodsSold: newSave.todayReport.costOfGoodsSold + costOfGoods,
+            productsSold: {
+              ...newSave.todayReport.productsSold,
+              [productId]:
+                (newSave.todayReport.productsSold[productId] ?? 0) + quantity,
+            },
+          },
+          stats: {
+            ...newSave.stats,
+            totalSales: newSave.stats.totalSales + quantity,
+            totalRevenue: newSave.stats.totalRevenue + revenue,
+          },
+        };
+      }
+
+      // Record customer visit
+      if (customerVisited) {
+        newSave = {
+          ...newSave,
+          todayReport: {
+            ...newSave.todayReport,
+            customersVisited: newSave.todayReport.customersVisited + 1,
+            customersPurchased:
+              newSave.todayReport.customersPurchased +
+              (customerPurchased ? 1 : 0),
+          },
+          stats: {
+            ...newSave.stats,
+            totalCustomersServed: newSave.stats.totalCustomersServed + 1,
+          },
+        };
+      }
+
+      // Add notification (cap at 50)
+      const newNotifications = notification
+        ? [notification, ...state.notifications].slice(0, 50)
+        : state.notifications;
+
+      return { save: newSave, notifications: newNotifications };
+    }),
+
+  applyDayTransition: (updatedSave: SaveGame) =>
+    set({ save: updatedSave, notifications: [] }),
+
+  addNotification: (n: ShopNotification) =>
+    set((state) => ({
+      notifications: [n, ...state.notifications].slice(0, 50),
+    })),
+
+  clearNotifications: () => set({ notifications: [] }),
 
   // ── Stats ────────────────────────────────────────
 

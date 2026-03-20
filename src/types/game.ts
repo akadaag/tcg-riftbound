@@ -333,6 +333,8 @@ export interface OfflineReport {
   totalItemsSold: number;
   /** Customers who visited while away. */
   customersServed: number;
+  /** Number of full game-days simulated (M13). */
+  daysSimulated: number;
 }
 
 // ============================================
@@ -488,6 +490,18 @@ export interface SaveGame {
   xpToNextLevel: number;
   /** ISO timestamp of last active play session. Used for offline calc. */
   lastPlayedAt: string;
+  /**
+   * ISO timestamp of the last simulation tick.
+   * null = simulation not yet started (new save or pre-M13 save).
+   */
+  lastTickAt: string | null;
+  /** Current phase of the game-day. Defaults to "morning" on new save. */
+  currentPhase: DayPhase;
+  /**
+   * Elapsed milliseconds within the current day (across all phases).
+   * Resets to 0 at the start of each new morning.
+   */
+  dayElapsedMs: number;
 
   // --- Shelves ---
   /** Shop shelf slots. Length = number of shelves unlocked. */
@@ -568,6 +582,46 @@ export const STARTING_SHELVES = 3;
 
 /** Max hours of offline progress accumulated. */
 export const MAX_OFFLINE_HOURS = 8;
+
+// ============================================
+// Real-Time Simulation Types (M13)
+// ============================================
+
+/**
+ * The four phases of a game-day.
+ * Each phase is ~3 real-world minutes (total 12 min per day).
+ */
+export type DayPhase = "morning" | "afternoon" | "evening" | "night";
+
+/** Duration of each phase in real-world milliseconds. */
+export const PHASE_DURATION_MS: Record<DayPhase, number> = {
+  morning: 3 * 60 * 1000, // 3 min
+  afternoon: 3 * 60 * 1000, // 3 min
+  evening: 3 * 60 * 1000, // 3 min
+  night: 3 * 60 * 1000, // 3 min (planning/summary, no customers)
+};
+
+/** Total real-world duration of one full game-day in milliseconds. */
+export const DAY_DURATION_MS =
+  PHASE_DURATION_MS.morning +
+  PHASE_DURATION_MS.afternoon +
+  PHASE_DURATION_MS.evening +
+  PHASE_DURATION_MS.night;
+
+/** Ordered list of active (customer-facing) phases. */
+export const ACTIVE_PHASES: DayPhase[] = ["morning", "afternoon", "evening"];
+
+/** Tick rate: how often the simulation ticks (milliseconds). */
+export const TICK_INTERVAL_MS = 1000;
+
+/** A single shop notification shown in the live feed. */
+export interface ShopNotification {
+  id: string;
+  message: string;
+  /** ISO timestamp */
+  at: string;
+  type: "sale" | "info" | "event";
+}
 
 /** Day-of-week cycle length. */
 export const WEEK_LENGTH = 7;

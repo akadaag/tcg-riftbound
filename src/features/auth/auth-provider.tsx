@@ -140,6 +140,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             };
           }
 
+          // 3e. Initialize M13 real-time simulation fields if missing (legacy save)
+          if (resolvedSave.lastTickAt === undefined) {
+            resolvedSave = {
+              ...resolvedSave,
+              lastTickAt: null,
+              currentPhase: "morning",
+              dayElapsedMs: 0,
+            };
+          }
+
           // 4. Calculate offline progress
           const productMap = getProductMap();
           const productSetMap = getProductSetMap();
