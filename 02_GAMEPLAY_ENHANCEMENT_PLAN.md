@@ -418,36 +418,38 @@ src/features/engine/
 - [x] 15.11 Name generation: random name pool for staff candidates
 - [x] 15.12 Save migration + typecheck + build
 
-### M16 — Supplier System
+### M16 — Supplier System (SKIPPED)
 
 > Multiple suppliers with different strategies.
+>
+> **Skipped**: The existing single-supplier instant-purchase system is sufficient for the chill tycoon experience. Wholesale discounts already come from upgrades, staff, and events. May revisit post-M19 if more depth is needed.
 
-- [ ] 16.1 Design supplier data model: `Supplier { id, name, catalog, priceModifier, deliveryTime, relationshipLevel, relationshipXP }`
-- [ ] 16.2 Create 4 supplier definitions with catalogs, pricing rules, delivery mechanics, relationship tiers
-- [ ] 16.3 Build `suppliers.ts` engine: getAvailableProducts, calculatePrice, placeOrder, processDeliveries, updateRelationship
-- [ ] 16.4 Implement delivery queue: order placed → in transit (X days) → delivered notification → added to inventory
-- [ ] 16.5 Implement supplier relationships: purchase volume → relationship XP → tier up → better prices/exclusive access
-- [ ] 16.6 Implement Flash Sales system: 3 daily deals, limited quantities, randomized from product pool, morning refresh
-- [ ] 16.7 Implement bulk discount tiers for BulkDeal: 10+ = 5%, 20+ = 10%, 50+ = 15%
-- [ ] 16.8 Wire Buyer staff into supplier system: auto-order when inventory < threshold, uses player's preferred supplier
-- [ ] 16.9 Refactor supplier page: multi-supplier tabs, order history, delivery tracker, relationship progress bars
-- [ ] 16.10 Save migration + typecheck + build
+- [~] 16.1 Design supplier data model: `Supplier { id, name, catalog, priceModifier, deliveryTime, relationshipLevel, relationshipXP }`
+- [~] 16.2 Create 4 supplier definitions with catalogs, pricing rules, delivery mechanics, relationship tiers
+- [~] 16.3 Build `suppliers.ts` engine: getAvailableProducts, calculatePrice, placeOrder, processDeliveries, updateRelationship
+- [~] 16.4 Implement delivery queue: order placed → in transit (X days) → delivered notification → added to inventory
+- [~] 16.5 Implement supplier relationships: purchase volume → relationship XP → tier up → better prices/exclusive access
+- [~] 16.6 Implement Flash Sales system: 3 daily deals, limited quantities, randomized from product pool, morning refresh
+- [~] 16.7 Implement bulk discount tiers for BulkDeal: 10+ = 5%, 20+ = 10%, 50+ = 15%
+- [~] 16.8 Wire Buyer staff into supplier system: auto-order when inventory < threshold, uses player's preferred supplier
+- [~] 16.9 Refactor supplier page: multi-supplier tabs, order history, delivery tracker, relationship progress bars
+- [~] 16.10 Save migration + typecheck + build
 
 ### M17 — Event Planning
 
 > Player-initiated events that drive traffic and revenue.
 
-- [ ] 17.1 Design event planning data model: `PlannedEvent { type, scheduledDay, prepDaysLeft, cost, status }`
-- [ ] 17.2 Create 6 player event type definitions with costs, requirements, effects, cooldowns, prep times
-- [ ] 17.3 Build `event-planner.ts` engine: planEvent, checkRequirements, advancePreparation, executeEvent, calculateResults
-- [ ] 17.4 Implement requirement validation: area checks, staff checks, inventory checks, gold checks
-- [ ] 17.5 Implement preparation phase: 1-3 day countdown before event fires, visual prep indicator
-- [ ] 17.6 Implement event execution: modified customer arrival rates, changed customer type weights, tolerance changes during event
-- [ ] 17.7 Implement event results: attendance, revenue delta, reputation gain, hype impact, special reward drops
-- [ ] 17.8 Implement cooldown system: per-event-type cooldown (3-5 days), cooldown tracker
-- [ ] 17.9 Build Event Planning UI: event calendar view, available events list with requirement checklist, plan button, active event banner, results modal
-- [ ] 17.10 Preserve existing random events as "community events" that stack with player events
-- [ ] 17.11 Save migration + typecheck + build
+- [x] 17.1 Design event planning data model: `PlannedEvent { type, scheduledDay, prepDaysLeft, cost, status }`
+- [x] 17.2 Create 6 player event type definitions with costs, requirements, effects, cooldowns, prep times
+- [x] 17.3 Build `event-planner.ts` engine: planEvent, checkRequirements, advancePreparation, executeEvent, calculateResults
+- [x] 17.4 Implement requirement validation: area checks, staff checks, inventory checks, gold checks
+- [x] 17.5 Implement preparation phase: 1-3 day countdown before event fires, visual prep indicator
+- [x] 17.6 Implement event execution: modified customer arrival rates, changed customer type weights, tolerance changes during event
+- [x] 17.7 Implement event results: attendance, revenue delta, reputation gain, hype impact, special reward drops
+- [x] 17.8 Implement cooldown system: per-event-type cooldown (3-5 days), cooldown tracker
+- [x] 17.9 Build Event Planning UI: event list view, available events list with requirement checklist, plan button, active event indicator, results summary
+- [x] 17.10 Preserve existing random events as "community events" that stack with player events
+- [x] 17.11 Save migration + typecheck + build
 
 ### M18 — Deep Upgrade Tree
 
@@ -483,16 +485,17 @@ src/features/engine/
 ## Milestone Dependencies
 
 ```
-M13 (Real-Time Simulation)
- ├── M14 (Shop Areas)        ── depends on M13
+M13 (Real-Time Simulation) ✅
+ ├── M14 (Shop Areas) ✅
  │    └── M18 (Upgrade Tree) ── depends on M14
- ├── M15 (Staff System)      ── depends on M13
- │    └── M17 (Events)       ── depends on M14 + M15
- ├── M16 (Suppliers)         ── depends on M13
+ ├── M15 (Staff System) ✅
+ │    └── M17 (Events) ✅ ── depends on M14 + M15
+ ├── M16 (Suppliers) ~SKIPPED~
  └── M19 (Progression)       ── depends on all above
 ```
 
 M15 (Staff) and M16 (Suppliers) can be developed in parallel after M13.
+M16 was skipped — existing single-supplier system is sufficient.
 M17 (Events) needs both M14 (areas as requirements) and M15 (staff as requirements).
 M18 (Upgrade Tree) can start after M14 (new areas need upgrade integration).
 M19 (Progression) is the final integration pass after all systems exist.
