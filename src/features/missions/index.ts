@@ -72,6 +72,14 @@ const DAILY_TEMPLATES: Omit<
     rewardType: "currency",
     minShopLevel: 2,
   },
+  {
+    scope: "daily",
+    type: "sell_singles",
+    title: "Singles Seller",
+    description: "Sell {target} singles today.",
+    rewardType: "currency",
+    minShopLevel: 4,
+  },
 ];
 
 const WEEKLY_TEMPLATES: Omit<
@@ -117,6 +125,22 @@ const WEEKLY_TEMPLATES: Omit<
     description: "Discover {target} new cards this week.",
     rewardType: "currency",
     minShopLevel: 1,
+  },
+  {
+    scope: "weekly",
+    type: "sell_singles",
+    title: "Weekly Singles",
+    description: "Sell {target} singles this week.",
+    rewardType: "currency",
+    minShopLevel: 4,
+  },
+  {
+    scope: "weekly",
+    type: "complete_trades",
+    title: "Trade Route",
+    description: "Complete {target} trades this week.",
+    rewardType: "reputation",
+    minShopLevel: 5,
   },
 ];
 
@@ -353,6 +377,117 @@ const MILESTONE_MISSIONS: MissionDefinition[] = [
     rewardValue: 5000,
     minShopLevel: 4,
   },
+  // --- M19: New milestone missions ---
+  {
+    id: "ms_staff_1",
+    scope: "milestone",
+    type: "hire_staff",
+    title: "First Hire",
+    description: "Hire your first staff member.",
+    targetValue: 1,
+    rewardType: "currency",
+    rewardValue: 300,
+    minShopLevel: 3,
+  },
+  {
+    id: "ms_staff_5",
+    scope: "milestone",
+    type: "hire_staff",
+    title: "Growing Team",
+    description: "Have 5 staff members.",
+    targetValue: 5,
+    rewardType: "currency",
+    rewardValue: 1500,
+    minShopLevel: 3,
+  },
+  {
+    id: "ms_area_2",
+    scope: "milestone",
+    type: "build_area",
+    title: "Expanding Grounds",
+    description: "Build 2 shop areas.",
+    targetValue: 2,
+    rewardType: "currency",
+    rewardValue: 500,
+    minShopLevel: 2,
+  },
+  {
+    id: "ms_area_5",
+    scope: "milestone",
+    type: "build_area",
+    title: "Full Complex",
+    description: "Build 5 shop areas.",
+    targetValue: 5,
+    rewardType: "currency",
+    rewardValue: 3000,
+    minShopLevel: 2,
+  },
+  {
+    id: "ms_singles_50",
+    scope: "milestone",
+    type: "sell_singles",
+    title: "Singles Vendor",
+    description: "Sell 50 singles total.",
+    targetValue: 50,
+    rewardType: "currency",
+    rewardValue: 500,
+    minShopLevel: 4,
+  },
+  {
+    id: "ms_singles_300",
+    scope: "milestone",
+    type: "sell_singles",
+    title: "Singles Specialist",
+    description: "Sell 300 singles total.",
+    targetValue: 300,
+    rewardType: "currency",
+    rewardValue: 3000,
+    minShopLevel: 4,
+  },
+  {
+    id: "ms_trades_10",
+    scope: "milestone",
+    type: "complete_trades",
+    title: "Shrewd Trader",
+    description: "Complete 10 trades.",
+    targetValue: 10,
+    rewardType: "reputation",
+    rewardValue: 30,
+    minShopLevel: 5,
+  },
+  {
+    id: "ms_trades_50",
+    scope: "milestone",
+    type: "complete_trades",
+    title: "Master Trader",
+    description: "Complete 50 trades.",
+    targetValue: 50,
+    rewardType: "reputation",
+    rewardValue: 100,
+    minShopLevel: 5,
+  },
+  {
+    id: "ms_upgrades_5",
+    scope: "milestone",
+    type: "buy_upgrades",
+    title: "Self-Improvement",
+    description: "Purchase 5 upgrades.",
+    targetValue: 5,
+    rewardType: "xp",
+    rewardValue: 150,
+    minShopLevel: 2,
+  },
+  {
+    id: "ms_upgrades_15",
+    scope: "milestone",
+    type: "buy_upgrades",
+    title: "Fully Optimised",
+    description: "Purchase 15 upgrades.",
+    targetValue: 15,
+    rewardType: "xp",
+    rewardValue: 500,
+    minShopLevel: 2,
+  },
 ];
 
 // ── Scaling Functions ────────────────────────────────────────────────
@@ -373,6 +508,10 @@ function scaleDailyTarget(type: string, shopLevel: number): number {
       return Math.max(1, Math.round(2 + level * 0.5));
     case "earn_profit":
       return Math.round((30 + level * 20) / 10) * 10;
+    case "sell_singles":
+      return Math.max(1, Math.round(1 + level * 0.5));
+    case "complete_trades":
+      return Math.max(1, Math.round(0.5 + level * 0.3));
     default:
       return 5;
   }
@@ -541,6 +680,19 @@ export function evaluateMissionProgress(
       return Math.floor((save.stats.uniqueCardsOwned / 656) * 100);
     case "host_player_events":
       return countCompletedPlayerEvents(save);
+    case "hire_staff":
+      return save.staff.length;
+    case "build_area":
+      return save.shopAreas.filter((a) => a.isBuilt).length;
+    case "sell_singles":
+      if (mission.scope === "milestone") return save.stats.totalSinglesSold;
+      return save.todayReport.singlesSold ?? 0;
+    case "complete_trades":
+      if (mission.scope === "milestone") return save.stats.totalTradesCompleted;
+      // Weekly trades are accumulated via getTodayContribution; no daily tracking.
+      return 0;
+    case "buy_upgrades":
+      return save.upgrades.reduce((sum, u) => sum + u.levelOwned, 0);
     default:
       return 0;
   }
@@ -596,6 +748,12 @@ export function getTodayContribution(
       return save.todayReport.customersVisited;
     case "earn_profit":
       return save.todayReport.profit;
+    case "sell_singles":
+      return save.todayReport.singlesSold;
+    case "complete_trades":
+      // Trades don't have per-day tracking yet; return 0 for weekly accumulation.
+      // Future: add tradesCompleted to DayReport for proper weekly tracking.
+      return 0;
     default:
       return 0;
   }

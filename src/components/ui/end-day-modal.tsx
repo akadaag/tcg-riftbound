@@ -20,6 +20,18 @@ interface EndDayModalProps {
   nextDayEvent: GameEvent | null;
   completedMissions?: string[];
   setCompletions?: Array<{ setCode: string; setName: string; reward: number }>;
+  /** Revenue from singles sales this day. */
+  singlesRevenue?: number;
+  /** Reputation change this day. */
+  reputationChange?: number;
+  /** Staff payroll paid this day. */
+  staffPayroll?: number;
+  /** Passive income this day (areas + upgrades + rep tier). */
+  passiveIncome?: number;
+  /** Reputation tier name (e.g. "Newcomer"). */
+  reputationTierName?: string;
+  /** Average daily revenue (lifetime). */
+  avgDayRevenue?: number;
   onClose: () => void;
 }
 
@@ -32,6 +44,12 @@ export function EndDayModal({
   nextDayEvent,
   completedMissions,
   setCompletions,
+  singlesRevenue,
+  reputationChange,
+  staffPayroll,
+  passiveIncome,
+  reputationTierName,
+  avgDayRevenue,
   onClose,
 }: EndDayModalProps) {
   // Escape key handler
@@ -108,6 +126,11 @@ export function EndDayModal({
                 label="Revenue"
                 value={`${dayReport.revenue.toLocaleString()} G`}
                 color="text-currency-gold"
+                comparison={
+                  avgDayRevenue
+                    ? formatComparison(dayReport.revenue, avgDayRevenue)
+                    : undefined
+                }
               />
               <StatRow
                 label="Profit"
@@ -116,6 +139,27 @@ export function EndDayModal({
                   dayReport.profit >= 0 ? "text-green-400" : "text-red-400"
                 }
               />
+              {(singlesRevenue ?? 0) > 0 && (
+                <StatRow
+                  label="Singles Revenue"
+                  value={`${(singlesRevenue ?? 0).toLocaleString()} G`}
+                  color="text-currency-gold"
+                />
+              )}
+              {(passiveIncome ?? 0) > 0 && (
+                <StatRow
+                  label="Passive Income"
+                  value={`+${(passiveIncome ?? 0).toLocaleString()} G`}
+                  color="text-blue-400"
+                />
+              )}
+              {(staffPayroll ?? 0) > 0 && (
+                <StatRow
+                  label="Staff Payroll"
+                  value={`-${(staffPayroll ?? 0).toLocaleString()} G`}
+                  color="text-red-400"
+                />
+              )}
               <StatRow
                 label="Customers"
                 value={`${dayReport.customersPurchased}/${dayReport.customersVisited}`}
@@ -144,6 +188,20 @@ export function EndDayModal({
                 value={`+${xpEarned} XP`}
                 color="text-accent-primary"
               />
+              {reputationChange !== undefined && reputationChange > 0 && (
+                <StatRow
+                  label="Reputation"
+                  value={`+${reputationChange}`}
+                  color="text-purple-400"
+                />
+              )}
+              {reputationTierName && (
+                <StatRow
+                  label="Tier"
+                  value={reputationTierName}
+                  color="text-purple-300"
+                />
+              )}
             </m.div>
 
             {/* Completed missions */}
@@ -229,14 +287,31 @@ export function EndDayModal({
   );
 }
 
+function formatComparison(
+  today: number,
+  avg: number,
+): { text: string; color: string } | undefined {
+  if (avg <= 0) return undefined;
+  const diff = today - avg;
+  const pct = Math.round((diff / avg) * 100);
+  if (pct === 0) return { text: "avg", color: "text-foreground-secondary" };
+  const sign = pct > 0 ? "+" : "";
+  return {
+    text: `${sign}${pct}% vs avg`,
+    color: pct > 0 ? "text-green-400" : "text-red-400",
+  };
+}
+
 function StatRow({
   label,
   value,
   color,
+  comparison,
 }: {
   label: string;
   value: string;
   color?: string;
+  comparison?: { text: string; color: string };
 }) {
   return (
     <m.div
@@ -244,8 +319,15 @@ function StatRow({
       variants={staggerItem}
     >
       <span className="text-foreground-secondary">{label}</span>
-      <span className={`font-medium ${color ?? "text-foreground"}`}>
-        {value}
+      <span className="flex items-center gap-2">
+        {comparison && (
+          <span className={`text-xs ${comparison.color}`}>
+            {comparison.text}
+          </span>
+        )}
+        <span className={`font-medium ${color ?? "text-foreground"}`}>
+          {value}
+        </span>
       </span>
     </m.div>
   );

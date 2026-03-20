@@ -102,7 +102,7 @@ export function useSimulation() {
         productSetMapData,
         getAllSets(),
       );
-      applyDayTransition(dayResult.updatedSave);
+      applyDayTransition(dayResult);
       return;
     }
 

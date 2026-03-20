@@ -25,6 +25,7 @@ import type {
   PlayerEventType,
 } from "@/types/game";
 import { XP_THRESHOLDS, STARTING_SHELVES } from "@/types/game";
+import type { EndDayResult } from "@/features/engine/day-cycle";
 import {
   getUpgradeById,
   getUpgradeCost,
@@ -144,6 +145,9 @@ export function createInitialSave(): SaveGame {
       totalSinglesRevenue: 0,
       totalSinglesSold: 0,
       totalTradesCompleted: 0,
+      totalDaysPlayed: 0,
+      bestDayRevenue: 0,
+      bestDayProfit: 0,
     },
 
     // Preferences
@@ -187,6 +191,8 @@ interface GameState {
   offlineReport: OfflineReport | null;
   /** Live notification feed — capped at 50 entries. Not persisted. */
   notifications: ShopNotification[];
+  /** End-of-day result shown in the night summary modal. */
+  endDayResult: EndDayResult | null;
 
   // Actions — Auth
   setAuthenticated: (userId: string) => void;
@@ -291,7 +297,9 @@ interface GameState {
     notification: ShopNotification | null;
   }) => void;
   /** Advance to the next day (called when night→morning transition fires). */
-  applyDayTransition: (updatedSave: SaveGame) => void;
+  applyDayTransition: (result: EndDayResult) => void;
+  /** Clear the end-of-day result (dismiss the modal). */
+  clearEndDayResult: () => void;
 
   // Actions — Notifications
   addNotification: (n: ShopNotification) => void;
@@ -360,6 +368,7 @@ export const useGameStore = create<GameState>()((set, get) => ({
   hasHydrated: false,
   offlineReport: null,
   notifications: [],
+  endDayResult: null,
 
   // ── Auth ─────────────────────────────────────────
 
@@ -1227,8 +1236,10 @@ export const useGameStore = create<GameState>()((set, get) => ({
       return { save: newSave, notifications: newNotifications };
     }),
 
-  applyDayTransition: (updatedSave: SaveGame) =>
-    set({ save: updatedSave, notifications: [] }),
+  applyDayTransition: (result: EndDayResult) =>
+    set({ save: result.updatedSave, notifications: [], endDayResult: result }),
+
+  clearEndDayResult: () => set({ endDayResult: null }),
 
   addNotification: (n: ShopNotification) =>
     set((state) => ({

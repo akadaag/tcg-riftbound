@@ -464,20 +464,17 @@ src/features/engine/
 - [x] 18.7 No save migration needed — same `UpgradeState[]` format, new upgrade IDs return 0 from `getOwnedLevel`
 - [x] 18.8 Typecheck + build clean
 
-### M19 — Enhanced Progression & Polish
+### M19 — Enhanced Progression & Polish (Simplified)
 
-> Tie everything together.
+> Tie everything together with polish and reputation tiers. Collection set bonuses and tutorial/onboarding removed (simplified per user request).
 
-- [ ] 19.1 Add 8+ new mission types for new systems (host_tournament, hire_staff, build_area, supplier_relationship, etc.)
-- [ ] 19.2 Implement reputation tier system: 6 tiers with thresholds and mechanical bonuses
-- [ ] 19.3 Implement collection set bonuses: permanent shop bonuses for 100% set completion
-- [ ] 19.4 Implement shop milestones: one-time achievements with unique rewards
-- [ ] 19.5 Full economy balance pass: verify gold sinks vs sources, salary vs revenue, upgrade costs vs progression speed
-- [ ] 19.6 Night phase polish: make daily summary informative and satisfying (graphs, comparisons, trends)
-- [ ] 19.7 Away Report polish: clear return-to-game experience with actionable info
-- [ ] 19.8 Tutorial/onboarding updates: introduce new systems progressively as they unlock
-- [ ] 19.9 Integration testing: verify all systems interact correctly, no edge case exploits
-- [ ] 19.10 Full typecheck + build + manual testing pass
+- [x] 19.1 New mission types + milestones: 5 new MissionType values (`hire_staff`, `build_area`, `sell_singles`, `complete_trades`, `buy_upgrades`) and 10 new milestone missions, plus new daily/weekly templates
+- [x] 19.2 Reputation tier system: 6 tiers (Unknown→Legendary) with thresholds and cumulative bonuses (+traffic, +tolerance, +rep/day, +passive income, +XP). Pure engine module `reputation.ts`. Wired into `advanceDay()` and `calculateOfflineProgress()`
+- [x] 19.3 Night summary polish: running averages in ShopStats (`totalDaysPlayed`, `bestDayRevenue`, `bestDayProfit`), enhanced EndDayModal with singles revenue, rep change, staff payroll, passive income, "vs avg" comparison, reputation tier display. Wired orphaned EndDayModal into page.tsx
+- [x] 19.4 Away Report polish: extended OfflineReport with `singlesRevenue`, `singlesSold`, `passiveIncome`, `reputationGained`; surfaced in offline report banner
+- [x] 19.5 Economy balance pass: reviewed milestone rewards, rep tier bonuses, progression timeline — all in line, no changes needed
+- [x] 19.6 Save migration: step 3i in auth-provider.tsx for new ShopStats fields with backward-compatible defaults
+- [x] 19.7 Typecheck + build clean, committed and pushed
 
 ---
 
@@ -490,7 +487,7 @@ M13 (Real-Time Simulation) ✅
  ├── M15 (Staff System) ✅
  │    └── M17 (Events) ✅ ── depends on M14 + M15
  ├── M16 (Suppliers) ~SKIPPED~
- └── M19 (Progression)       ── depends on all above
+  └── M19 (Progression) ✅    ── depends on all above
 ```
 
 M15 (Staff) and M16 (Suppliers) can be developed in parallel after M13.

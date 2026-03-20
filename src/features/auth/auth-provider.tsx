@@ -179,6 +179,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             };
           }
 
+          // 3i. Initialize M19 ShopStats running-average fields if missing (legacy save)
+          if (resolvedSave.stats.totalDaysPlayed === undefined) {
+            resolvedSave = {
+              ...resolvedSave,
+              stats: {
+                ...resolvedSave.stats,
+                totalDaysPlayed: resolvedSave.currentDay - 1,
+                bestDayRevenue:
+                  resolvedSave.stats.totalRevenue > 0
+                    ? Math.round(
+                        resolvedSave.stats.totalRevenue /
+                          Math.max(1, resolvedSave.currentDay - 1),
+                      )
+                    : 0,
+                bestDayProfit: 0,
+              },
+            };
+          }
+
           // 4. Calculate offline progress
           const productMap = getProductMap();
           const productSetMap = getProductSetMap();

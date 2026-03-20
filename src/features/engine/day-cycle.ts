@@ -65,6 +65,10 @@ import {
   refreshCandidatesIfNeeded,
 } from "@/features/engine/staff";
 import { processPlannedEventsForDay } from "@/features/engine/event-planner";
+import {
+  getReputationTier,
+  getReputationTierBonuses,
+} from "@/features/engine/reputation";
 
 // ── Offline Progress ─────────────────────────────────────────────────
 
@@ -109,6 +113,10 @@ export function calculateOfflineProgress(
         totalItemsSold: 0,
         customersServed: 0,
         daysSimulated: 0,
+        singlesRevenue: 0,
+        singlesSold: 0,
+        passiveIncome: 0,
+        reputationGained: 0,
       },
       updatedSave: {
         ...save,
@@ -204,20 +212,37 @@ export function calculateOfflineProgress(
       Math.floor(upgradeMods.passiveIncome)) *
     simResult.daysSimulated;
 
+  // Calculate reputation gained during offline period (including rep tier bonus)
+  const offlineRepTierBonuses = getReputationTierBonuses(save.reputation);
+  const offlineRepGained =
+    simResult.reputationGained +
+    Math.floor(offlineRepTierBonuses.reputationPerDay) *
+      simResult.daysSimulated;
+
+  // Add rep tier passive income to total
+  const repTierPassive =
+    Math.floor(offlineRepTierBonuses.passiveIncomePerDay) *
+    simResult.daysSimulated;
+  const totalPassiveIncome = passiveIncome + repTierPassive;
+
   const report: OfflineReport = {
     hoursElapsed: Math.round(hours * 10) / 10,
-    revenue: totalOfflineRevenue + passiveIncome,
+    revenue: totalOfflineRevenue + totalPassiveIncome,
     productsSold: simResult.productsSold,
     totalItemsSold: simResult.totalItemsSold + offlineSinglesSold,
     customersServed: simResult.customersServed,
     daysSimulated: simResult.daysSimulated,
+    singlesRevenue: offlineSinglesRevenue,
+    singlesSold: offlineSinglesSold,
+    passiveIncome: totalPassiveIncome,
+    reputationGained: offlineRepGained,
   };
 
   const now = new Date().toISOString();
   const updatedSave: SaveGame = {
     ...save,
-    softCurrency: save.softCurrency + totalOfflineRevenue + passiveIncome,
-    reputation: save.reputation + simResult.reputationGained,
+    softCurrency: save.softCurrency + totalOfflineRevenue + totalPassiveIncome,
+    reputation: save.reputation + offlineRepGained,
     shelves: simResult.updatedShelves,
     collection: offlineCollection,
     singlesListings: offlineSinglesListings,
@@ -231,7 +256,7 @@ export function calculateOfflineProgress(
       ...save.stats,
       totalSales: save.stats.totalSales + simResult.totalItemsSold,
       totalRevenue:
-        save.stats.totalRevenue + totalOfflineRevenue + passiveIncome,
+        save.stats.totalRevenue + totalOfflineRevenue + totalPassiveIncome,
       totalCustomersServed:
         save.stats.totalCustomersServed + simResult.customersServed,
       totalSinglesRevenue:
@@ -241,7 +266,8 @@ export function calculateOfflineProgress(
     // Update today report with offline sales
     todayReport: {
       ...save.todayReport,
-      revenue: save.todayReport.revenue + totalOfflineRevenue + passiveIncome,
+      revenue:
+        save.todayReport.revenue + totalOfflineRevenue + totalPassiveIncome,
       customersVisited:
         save.todayReport.customersVisited + simResult.customersServed,
       customersPurchased:
@@ -279,6 +305,20 @@ export interface EndDayResult {
   setCompletions: Array<{ setCode: string; setName: string; reward: number }>;
   /** Number of player-planned events that completed this day advance. */
   playerEventsCompleted: number;
+  /** Revenue from singles sales this day. */
+  singlesRevenue: number;
+  /** Reputation change this day. */
+  reputationChange: number;
+  /** Staff payroll paid this day. */
+  staffPayroll: number;
+  /** Passive income this day (areas + upgrades + rep tier). */
+  passiveIncome: number;
+  /** Reputation tier name (e.g. "Newcomer"). */
+  reputationTierName: string;
+  /** Average daily revenue (lifetime). */
+  avgDayRevenue: number;
+  /** Average daily profit (lifetime). */
+  avgDayProfit: number;
 }
 
 /**
@@ -319,6 +359,9 @@ export function advanceDay(
   const upgradeMods = getUpgradeModifiers(save.upgrades);
   // Get area effects
   const areaEffects = getAreaEffects(save.shopAreas);
+  // Get reputation tier bonuses (cumulative)
+  const repTierBonuses = getReputationTierBonuses(save.reputation);
+  const repTier = getReputationTier(save.reputation);
 
   // 1. Simulate singles sales for today's customer wave
   let singlesRevenue = save.todayReport.singlesRevenue;
@@ -418,7 +461,7 @@ export function advanceDay(
     todayReport.newCardsDiscovered,
     todayReport.revenue,
     eventMods.xpMultiplier,
-    upgradeMods.xpBonus,
+    upgradeMods.xpBonus + repTierBonuses.xpBonus,
     todayReport.singlesSold,
   );
 
@@ -459,11 +502,12 @@ export function advanceDay(
     }));
   }
 
-  // 3b. Apply reputation-per-day from upgrades + areas + player events
+  // 3b. Apply reputation-per-day from upgrades + areas + player events + reputation tier
   const reputationGain = Math.floor(
     upgradeMods.reputationPerDay +
       areaEffects.reputationPerDay +
-      eventPlannerResult.reputationReward,
+      eventPlannerResult.reputationReward +
+      repTierBonuses.reputationPerDay,
   );
 
   // 3c. Calculate event revenue bonus (upgrade effect applied to completed player events)
@@ -479,8 +523,13 @@ export function advanceDay(
     }
   }
 
-  // 3d. Calculate upgrade passive income
+  // 3d. Calculate upgrade passive income + reputation tier passive income
   const upgradePassiveIncome = Math.floor(upgradeMods.passiveIncome);
+  const repTierPassiveIncome = Math.floor(repTierBonuses.passiveIncomePerDay);
+  const totalPassiveIncome =
+    Math.floor(areaEffects.passiveIncomePerDay) +
+    upgradePassiveIncome +
+    repTierPassiveIncome;
 
   // 7. Maybe schedule a new event
   let newEvent: GameEvent | null = null;
@@ -683,8 +732,7 @@ export function advanceDay(
     save.softCurrency +
       (singlesRevenue - save.todayReport.singlesRevenue) +
       setCompletionBonus +
-      Math.floor(areaEffects.passiveIncomePerDay) +
-      upgradePassiveIncome +
+      totalPassiveIncome +
       eventRevenueBonus >=
     payroll;
   const staffDayResult = applyDayToStaff(save.staff ?? [], canPayStaff);
@@ -706,13 +754,12 @@ export function advanceDay(
     xp: xpResult.xp,
     xpToNextLevel: xpResult.xpToNextLevel,
     reputation: save.reputation + reputationGain,
-    // Add singles revenue delta + set completion bonuses + area passive income + upgrade passive income + event revenue bonus − staff payroll
+    // Add singles revenue delta + set completion bonuses + passive income (areas + upgrades + rep tier) + event revenue bonus − staff payroll
     softCurrency:
       save.softCurrency +
       (singlesRevenue - save.todayReport.singlesRevenue) +
       setCompletionBonus +
-      Math.floor(areaEffects.passiveIncomePerDay) +
-      upgradePassiveIncome +
+      totalPassiveIncome +
       eventRevenueBonus -
       staffPayrollDeduction,
     collection: updatedCollection,
@@ -730,7 +777,18 @@ export function advanceDay(
     currentPhase: "morning",
     dayElapsedMs: 0,
     updatedAt: new Date().toISOString(),
-    stats: updatedStats,
+    stats: {
+      ...updatedStats,
+      totalDaysPlayed: (updatedStats.totalDaysPlayed ?? 0) + 1,
+      bestDayRevenue: Math.max(
+        updatedStats.bestDayRevenue ?? 0,
+        todayReport.revenue,
+      ),
+      bestDayProfit: Math.max(
+        updatedStats.bestDayProfit ?? 0,
+        todayReport.profit,
+      ),
+    },
     // Staff updates
     staff: staffDayResult.updatedStaff,
     staffCandidates: candidateRefresh.candidates,
@@ -745,6 +803,15 @@ export function advanceDay(
   // Record the completed day's XP in the report
   todayReport.xpEarned = xpEarned;
 
+  // Calculate running averages for the end-of-day summary
+  const finalStats = updatedSave.stats;
+  const daysPlayed = finalStats.totalDaysPlayed || 1;
+  const avgDayRevenue = Math.round(finalStats.totalRevenue / daysPlayed);
+  const avgDayProfit = Math.round(
+    (finalStats.totalRevenue - finalStats.totalSales * 0) / // profit isn't tracked lifetime, approximate from revenue
+      daysPlayed,
+  );
+
   return {
     dayReport: todayReport,
     xpEarned,
@@ -755,6 +822,13 @@ export function advanceDay(
     completedMissions,
     setCompletions,
     playerEventsCompleted: eventPlannerResult.newlyHosted,
+    singlesRevenue: singlesRevenue - save.todayReport.singlesRevenue,
+    reputationChange: reputationGain,
+    staffPayroll: staffPayrollDeduction,
+    passiveIncome: totalPassiveIncome,
+    reputationTierName: repTier.name,
+    avgDayRevenue,
+    avgDayProfit: Math.round(todayReport.profit), // Use today's actual profit for comparison base
   };
 }
 

@@ -335,6 +335,14 @@ export interface OfflineReport {
   customersServed: number;
   /** Number of full game-days simulated (M13). */
   daysSimulated: number;
+  /** Revenue earned from singles sales while away. */
+  singlesRevenue: number;
+  /** Number of singles cards sold while away. */
+  singlesSold: number;
+  /** Passive income earned while away (areas + upgrades + reputation). */
+  passiveIncome: number;
+  /** Reputation gained while away. */
+  reputationGained: number;
 }
 
 // ============================================
@@ -392,7 +400,12 @@ export type MissionType =
   | "serve_customers"
   | "reach_shop_level"
   | "earn_profit"
-  | "host_player_events";
+  | "host_player_events"
+  | "hire_staff"
+  | "build_area"
+  | "sell_singles"
+  | "complete_trades"
+  | "buy_upgrades";
 
 export interface MissionDefinition {
   id: string;
@@ -466,6 +479,12 @@ export interface ShopStats {
   totalSinglesSold: number;
   /** Lifetime trades completed via Card Trader. */
   totalTradesCompleted: number;
+  /** Total in-game days played. */
+  totalDaysPlayed: number;
+  /** Best single-day revenue. */
+  bestDayRevenue: number;
+  /** Best single-day profit. */
+  bestDayProfit: number;
 }
 
 // ============================================
