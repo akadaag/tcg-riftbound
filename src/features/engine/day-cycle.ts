@@ -64,6 +64,7 @@ import {
   applyDayToStaff,
   refreshCandidatesIfNeeded,
 } from "@/features/engine/staff";
+import { processPlannedEventsForDay } from "@/features/engine/event-planner";
 
 // ── Offline Progress ─────────────────────────────────────────────────
 
@@ -274,6 +275,8 @@ export interface EndDayResult {
   completedMissions: string[];
   /** Sets newly completed today (with name and currency reward). */
   setCompletions: Array<{ setCode: string; setName: string; reward: number }>;
+  /** Number of player-planned events that completed this day advance. */
+  playerEventsCompleted: number;
 }
 
 /**
@@ -424,11 +427,6 @@ export function advanceDay(
     xpEarned,
   );
 
-  // 3. Apply reputation-per-day from upgrades + areas
-  const reputationGain = Math.floor(
-    upgradeMods.reputationPerDay + areaEffects.reputationPerDay,
-  );
-
   // 4. Decay hype
   let updatedHype = decayHype(save.setHype);
 
@@ -442,6 +440,29 @@ export function advanceDay(
   // 6. Apply event hype boosts for remaining active events
   const nextDayActive = getActiveEvents(remainingEvents, nextDay);
   updatedHype = applyEventHype(updatedHype, nextDayActive);
+
+  // 6b. Process player-planned events (M17)
+  const eventPlannerResult = processPlannedEventsForDay(
+    save.plannedEvents ?? [],
+    nextDay,
+    remainingEvents,
+    save.playerEventCooldowns ?? {},
+  );
+
+  // Apply player event hype boost
+  if (eventPlannerResult.hypeBoost > 0) {
+    updatedHype = updatedHype.map((h) => ({
+      ...h,
+      currentHype: Math.min(100, h.currentHype + eventPlannerResult.hypeBoost),
+    }));
+  }
+
+  // 3b. Apply reputation-per-day from upgrades + areas + player events
+  const reputationGain = Math.floor(
+    upgradeMods.reputationPerDay +
+      areaEffects.reputationPerDay +
+      eventPlannerResult.reputationReward,
+  );
 
   // 7. Maybe schedule a new event
   let newEvent: GameEvent | null = null;
@@ -463,7 +484,10 @@ export function advanceDay(
     );
   }
 
-  const allEvents = newEvent ? [...remainingEvents, newEvent] : remainingEvents;
+  const allEvents = [
+    ...(newEvent ? [...remainingEvents, newEvent] : remainingEvents),
+    ...eventPlannerResult.newGameEvents,
+  ];
 
   // 8. Check for newly completed sets and award currency rewards.
   //    A set is "complete" when the player owns at least 1 copy of every card
@@ -689,6 +713,11 @@ export function advanceDay(
     staff: staffDayResult.updatedStaff,
     staffCandidates: candidateRefresh.candidates,
     staffCandidatesRefreshedDay: candidateRefresh.refreshedDay,
+    // Player Events (M17)
+    plannedEvents: eventPlannerResult.updatedPlannedEvents,
+    playerEventCooldowns: eventPlannerResult.updatedCooldowns,
+    totalPlayerEventsHosted:
+      (save.totalPlayerEventsHosted ?? 0) + eventPlannerResult.newlyHosted,
   };
 
   // Record the completed day's XP in the report
@@ -703,6 +732,7 @@ export function advanceDay(
     updatedSave,
     completedMissions,
     setCompletions,
+    playerEventsCompleted: eventPlannerResult.newlyHosted,
   };
 }
 

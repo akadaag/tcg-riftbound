@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useGameStore } from "@/stores/game-store";
 import { TRADER_UNLOCK_LEVEL } from "@/features/trader";
 import { STAFF_UNLOCK_LEVEL } from "@/features/engine/staff";
+import { EVENT_PLANNER_UNLOCK_LEVEL } from "@/features/engine/event-planner";
 
 interface MenuItem {
   label: string;
@@ -29,6 +30,12 @@ const menuItems: MenuItem[] = [
     description: "Hire and manage your team to boost shop performance",
     href: "/more/staff",
     unlockLevel: STAFF_UNLOCK_LEVEL,
+  },
+  {
+    label: "Events",
+    description: "Plan and host events to drive traffic and revenue",
+    href: "/more/events",
+    unlockLevel: EVENT_PLANNER_UNLOCK_LEVEL,
   },
   {
     label: "Missions",

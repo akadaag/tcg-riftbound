@@ -12,3 +12,4 @@ export * from "./day-cycle";
 export * from "./simulation";
 export * from "./areas";
 export * from "./staff";
+export * from "./event-planner";

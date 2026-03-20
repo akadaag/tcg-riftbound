@@ -22,6 +22,7 @@ import type {
   ShopAreaType,
   StaffMember,
   StaffCandidate,
+  PlayerEventType,
 } from "@/types/game";
 import { XP_THRESHOLDS, STARTING_SHELVES } from "@/types/game";
 import {
@@ -46,6 +47,11 @@ import {
   giveRaise as engineGiveRaise,
   generateCandidates,
 } from "@/features/engine/staff";
+import {
+  createPlannedEvent,
+  cancelPlannedEvent as engineCancelPlannedEvent,
+  checkEventRequirements,
+} from "@/features/engine/event-planner";
 
 // ============================================
 // Game Store — Zustand
@@ -150,6 +156,11 @@ export function createInitialSave(): SaveGame {
     staff: [],
     staffCandidates: [],
     staffCandidatesRefreshedDay: 0,
+
+    // Player Events (M17)
+    plannedEvents: [],
+    totalPlayerEventsHosted: 0,
+    playerEventCooldowns: {},
   };
 }
 
@@ -322,6 +333,13 @@ interface GameState {
     reason: string | null;
   };
   refreshStaffCandidates: () => void;
+
+  // Actions — Player Events (M17)
+  planEvent: (type: PlayerEventType) => {
+    success: boolean;
+    reason: string | null;
+  };
+  cancelPlannedEvent: (eventId: string) => void;
 
   // Actions — UI
   setLoading: (loading: boolean) => void;
@@ -1391,4 +1409,51 @@ export const useGameStore = create<GameState>()((set, get) => ({
         updatedAt: new Date().toISOString(),
       },
     })),
+
+  // ── Player Events (M17) ───────────────────────────────────────────
+
+  planEvent: (type: PlayerEventType) => {
+    const state = get();
+    const check = checkEventRequirements(
+      type,
+      state.save.shopLevel,
+      state.save.softCurrency,
+      state.save.shopAreas,
+      state.save.staff ?? [],
+      state.save.plannedEvents ?? [],
+      state.save.playerEventCooldowns ?? {},
+      state.save.currentDay,
+    );
+    if (!check.canPlan)
+      return {
+        success: false,
+        reason: check.reasons[0] ?? "Cannot plan event",
+      };
+
+    const planned = createPlannedEvent(type, state.save.currentDay);
+
+    set({
+      save: {
+        ...state.save,
+        softCurrency: state.save.softCurrency - planned.cost,
+        plannedEvents: [...(state.save.plannedEvents ?? []), planned],
+        updatedAt: new Date().toISOString(),
+      },
+    });
+    return { success: true, reason: null };
+  },
+
+  cancelPlannedEvent: (eventId: string) =>
+    set((state) => {
+      const plannedEvents = (state.save.plannedEvents ?? []).map((e) =>
+        e.id === eventId ? engineCancelPlannedEvent(e) : e,
+      );
+      return {
+        save: {
+          ...state.save,
+          plannedEvents,
+          updatedAt: new Date().toISOString(),
+        },
+      };
+    }),
 }));

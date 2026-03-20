@@ -169,6 +169,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             };
           }
 
+          // 3h. Initialize M17 player events fields if missing (legacy save)
+          if (!resolvedSave.plannedEvents) {
+            resolvedSave = {
+              ...resolvedSave,
+              plannedEvents: [],
+              totalPlayerEventsHosted: 0,
+              playerEventCooldowns: {},
+            };
+          }
+
           // 4. Calculate offline progress
           const productMap = getProductMap();
           const productSetMap = getProductSetMap();

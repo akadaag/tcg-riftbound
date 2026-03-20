@@ -17,6 +17,7 @@ import {
   getUpgradeModifiers,
   getTotalInventoryCapacity,
 } from "@/features/upgrades";
+import { getStaffEffects } from "@/features/engine/staff";
 
 export default function SupplierPage() {
   const { save, buyFromSupplier } = useGameStore();
@@ -25,6 +26,7 @@ export default function SupplierPage() {
   const activeEvents = getActiveEvents(save.activeEvents, save.currentDay);
   const eventMods = getCombinedEventModifiers(activeEvents);
   const upgradeMods = getUpgradeModifiers(save.upgrades);
+  const staffEffects = getStaffEffects(save.staff ?? []);
 
   // Inventory capacity
   const totalCapacity = getTotalInventoryCapacity(save.upgrades);
@@ -37,9 +39,10 @@ export default function SupplierPage() {
     Math.round((currentStock / totalCapacity) * 100),
   );
 
-  // Combined wholesale multiplier: event modifier * (1 - upgrade discount)
+  // Combined wholesale multiplier: event modifier * (1 - upgrade discount - staff discount)
   const combinedWholesaleMultiplier =
-    eventMods.wholesaleMultiplier * (1 - upgradeMods.wholesaleDiscount);
+    eventMods.wholesaleMultiplier *
+    (1 - upgradeMods.wholesaleDiscount - staffEffects.wholesaleDiscount);
 
   return (
     <div className="flex flex-1 flex-col px-4 pt-6 pb-4">

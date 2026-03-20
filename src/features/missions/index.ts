@@ -12,6 +12,7 @@ import type {
   SaveGame,
 } from "@/types/game";
 import { WEEK_LENGTH } from "@/types/game";
+import { countCompletedPlayerEvents } from "@/features/engine/event-planner";
 
 // ── Mission Templates ────────────────────────────────────────────────
 
@@ -319,6 +320,39 @@ const MILESTONE_MISSIONS: MissionDefinition[] = [
     rewardValue: 5000,
     minShopLevel: 1,
   },
+  {
+    id: "ms_events_1",
+    scope: "milestone",
+    type: "host_player_events",
+    title: "Event Organiser",
+    description: "Host your first player event.",
+    targetValue: 1,
+    rewardType: "currency",
+    rewardValue: 500,
+    minShopLevel: 4,
+  },
+  {
+    id: "ms_events_5",
+    scope: "milestone",
+    type: "host_player_events",
+    title: "Regular Host",
+    description: "Host 5 player events.",
+    targetValue: 5,
+    rewardType: "currency",
+    rewardValue: 2000,
+    minShopLevel: 4,
+  },
+  {
+    id: "ms_events_15",
+    scope: "milestone",
+    type: "host_player_events",
+    title: "Community Hub",
+    description: "Host 15 player events.",
+    targetValue: 15,
+    rewardType: "currency",
+    rewardValue: 5000,
+    minShopLevel: 4,
+  },
 ];
 
 // ── Scaling Functions ────────────────────────────────────────────────
@@ -505,6 +539,8 @@ export function evaluateMissionProgress(
       // Progress = percentage of total unique cards owned (656 total across all sets).
       // Milestones use this to reward collection depth at 25 % and 50 % thresholds.
       return Math.floor((save.stats.uniqueCardsOwned / 656) * 100);
+    case "host_player_events":
+      return countCompletedPlayerEvents(save);
     default:
       return 0;
   }

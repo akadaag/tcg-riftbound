@@ -394,7 +394,8 @@ export type MissionType =
   | "complete_set_pct"
   | "serve_customers"
   | "reach_shop_level"
-  | "earn_profit";
+  | "earn_profit"
+  | "host_player_events";
 
 export interface MissionDefinition {
   id: string;
@@ -558,6 +559,14 @@ export interface SaveGame {
   staffCandidates: StaffCandidate[];
   /** ISO date string (YYYY-MM-DD) of the last day the candidate pool was refreshed. */
   staffCandidatesRefreshedDay: number;
+
+  // --- Player Events (M17) ---
+  /** Player-planned events (scheduled, preparing, active, completed, cancelled). */
+  plannedEvents: PlannedEvent[];
+  /** Lifetime count of player events successfully hosted (for missions). */
+  totalPlayerEventsHosted: number;
+  /** Per-type cooldown tracking: eventType -> day the cooldown expires. */
+  playerEventCooldowns: Partial<Record<PlayerEventType, number>>;
 }
 
 // ============================================
@@ -779,4 +788,61 @@ export interface UserProfile {
   createdAt: string;
   lastLoginAt: string;
   displayName: string | null;
+}
+
+// ============================================
+// Player Event Planning (M17)
+// ============================================
+
+/**
+ * The types of events a player can plan and host.
+ * Each type has different area/staff requirements and effects.
+ */
+export type PlayerEventType =
+  | "tournament"
+  | "launch_party"
+  | "sidewalk_sale"
+  | "vip_night"
+  | "card_signing"
+  | "pack_cracking_stream";
+
+/** Status of a planned event. */
+export type PlayerEventStatus =
+  | "scheduled" // Planned, countdown not yet started
+  | "preparing" // 1-3 day prep countdown in progress
+  | "active" // Event is live (fires as a GameEvent)
+  | "completed" // Event finished
+  | "cancelled"; // Player cancelled before it fired
+
+/**
+ * A player-planned event.
+ * Stored in save.plannedEvents. When it fires, it injects a GameEvent
+ * into the normal event system.
+ */
+export interface PlannedEvent {
+  id: string;
+  type: PlayerEventType;
+  name: string;
+  /** Day the player scheduled this event. */
+  scheduledOnDay: number;
+  /** Day the event is set to fire (scheduledOnDay + prepDays). */
+  targetDay: number;
+  /** How many prep days remain before the event fires. */
+  prepDaysLeft: number;
+  /** Gold cost paid upfront when scheduling. */
+  cost: number;
+  status: PlayerEventStatus;
+  /** ID of the injected GameEvent once active (for cross-reference). */
+  activeEventId: string | null;
+  /** Results summary after the event completes. */
+  result: PlayerEventResult | null;
+}
+
+/** Summary of outcomes after a player event completes. */
+export interface PlayerEventResult {
+  revenueBonus: number;
+  customersAttracted: number;
+  reputationGained: number;
+  hypeBoost: number;
+  xpBonus: number;
 }
