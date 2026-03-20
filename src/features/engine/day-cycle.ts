@@ -575,9 +575,11 @@ export function advanceDay(
     for (const setDef of sets) {
       if (alreadyCompleted.has(setDef.setCode)) continue;
       // Count how many of this set's cards the player owns
+      // P1-14: Only count entries with copiesOwned > 0 to prevent set completion exploit
       let owned = 0;
       let total = 0;
       for (const entry of save.collection) {
+        if (entry.copiesOwned <= 0) continue;
         const card = cardLookupFn(entry.cardId);
         if (card && card.setCode === setDef.setCode) owned++;
       }

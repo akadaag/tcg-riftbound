@@ -19,7 +19,9 @@ export function calculateSellPrice(
   markup: number,
   hypeMultiplier: number = 1.0,
 ): number {
-  return Math.round(baseSellPrice * (1 + markup / 100) * hypeMultiplier);
+  // P1-12: Clamp markup to [0, 100] to prevent negative/zero price exploit
+  const clampedMarkup = Math.max(0, Math.min(100, markup));
+  return Math.round(baseSellPrice * (1 + clampedMarkup / 100) * hypeMultiplier);
 }
 
 /**

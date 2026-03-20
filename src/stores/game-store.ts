@@ -467,19 +467,27 @@ export const useGameStore = create<GameState>()((set, get) => ({
       const shelf = shelves[shelfIndex];
       if (!shelf.productId) return state;
 
+      // P1-11: Clamp to actual owned quantity to prevent item duplication
+      const invItem = state.save.inventory.find(
+        (i) => i.productId === shelf.productId,
+      );
+      const available = invItem ? invItem.ownedQuantity : 0;
+      const actual = Math.min(quantity, available);
+      if (actual <= 0) return state;
+
       // Remove from inventory
       const inventory = state.save.inventory.map((item) =>
         item.productId === shelf.productId
           ? {
               ...item,
-              ownedQuantity: Math.max(0, item.ownedQuantity - quantity),
+              ownedQuantity: Math.max(0, item.ownedQuantity - actual),
             }
           : item,
       );
 
       shelves[shelfIndex] = {
         ...shelf,
-        quantity: shelf.quantity + quantity,
+        quantity: shelf.quantity + actual,
       };
 
       return {
@@ -676,50 +684,51 @@ export const useGameStore = create<GameState>()((set, get) => ({
    * Returns count of new unique cards vs duplicates.
    */
   addCardsToCollection: (cardIds: string[]) => {
-    const state = get();
-    const ownedSet = new Set(state.save.collection.map((c) => c.cardId));
-    let newUniqueCount = 0;
-    let duplicateCount = 0;
-    const now = new Date().toISOString();
+    let result = { newUniqueCount: 0, duplicateCount: 0 };
+    set((state) => {
+      const ownedSet = new Set(state.save.collection.map((c) => c.cardId));
+      let newUniqueCount = 0;
+      let duplicateCount = 0;
+      const now = new Date().toISOString();
 
-    let collection = [...state.save.collection];
+      let collection = [...state.save.collection];
 
-    for (const cardId of cardIds) {
-      if (ownedSet.has(cardId)) {
-        // Duplicate — increment count
-        duplicateCount++;
-        collection = collection.map((c) =>
-          c.cardId === cardId ? { ...c, copiesOwned: c.copiesOwned + 1 } : c,
-        );
-      } else {
-        // New card
-        newUniqueCount++;
-        ownedSet.add(cardId);
-        collection.push({
-          cardId,
-          copiesOwned: 1,
-          firstObtainedAt: now,
-          highestVariantOwned: null,
-          isNew: true,
-        });
+      for (const cardId of cardIds) {
+        if (ownedSet.has(cardId)) {
+          duplicateCount++;
+          collection = collection.map((c) =>
+            c.cardId === cardId ? { ...c, copiesOwned: c.copiesOwned + 1 } : c,
+          );
+        } else {
+          newUniqueCount++;
+          ownedSet.add(cardId);
+          collection.push({
+            cardId,
+            copiesOwned: 1,
+            firstObtainedAt: now,
+            highestVariantOwned: null,
+            isNew: true,
+          });
+        }
       }
-    }
 
-    set({
-      save: {
-        ...state.save,
-        collection,
-        stats: {
-          ...state.save.stats,
-          totalCardsCollected:
-            state.save.stats.totalCardsCollected + cardIds.length,
-          uniqueCardsOwned: state.save.stats.uniqueCardsOwned + newUniqueCount,
+      result = { newUniqueCount, duplicateCount };
+      return {
+        save: {
+          ...state.save,
+          collection,
+          stats: {
+            ...state.save.stats,
+            totalCardsCollected:
+              state.save.stats.totalCardsCollected + cardIds.length,
+            uniqueCardsOwned:
+              state.save.stats.uniqueCardsOwned + newUniqueCount,
+          },
+          updatedAt: now,
         },
-        updatedAt: now,
-      },
+      };
     });
-
-    return { newUniqueCount, duplicateCount };
+    return result;
   },
 
   // ── Day tracking ─────────────────────────────────
@@ -839,34 +848,37 @@ export const useGameStore = create<GameState>()((set, get) => ({
    * Requires copiesOwned >= 2 (keep at least 1). Returns false if invalid.
    */
   listSingle: (cardId: string, askingPrice: number) => {
-    const state = get();
-    const entry = state.save.collection.find((c) => c.cardId === cardId);
-    if (!entry || entry.copiesOwned < 2) return false;
+    let result = false;
+    set((state) => {
+      const entry = state.save.collection.find((c) => c.cardId === cardId);
+      if (!entry || entry.copiesOwned < 2) return state;
 
-    // Already listed?
-    if (state.save.singlesListings.some((l) => l.cardId === cardId))
-      return false;
+      // Already listed?
+      if (state.save.singlesListings.some((l) => l.cardId === cardId))
+        return state;
 
-    // Slot limit: 5 base + area bonuses
-    const areaEffects = getAreaEffects(state.save.shopAreas);
-    const MAX_SINGLES_SLOTS = 5 + areaEffects.extraSinglesSlots;
-    if (state.save.singlesListings.length >= MAX_SINGLES_SLOTS) return false;
+      // Slot limit: 5 base + area bonuses
+      const areaEffects = getAreaEffects(state.save.shopAreas);
+      const MAX_SINGLES_SLOTS = 5 + areaEffects.extraSinglesSlots;
+      if (state.save.singlesListings.length >= MAX_SINGLES_SLOTS) return state;
 
-    set({
-      save: {
-        ...state.save,
-        singlesListings: [
-          ...state.save.singlesListings,
-          {
-            cardId,
-            askingPrice: Math.max(1, Math.round(askingPrice)),
-            listedAt: new Date().toISOString(),
-          },
-        ],
-        updatedAt: new Date().toISOString(),
-      },
+      result = true;
+      return {
+        save: {
+          ...state.save,
+          singlesListings: [
+            ...state.save.singlesListings,
+            {
+              cardId,
+              askingPrice: Math.max(1, Math.round(askingPrice)),
+              listedAt: new Date().toISOString(),
+            },
+          ],
+          updatedAt: new Date().toISOString(),
+        },
+      };
     });
-    return true;
+    return result;
   },
 
   /** Remove a card listing from the singles counter. */
@@ -928,50 +940,51 @@ export const useGameStore = create<GameState>()((set, get) => ({
    * add 1 copy of the result card.
    */
   tradeCards: (selectedCardIds: string[], resultCardId: string) => {
-    const state = get();
-    const now = new Date().toISOString();
+    set((state) => {
+      const now = new Date().toISOString();
 
-    // Decrement copies for each sacrificed card
-    let collection = [...state.save.collection];
-    for (const cardId of selectedCardIds) {
-      collection = collection.map((c) =>
-        c.cardId === cardId
-          ? { ...c, copiesOwned: Math.max(0, c.copiesOwned - 1) }
-          : c,
-      );
-    }
+      // Decrement copies for each sacrificed card
+      let collection = [...state.save.collection];
+      for (const cardId of selectedCardIds) {
+        collection = collection.map((c) =>
+          c.cardId === cardId
+            ? { ...c, copiesOwned: Math.max(0, c.copiesOwned - 1) }
+            : c,
+        );
+      }
 
-    // Add result card
-    const existing = collection.find((c) => c.cardId === resultCardId);
-    if (existing) {
-      collection = collection.map((c) =>
-        c.cardId === resultCardId
-          ? { ...c, copiesOwned: c.copiesOwned + 1 }
-          : c,
-      );
-    } else {
-      collection.push({
-        cardId: resultCardId,
-        copiesOwned: 1,
-        firstObtainedAt: now,
-        highestVariantOwned: null,
-        isNew: true,
-      });
-    }
+      // Add result card
+      const existing = collection.find((c) => c.cardId === resultCardId);
+      if (existing) {
+        collection = collection.map((c) =>
+          c.cardId === resultCardId
+            ? { ...c, copiesOwned: c.copiesOwned + 1 }
+            : c,
+        );
+      } else {
+        collection.push({
+          cardId: resultCardId,
+          copiesOwned: 1,
+          firstObtainedAt: now,
+          highestVariantOwned: null,
+          isNew: true,
+        });
+      }
 
-    set({
-      save: {
-        ...state.save,
-        collection,
-        stats: {
-          ...state.save.stats,
-          totalTradesCompleted: state.save.stats.totalTradesCompleted + 1,
-          uniqueCardsOwned: existing
-            ? state.save.stats.uniqueCardsOwned
-            : state.save.stats.uniqueCardsOwned + 1,
+      return {
+        save: {
+          ...state.save,
+          collection,
+          stats: {
+            ...state.save.stats,
+            totalTradesCompleted: state.save.stats.totalTradesCompleted + 1,
+            uniqueCardsOwned: existing
+              ? state.save.stats.uniqueCardsOwned
+              : state.save.stats.uniqueCardsOwned + 1,
+          },
+          updatedAt: now,
         },
-        updatedAt: now,
-      },
+      };
     });
   },
 
@@ -1022,62 +1035,73 @@ export const useGameStore = create<GameState>()((set, get) => ({
    * Deducts cost, increments level, applies instant effects (e.g. shelf slots).
    */
   purchaseUpgrade: (upgradeId: string) => {
-    const state = get();
-    const def = getUpgradeById(upgradeId);
-    if (!def) return { success: false, reason: "Upgrade not found" };
-
-    const currentLevel = getOwnedLevel(upgradeId, state.save.upgrades);
-    const check = canPurchaseUpgrade(
-      def,
-      currentLevel,
-      state.save.shopLevel,
-      state.save.softCurrency,
-      state.save.upgrades,
-    );
-    if (!check.canBuy) return { success: false, reason: check.reason };
-
-    const cost = getUpgradeCost(def, currentLevel)!;
-    const newLevel = currentLevel + 1;
-
-    // Update upgrade state
-    const existingUpgrade = state.save.upgrades.find(
-      (u) => u.upgradeId === upgradeId,
-    );
-    let upgrades: UpgradeState[];
-    if (existingUpgrade) {
-      upgrades = state.save.upgrades.map((u) =>
-        u.upgradeId === upgradeId ? { ...u, levelOwned: newLevel } : u,
-      );
-    } else {
-      upgrades = [...state.save.upgrades, { upgradeId, levelOwned: newLevel }];
-    }
-
-    // Build new save
-    let newSave: SaveGame = {
-      ...state.save,
-      softCurrency: state.save.softCurrency - cost,
-      upgrades,
-      updatedAt: new Date().toISOString(),
+    let result: { success: boolean; reason: string | null } = {
+      success: false,
+      reason: "Upgrade not found",
     };
+    const def = getUpgradeById(upgradeId);
+    if (!def) return result;
 
-    // Instant effects
-    if (def.effectType === "shelf_slot") {
-      // Add a new shelf slot immediately
-      newSave = {
-        ...newSave,
-        shelves: [
-          ...newSave.shelves,
-          { productId: null, quantity: 0, markup: 20 },
-        ],
+    set((state) => {
+      const currentLevel = getOwnedLevel(upgradeId, state.save.upgrades);
+      const check = canPurchaseUpgrade(
+        def,
+        currentLevel,
+        state.save.shopLevel,
+        state.save.softCurrency,
+        state.save.upgrades,
+      );
+      if (!check.canBuy) {
+        result = { success: false, reason: check.reason };
+        return state;
+      }
+
+      const cost = getUpgradeCost(def, currentLevel)!;
+      const newLevel = currentLevel + 1;
+
+      // Update upgrade state
+      const existingUpgrade = state.save.upgrades.find(
+        (u) => u.upgradeId === upgradeId,
+      );
+      let upgrades: UpgradeState[];
+      if (existingUpgrade) {
+        upgrades = state.save.upgrades.map((u) =>
+          u.upgradeId === upgradeId ? { ...u, levelOwned: newLevel } : u,
+        );
+      } else {
+        upgrades = [
+          ...state.save.upgrades,
+          { upgradeId, levelOwned: newLevel },
+        ];
+      }
+
+      // Build new save
+      let newSave: SaveGame = {
+        ...state.save,
+        softCurrency: state.save.softCurrency - cost,
+        upgrades,
+        updatedAt: new Date().toISOString(),
       };
-    }
 
-    if (def.effectType === "display_case_slots") {
-      // Display case capacity is computed dynamically, no instant save change needed
-    }
+      // Instant effects
+      if (def.effectType === "shelf_slot") {
+        newSave = {
+          ...newSave,
+          shelves: [
+            ...newSave.shelves,
+            { productId: null, quantity: 0, markup: 20 },
+          ],
+        };
+      }
 
-    set({ save: newSave });
-    return { success: true, reason: null };
+      if (def.effectType === "display_case_slots") {
+        // Display case capacity is computed dynamically, no instant save change needed
+      }
+
+      result = { success: true, reason: null };
+      return { save: newSave };
+    });
+    return result;
   },
 
   // ── Missions ─────────────────────────────────────
@@ -1112,51 +1136,56 @@ export const useGameStore = create<GameState>()((set, get) => ({
    * Applies the reward (currency, xp, or reputation).
    */
   claimMissionReward: (missionId: string, mission: MissionDefinition) => {
-    const state = get();
-    const progress = state.save.missions.find((m) => m.missionId === missionId);
-    if (!progress || !progress.completed || progress.claimed) return false;
+    let result = false;
+    set((state) => {
+      const progress = state.save.missions.find(
+        (m) => m.missionId === missionId,
+      );
+      if (!progress || !progress.completed || progress.claimed) return state;
 
-    let newSave: SaveGame = {
-      ...state.save,
-      missions: state.save.missions.map((m) =>
-        m.missionId === missionId ? { ...m, claimed: true } : m,
-      ),
-      updatedAt: new Date().toISOString(),
-    };
+      let newSave: SaveGame = {
+        ...state.save,
+        missions: state.save.missions.map((m) =>
+          m.missionId === missionId ? { ...m, claimed: true } : m,
+        ),
+        updatedAt: new Date().toISOString(),
+      };
 
-    // Apply reward
-    switch (mission.rewardType) {
-      case "currency":
-        newSave = {
-          ...newSave,
-          softCurrency: newSave.softCurrency + mission.rewardValue,
-        };
-        break;
-      case "xp": {
-        const xpResult = applyXP(
-          newSave.xp,
-          newSave.shopLevel,
-          newSave.xpToNextLevel,
-          mission.rewardValue,
-        );
-        newSave = {
-          ...newSave,
-          xp: xpResult.xp,
-          shopLevel: xpResult.level,
-          xpToNextLevel: xpResult.xpToNextLevel,
-        };
-        break;
+      // Apply reward
+      switch (mission.rewardType) {
+        case "currency":
+          newSave = {
+            ...newSave,
+            softCurrency: newSave.softCurrency + mission.rewardValue,
+          };
+          break;
+        case "xp": {
+          const xpResult = applyXP(
+            newSave.xp,
+            newSave.shopLevel,
+            newSave.xpToNextLevel,
+            mission.rewardValue,
+          );
+          newSave = {
+            ...newSave,
+            xp: xpResult.xp,
+            shopLevel: xpResult.level,
+            xpToNextLevel: xpResult.xpToNextLevel,
+          };
+          break;
+        }
+        case "reputation":
+          newSave = {
+            ...newSave,
+            reputation: newSave.reputation + mission.rewardValue,
+          };
+          break;
       }
-      case "reputation":
-        newSave = {
-          ...newSave,
-          reputation: newSave.reputation + mission.rewardValue,
-        };
-        break;
-    }
 
-    set({ save: newSave });
-    return true;
+      result = true;
+      return { save: newSave };
+    });
+    return result;
   },
 
   // ── Tick dispatch ────────────────────────────────
@@ -1282,59 +1311,77 @@ export const useGameStore = create<GameState>()((set, get) => ({
   // ── Shop Areas (M14) ─────────────────────────────
 
   buildArea: (areaId: ShopAreaType) => {
-    const state = get();
-    const check = canBuildArea(
-      state.save.shopAreas,
-      areaId,
-      state.save.softCurrency,
-      state.save.shopLevel,
-    );
-    if (!check.canBuild) return { success: false, reason: check.reason };
+    let result: { success: boolean; reason: string | null } = {
+      success: false,
+      reason: "Cannot build area",
+    };
+    set((state) => {
+      const check = canBuildArea(
+        state.save.shopAreas,
+        areaId,
+        state.save.softCurrency,
+        state.save.shopLevel,
+      );
+      if (!check.canBuild) {
+        result = { success: false, reason: check.reason };
+        return state;
+      }
 
-    const def = getAreaDefinition(areaId)!;
-    const cost = def.buildCost;
+      const def = getAreaDefinition(areaId)!;
+      const cost = def.buildCost;
 
-    // Add or update the area entry as built at tier 1
-    const existing = state.save.shopAreas.find((a) => a.areaId === areaId);
-    const shopAreas: ShopArea[] = existing
-      ? state.save.shopAreas.map((a) =>
-          a.areaId === areaId ? { ...a, isBuilt: true, tier: 1 } : a,
-        )
-      : [...state.save.shopAreas, { areaId, isBuilt: true, tier: 1 }];
+      // Add or update the area entry as built at tier 1
+      const existing = state.save.shopAreas.find((a) => a.areaId === areaId);
+      const shopAreas: ShopArea[] = existing
+        ? state.save.shopAreas.map((a) =>
+            a.areaId === areaId ? { ...a, isBuilt: true, tier: 1 } : a,
+          )
+        : [...state.save.shopAreas, { areaId, isBuilt: true, tier: 1 }];
 
-    set({
-      save: {
-        ...state.save,
-        softCurrency: state.save.softCurrency - cost,
-        shopAreas,
-        updatedAt: new Date().toISOString(),
-      },
+      result = { success: true, reason: null };
+      return {
+        save: {
+          ...state.save,
+          softCurrency: state.save.softCurrency - cost,
+          shopAreas,
+          updatedAt: new Date().toISOString(),
+        },
+      };
     });
-    return { success: true, reason: null };
+    return result;
   },
 
   upgradeArea: (areaId: ShopAreaType) => {
-    const state = get();
-    const check = canUpgradeArea(
-      state.save.shopAreas,
-      areaId,
-      state.save.softCurrency,
-    );
-    if (!check.canUpgrade) return { success: false, reason: check.reason };
+    let result: { success: boolean; reason: string | null } = {
+      success: false,
+      reason: "Cannot upgrade area",
+    };
+    set((state) => {
+      const check = canUpgradeArea(
+        state.save.shopAreas,
+        areaId,
+        state.save.softCurrency,
+      );
+      if (!check.canUpgrade) {
+        result = { success: false, reason: check.reason };
+        return state;
+      }
 
-    const shopAreas: ShopArea[] = state.save.shopAreas.map((a) =>
-      a.areaId === areaId ? { ...a, tier: a.tier + 1 } : a,
-    );
+      const shopAreas: ShopArea[] = state.save.shopAreas.map((a) =>
+        a.areaId === areaId ? { ...a, tier: a.tier + 1 } : a,
+      );
 
-    set({
-      save: {
-        ...state.save,
-        softCurrency: state.save.softCurrency - check.cost,
-        shopAreas,
-        updatedAt: new Date().toISOString(),
-      },
+      result = { success: true, reason: null };
+      return {
+        save: {
+          ...state.save,
+          softCurrency: state.save.softCurrency - check.cost,
+          shopAreas,
+          updatedAt: new Date().toISOString(),
+        },
+      };
     });
-    return { success: true, reason: null };
+    return result;
   },
 
   // ── UI ───────────────────────────────────────────
@@ -1346,41 +1393,51 @@ export const useGameStore = create<GameState>()((set, get) => ({
   // ── Staff (M15) ───────────────────────────────────
 
   hireStaffMember: (candidateId: string) => {
-    const state = get();
-    const candidate = state.save.staffCandidates.find(
-      (c) => c.id === candidateId,
-    );
-    if (!candidate) return { success: false, reason: "Candidate not found" };
+    let result: { success: boolean; reason: string | null } = {
+      success: false,
+      reason: "Candidate not found",
+    };
+    set((state) => {
+      const candidate = state.save.staffCandidates.find(
+        (c) => c.id === candidateId,
+      );
+      if (!candidate) {
+        result = { success: false, reason: "Candidate not found" };
+        return state;
+      }
 
-    const member = engineHireStaff(
-      candidate,
-      state.save.staff,
-      state.save.shopLevel,
-      state.save.currentDay,
-    );
-    if (!member) {
-      return { success: false, reason: "No staff slots available" };
-    }
+      const member = engineHireStaff(
+        candidate,
+        state.save.staff,
+        state.save.shopLevel,
+        state.save.currentDay,
+      );
+      if (!member) {
+        result = { success: false, reason: "No staff slots available" };
+        return state;
+      }
 
-    if (state.save.softCurrency < candidate.salary) {
+      if (state.save.softCurrency < candidate.salary) {
+        result = {
+          success: false,
+          reason: "Not enough G to cover first day's salary",
+        };
+        return state;
+      }
+
+      result = { success: true, reason: null };
       return {
-        success: false,
-        reason: "Not enough G to cover first day's salary",
+        save: {
+          ...state.save,
+          staff: [...state.save.staff, member],
+          staffCandidates: state.save.staffCandidates.filter(
+            (c) => c.id !== candidateId,
+          ),
+          updatedAt: new Date().toISOString(),
+        },
       };
-    }
-
-    set({
-      save: {
-        ...state.save,
-        staff: [...state.save.staff, member],
-        // Remove hired candidate from pool
-        staffCandidates: state.save.staffCandidates.filter(
-          (c) => c.id !== candidateId,
-        ),
-        updatedAt: new Date().toISOString(),
-      },
     });
-    return { success: true, reason: null };
+    return result;
   },
 
   fireStaffMember: (staffId: string) =>
@@ -1393,20 +1450,31 @@ export const useGameStore = create<GameState>()((set, get) => ({
     })),
 
   giveStaffRaise: (staffId: string, raiseAmount: number) => {
-    const state = get();
-    const member = state.save.staff.find((s) => s.id === staffId);
-    if (!member) return { success: false, reason: "Staff member not found" };
-    if (raiseAmount <= 0)
-      return { success: false, reason: "Raise must be positive" };
+    let result: { success: boolean; reason: string | null } = {
+      success: false,
+      reason: "Staff member not found",
+    };
+    set((state) => {
+      const member = state.save.staff.find((s) => s.id === staffId);
+      if (!member) {
+        result = { success: false, reason: "Staff member not found" };
+        return state;
+      }
+      if (raiseAmount <= 0) {
+        result = { success: false, reason: "Raise must be positive" };
+        return state;
+      }
 
-    set({
-      save: {
-        ...state.save,
-        staff: engineGiveRaise(state.save.staff, staffId, raiseAmount),
-        updatedAt: new Date().toISOString(),
-      },
+      result = { success: true, reason: null };
+      return {
+        save: {
+          ...state.save,
+          staff: engineGiveRaise(state.save.staff, staffId, raiseAmount),
+          updatedAt: new Date().toISOString(),
+        },
+      };
     });
-    return { success: true, reason: null };
+    return result;
   },
 
   refreshStaffCandidates: () =>
@@ -1425,34 +1493,42 @@ export const useGameStore = create<GameState>()((set, get) => ({
   // ── Player Events (M17) ───────────────────────────────────────────
 
   planEvent: (type: PlayerEventType) => {
-    const state = get();
-    const check = checkEventRequirements(
-      type,
-      state.save.shopLevel,
-      state.save.softCurrency,
-      state.save.shopAreas,
-      state.save.staff ?? [],
-      state.save.plannedEvents ?? [],
-      state.save.playerEventCooldowns ?? {},
-      state.save.currentDay,
-    );
-    if (!check.canPlan)
+    let result: { success: boolean; reason: string | null } = {
+      success: false,
+      reason: "Cannot plan event",
+    };
+    set((state) => {
+      const check = checkEventRequirements(
+        type,
+        state.save.shopLevel,
+        state.save.softCurrency,
+        state.save.shopAreas,
+        state.save.staff ?? [],
+        state.save.plannedEvents ?? [],
+        state.save.playerEventCooldowns ?? {},
+        state.save.currentDay,
+      );
+      if (!check.canPlan) {
+        result = {
+          success: false,
+          reason: check.reasons[0] ?? "Cannot plan event",
+        };
+        return state;
+      }
+
+      const planned = createPlannedEvent(type, state.save.currentDay);
+
+      result = { success: true, reason: null };
       return {
-        success: false,
-        reason: check.reasons[0] ?? "Cannot plan event",
+        save: {
+          ...state.save,
+          softCurrency: state.save.softCurrency - planned.cost,
+          plannedEvents: [...(state.save.plannedEvents ?? []), planned],
+          updatedAt: new Date().toISOString(),
+        },
       };
-
-    const planned = createPlannedEvent(type, state.save.currentDay);
-
-    set({
-      save: {
-        ...state.save,
-        softCurrency: state.save.softCurrency - planned.cost,
-        plannedEvents: [...(state.save.plannedEvents ?? []), planned],
-        updatedAt: new Date().toISOString(),
-      },
     });
-    return { success: true, reason: null };
+    return result;
   },
 
   cancelPlannedEvent: (eventId: string) =>

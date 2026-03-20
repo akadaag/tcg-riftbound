@@ -101,7 +101,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           resolvedSave = { ...resolvedSave, userId: currentUser.id };
 
           // 3. Initialize set hype if missing (new game or legacy save)
-          if (resolvedSave.setHype.length === 0) {
+          if (!resolvedSave.setHype || resolvedSave.setHype.length === 0) {
             resolvedSave = {
               ...resolvedSave,
               setHype: initializeHype(getAllSets()),
@@ -117,7 +117,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
 
           // 3c. Initialize new stats fields if missing (legacy save)
-          if (resolvedSave.stats.totalSinglesRevenue === undefined) {
+          if (!resolvedSave.stats) {
+            resolvedSave = {
+              ...resolvedSave,
+              stats: {
+                totalSales: 0,
+                totalRevenue: 0,
+                totalPacksOpened: 0,
+                totalCardsCollected: 0,
+                totalCustomersServed: 0,
+                uniqueCardsOwned: 0,
+                totalSinglesRevenue: 0,
+                totalSinglesSold: 0,
+                totalTradesCompleted: 0,
+                totalDaysPlayed: Math.max(
+                  0,
+                  (resolvedSave.currentDay ?? 1) - 1,
+                ),
+                bestDayRevenue: 0,
+                bestDayProfit: 0,
+              },
+            };
+          } else if (resolvedSave.stats.totalSinglesRevenue === undefined) {
             resolvedSave = {
               ...resolvedSave,
               stats: {
@@ -130,7 +151,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
 
           // 3d. Initialize new DayReport fields if missing (legacy save)
-          if (resolvedSave.todayReport.singlesRevenue === undefined) {
+          if (resolvedSave.todayReport?.singlesRevenue === undefined) {
             resolvedSave = {
               ...resolvedSave,
               todayReport: {
@@ -180,7 +201,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
 
           // 3i. Initialize M19 ShopStats running-average fields if missing (legacy save)
-          if (resolvedSave.stats.totalDaysPlayed === undefined) {
+          if (resolvedSave.stats?.totalDaysPlayed === undefined) {
             resolvedSave = {
               ...resolvedSave,
               stats: {

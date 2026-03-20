@@ -37,8 +37,8 @@ Creare un'esperienza che unisca:
 
 ## Current Status
 
-- Overall phase: `[x] Advanced Features`
-- Current milestone: `[x] M19 — Enhanced Progression & Polish (Simplified)`
+- Overall phase: `[x] Advanced Features` → `[ ] Bug Fix Passes`
+- Current milestone: `[ ] Bug Fix Pass 1 — Exploits & Data Integrity (see 03_BUG_FIXING_PRIORITIES.md)`
 - App shell: `[x]`
 - Authentication: `[x]`
 - Cloud save sync: `[x]`
@@ -1237,6 +1237,8 @@ public/
 ---
 
 # Implementation Log
+
+- 2026-03-20 — **03_BUG_FIXING_PRIORITIES.md created.** Full two-pass audit results documented: ~71 verified bugs across 4 severity passes (16 critical/high exploits & TOCTOU races, 20 broken features & missing validation, 16 hardening items, 19 polish items). Zero false positives. Ready to begin Pass 1 — Exploits & Data Integrity.
 
 - 2026-03-20 — **M19 complete (simplified).** Enhanced progression and polish pass. Simplified from original 10-step plan: removed collection set bonuses and tutorial/onboarding. 19.1: 5 new `MissionType` values (`hire_staff`, `build_area`, `sell_singles`, `complete_trades`, `buy_upgrades`), 10 new milestone missions (staff-hiring, area-building, singles-selling, trade-completing, upgrade-purchasing milestones), new daily/weekly templates, new `scaleDailyTarget`/`evaluateMissionProgress`/`getTodayContribution` cases. 19.2: Reputation tier system — `src/features/engine/reputation.ts` created (pure functions); 6 tiers (Unknown 0 / Newcomer 50 / Established 150 / Popular 400 / Famous 800 / Legendary 1500) with cumulative bonuses (+2% traffic, +3% tolerance, +5 rep/day, +50 G/day passive, +5% XP); `getReputationTier()`, `getReputationTierBonuses()`, `getNextTierThreshold()` exported; wired into `advanceDay()` (rep/day, passive income, XP bonuses applied) and `calculateOfflineProgress()` (passive income + rep/day bonuses); dashboard shows tier name next to reputation. 19.3: Night summary polish — 3 new `ShopStats` fields (`totalDaysPlayed`, `bestDayRevenue`, `bestDayProfit`); `EndDayResult` extended with `singlesRevenue`, `reputationChange`, `staffPayroll`, `passiveIncome`, `reputationTierName`, `avgDayRevenue`, `avgDayProfit`; `advanceDay()` computes running averages; EndDayModal enhanced with singles revenue, passive income, staff payroll, rep change, tier name, "vs avg" comparison; `StatRow` gains `comparison` prop + `formatComparison` helper; orphaned EndDayModal wired into `page.tsx` via `endDayResult` Zustand state + `clearEndDayResult` action. 19.4: Away Report polish — `OfflineReport` extended with `singlesRevenue`, `singlesSold`, `passiveIncome`, `reputationGained`; `calculateOfflineProgress()` populates all new fields including rep tier bonuses; offline banner in `page.tsx` shows singles revenue, passive income, rep gained. 19.5: Economy balance pass — reviewed all rewards/costs, no changes needed. 19.6: Save migration step 3i for new ShopStats fields (`totalDaysPlayed` defaults to `currentDay-1`, `bestDayRevenue` estimated from `totalRevenue/days`, `bestDayProfit` defaults to 0). 19.7: Typecheck + build clean. Files modified: `types/game.ts`, `missions/index.ts`, `engine/day-cycle.ts`, `engine/index.ts`, `end-day-modal.tsx`, `game-store.ts`, `useSimulation.ts`, `page.tsx`, `auth-provider.tsx`. Files created: `src/features/engine/reputation.ts`. Known gap: rep tier traffic/tolerance bonuses not yet wired into real-time simulation tick (only affect end-of-day and offline).
 

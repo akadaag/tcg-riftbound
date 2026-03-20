@@ -76,6 +76,10 @@ export default function PacksPage() {
 
   const handleOpenPack = useCallback(
     (productId: string) => {
+      // P1-15: Guard against double-tap race — verify ownership before opening
+      const invItem = save.inventory.find((i) => i.productId === productId);
+      if (!invItem || invItem.ownedQuantity < 1) return;
+
       const dropTable = getDropTableForProduct(productId);
       if (!dropTable) return;
 
@@ -125,6 +129,7 @@ export default function PacksPage() {
       setTimeout(() => setPageState("reveal"), 900);
     },
     [
+      save.inventory,
       metaMap,
       ownedCardIds,
       eventMods.rarityBoostChance,
@@ -134,14 +139,16 @@ export default function PacksPage() {
     ],
   );
 
-  const handleNextCard = () => {
-    if (revealIndex < revealCards.length - 1) {
-      setRevealIndex(revealIndex + 1);
-    }
-  };
+  const handleNextCard = useCallback(() => {
+    setRevealIndex((i) => Math.min(i + 1, revealCards.length - 1));
+  }, [revealCards.length]);
 
   const handleOpenPackBatch = useCallback(
     (productId: string, count: number) => {
+      // P1-15: Guard against double-tap race — verify ownership before batch opening
+      const invItem = save.inventory.find((i) => i.productId === productId);
+      if (!invItem || invItem.ownedQuantity < count) return;
+
       const dropTable = getDropTableForProduct(productId);
       if (!dropTable) return;
 
@@ -192,6 +199,7 @@ export default function PacksPage() {
       setTimeout(() => setPageState("batch_reveal"), 900);
     },
     [
+      save.inventory,
       metaMap,
       ownedCardIds,
       eventMods.rarityBoostChance,
@@ -200,6 +208,7 @@ export default function PacksPage() {
       recordPackOpened,
     ],
   );
+
   const handleRevealAll = () => {
     setRevealIndex(revealCards.length - 1);
   };

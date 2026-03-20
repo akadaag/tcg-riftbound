@@ -349,11 +349,13 @@ export function giveRaise(
   staffId: string,
   raiseAmount: number,
 ): StaffMember[] {
+  // P1-13: Validate positive raise to prevent negative raise exploit
+  const safeRaise = Math.max(1, raiseAmount);
   return staff.map((s) =>
     s.id === staffId
       ? {
           ...s,
-          salary: s.salary + raiseAmount,
+          salary: s.salary + safeRaise,
           morale: Math.min(100, s.morale + 20),
         }
       : s,
