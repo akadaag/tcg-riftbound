@@ -327,9 +327,10 @@ export function applyDayToStaff(
         xp: newXp,
         level: newLevel,
         xpToNextLevel: newXpToNext,
-        // Salary scales with level-up
+        // P2-15: Scale salary from current salary rather than BASE_SALARY to preserve player raises.
+        // On level-up, add 30% of BASE_SALARY as a raise increment (not a full recalculation).
         salary: didLevelUp
-          ? Math.round(BASE_SALARY[member.role] * (1 + (newLevel - 1) * 0.3))
+          ? member.salary + Math.round(BASE_SALARY[member.role] * 0.3)
           : member.salary,
       });
     }

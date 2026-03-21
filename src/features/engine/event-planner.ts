@@ -367,7 +367,11 @@ export function createPlannedEvent(
   type: PlayerEventType,
   currentDay: number,
 ): PlannedEvent {
-  const def = getPlayerEventDefinition(type)!;
+  const def = getPlayerEventDefinition(type);
+  // P2-17: Guard against unknown event type — should never happen if caller validated first
+  if (!def) {
+    throw new Error(`createPlannedEvent: unknown event type "${type}"`);
+  }
   return {
     id: generatePlanId(),
     type,

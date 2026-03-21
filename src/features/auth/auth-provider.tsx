@@ -162,6 +162,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             };
           }
 
+          // 3d2. Initialize tradesCompletedToday if missing (legacy save)
+          if (resolvedSave.todayReport?.tradesCompletedToday === undefined) {
+            resolvedSave = {
+              ...resolvedSave,
+              todayReport: {
+                ...resolvedSave.todayReport,
+                tradesCompletedToday: 0,
+              },
+            };
+          }
+
           // 3e. Initialize M13 real-time simulation fields if missing (legacy save)
           if (resolvedSave.lastTickAt === undefined) {
             resolvedSave = {

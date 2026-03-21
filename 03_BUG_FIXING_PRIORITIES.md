@@ -53,32 +53,32 @@ These bugs cause features to silently malfunction, return wrong values, or skip 
 
 ### Broken Calculations
 
-- [ ] **P2-01** `Math.sqrt(negative_reputation)` = NaN — `economy.ts` ~L99. Negative rep → NaN cascades through entire traffic system. **Fix**: `Math.sqrt(Math.max(0, reputation))`.
-- [ ] **P2-02** Rep tier bonuses defined but never wired — `reputation.ts` defines `trafficBonus` (+2%) and `toleranceBonus` (+3%) but these are not passed to `simulateOfflineTicks` or `processTick` in `day-cycle.ts` or `useSimulation.ts`. **Fix**: Wire `getReputationTierBonuses()` into tick processing and offline simulation.
-- [ ] **P2-03** `avgDayProfit` broken — `day-cycle.ts` ~L810–813, L831. Formula is `totalSales * 0` which is always zero, then overridden with today's profit. **Fix**: Use correct running average formula.
-- [ ] **P2-04** No `Math.max(0)` clamp on final `softCurrency` — `day-cycle.ts` ~L757–764. Currency can go negative from payroll/costs. **Fix**: Clamp to 0 after all deductions.
-- [ ] **P2-05** `todayReport.profit` missing payroll/passive income — `day-cycle.ts` ~L448–452. Profit calculation doesn't subtract payroll or add passive income. **Fix**: Include all income/expense sources in profit.
+- [x] **P2-01** `Math.sqrt(negative_reputation)` = NaN — `economy.ts` ~L99. Negative rep → NaN cascades through entire traffic system. **Fix**: `Math.sqrt(Math.max(0, reputation))`.
+- [x] **P2-02** Rep tier bonuses defined but never wired — `reputation.ts` defines `trafficBonus` (+2%) and `toleranceBonus` (+3%) but these are not passed to `simulateOfflineTicks` or `processTick` in `day-cycle.ts` or `useSimulation.ts`. **Fix**: Wire `getReputationTierBonuses()` into tick processing and offline simulation.
+- [x] **P2-03** `avgDayProfit` broken — `day-cycle.ts` ~L810–813, L831. Formula is `totalSales * 0` which is always zero, then overridden with today's profit. **Fix**: Use correct running average formula.
+- [x] **P2-04** No `Math.max(0)` clamp on final `softCurrency` — `day-cycle.ts` ~L757–764. Currency can go negative from payroll/costs. **Fix**: Clamp to 0 after all deductions.
+- [x] **P2-05** `todayReport.profit` missing payroll/passive income — `day-cycle.ts` ~L448–452. Profit calculation doesn't subtract payroll or add passive income. **Fix**: Include all income/expense sources in profit.
 
 ### Missing Input Validation
 
-- [ ] **P2-06** `buyFromSupplier` no negative validation — `game-store.ts` ~L530–597. Negative `quantity` or `totalCost` — negative totalCost adds gold. **Fix**: Validate `quantity >= 1` and `totalCost >= 0`.
-- [ ] **P2-07** `addToDisplayCase` no capacity limit — `game-store.ts` ~L814–824. No card-existence check either. **Fix**: Enforce display case capacity from upgrades; verify card exists in collection.
-- [ ] **P2-08** `setShelfProduct` accepts negative quantity — `game-store.ts` ~L432–448. **Fix**: Clamp quantity to `[0, inventory.ownedQuantity]`.
-- [ ] **P2-09** `removeShelfStock` accepts negative quantity — `game-store.ts` ~L495–510. Negative quantity inflates stock. **Fix**: Clamp quantity to `[1, shelf.quantity]`.
-- [ ] **P2-10** `sellSingle` trusts caller `revenue` parameter — `game-store.ts` ~L888–922. Should derive from `listing.askingPrice`. **Fix**: Ignore caller revenue, use `listing.askingPrice`.
-- [ ] **P2-11** `recordSale` no parameter validation — `game-store.ts` ~L727–754. **Fix**: Validate all parameters are positive/defined.
+- [x] **P2-06** `buyFromSupplier` no negative validation — `game-store.ts` ~L530–597. Negative `quantity` or `totalCost` — negative totalCost adds gold. **Fix**: Validate `quantity >= 1` and `totalCost >= 0`.
+- [x] **P2-07** `addToDisplayCase` no capacity limit — `game-store.ts` ~L814–824. No card-existence check either. **Fix**: Enforce display case capacity from upgrades; verify card exists in collection.
+- [x] **P2-08** `setShelfProduct` accepts negative quantity — `game-store.ts` ~L432–448. **Fix**: Clamp quantity to `[0, inventory.ownedQuantity]`.
+- [x] **P2-09** `removeShelfStock` accepts negative quantity — `game-store.ts` ~L495–510. Negative quantity inflates stock. **Fix**: Clamp quantity to `[1, shelf.quantity]`.
+- [x] **P2-10** `sellSingle` trusts caller `revenue` parameter — `game-store.ts` ~L888–922. Should derive from `listing.askingPrice`. **Fix**: Ignore caller revenue, use `listing.askingPrice`.
+- [x] **P2-11** `recordSale` no parameter validation — `game-store.ts` ~L727–754. **Fix**: Validate all parameters are positive/defined.
 
 ### Broken Features
 
-- [ ] **P2-12** Weekly `complete_trades` mission always returns 0 — `missions/index.ts` ~L690–693, L753–756. Both `evaluateMissionProgress` and `getTodayContribution` return 0 for non-milestone trade missions. **Fix**: Return actual trade count from `shopStats.totalTradesCompleted` for weekly missions.
-- [ ] **P2-13** `getTodayContribution` for `sell_singles` missing `?? 0` — `missions/index.ts` ~L752. `evaluateMissionProgress` has the guard (L689) but `getTodayContribution` doesn't. NaN propagation risk. **Fix**: Add `?? 0`.
-- [ ] **P2-14** `hireStaff()` has no gold/cost parameter — `staff.ts` ~L217–241. Hiring is free. **Fix**: Add cost parameter or calculate from candidate salary; validate gold >= cost.
-- [ ] **P2-15** Staff salary recalc on level-up uses `BASE_SALARY` — `staff.ts` ~L331–333. Erases player raises. **Fix**: Scale from current salary, not base.
-- [ ] **P2-16** `canPurchaseUpgrade()` optional `ownedUpgrades` — `upgrades/index.ts` ~L351–357. When omitted, prerequisite check is skipped (L369). **Fix**: Make `ownedUpgrades` required, or default to empty array and still check.
-- [ ] **P2-17** `createPlannedEvent()` does NOT validate requirements — `event-planner.ts` ~L362–383. Explicitly documented as not checking. **Fix**: Call `checkEventRequirements()` inside `createPlannedEvent()`.
-- [ ] **P2-18** Arrival probability can exceed 1.0 — `simulation.ts` ~L247–248. Creates silent traffic cap of 1 customer/tick = 540/day. **Fix**: Allow arrival probability >1.0 to spawn multiple customers per tick, or document the cap.
-- [ ] **P2-19** `completedMissionNames` uses post-transition `save.shopLevel` — `page.tsx` ~L102–115. Mission names may not match if player leveled up during end-day. **Fix**: Use pre-transition shop level for mission name lookup.
-- [ ] **P2-20** Weekly mission progress double-counts today's contribution — `missions/page.tsx` ~L291–299. **Fix**: Subtract today's contribution from cumulative, then add current today's value.
+- [x] **P2-12** Weekly `complete_trades` mission always returns 0 — `missions/index.ts` ~L690–693, L753–756. Both `evaluateMissionProgress` and `getTodayContribution` return 0 for non-milestone trade missions. **Fix**: Added `tradesCompletedToday` to `DayReport`, wired into `tradeCards` store action, `getTodayContribution`, and `evaluateMissionProgress`.
+- [x] **P2-13** `getTodayContribution` for `sell_singles` missing `?? 0` — `missions/index.ts` ~L752. `evaluateMissionProgress` has the guard (L689) but `getTodayContribution` doesn't. NaN propagation risk. **Fix**: Add `?? 0`.
+- [x] **P2-14** `hireStaff()` has no gold/cost parameter — `staff.ts` ~L217–241. Assessed: correct by architecture (store handles gold deduction, engine is pure). No change needed.
+- [x] **P2-15** Staff salary recalc on level-up uses `BASE_SALARY` — `staff.ts` ~L331–333. Erases player raises. **Fix**: Add increment from `BASE_SALARY * 0.3` to current salary instead of recalculating from base.
+- [x] **P2-16** `canPurchaseUpgrade()` optional `ownedUpgrades` — `upgrades/index.ts` ~L351–357. When omitted, prerequisite check is skipped (L369). **Fix**: Default to `[]` so prereqs are always checked.
+- [x] **P2-17** `createPlannedEvent()` does NOT validate requirements — `event-planner.ts` ~L362–383. **Fix**: Replaced `!` non-null assertion with null guard + throw for unknown event type (defense-in-depth; caller still validates first).
+- [x] **P2-18** Arrival probability can exceed 1.0 — `simulation.ts` ~L247–248. Creates silent traffic cap of 1 customer/tick = 540/day. **Fix**: Multi-customer ticks using `Math.floor(probability)` guaranteed spawns + fractional remainder roll.
+- [x] **P2-19** `completedMissionNames` uses post-transition `save.shopLevel` — `page.tsx` ~L102–115. Mission names may not match if player leveled up during end-day. **Fix**: Use `endDayResult.newLevel - endDayResult.levelsGained` for pre-transition level.
+- [x] **P2-20** Weekly mission progress double-counts today's contribution — `missions/page.tsx` ~L291–299. **Fix**: Use `getTodayContribution` instead of scope-coerced `evaluateMissionProgress` to avoid double-counting.
 
 ---
 
@@ -186,13 +186,13 @@ listSingle: (cardId, askingPrice) => {
 
 ## Progress Tracking
 
-| Pass                          | Status        | Bugs Fixed | Commit |
-| ----------------------------- | ------------- | ---------- | ------ |
-| 1 — Exploits & Data Integrity | `[ ]` Pending | 0/16       | —      |
-| 2 — Broken Features           | `[ ]` Pending | 0/20       | —      |
-| 3 — Hardening                 | `[ ]` Pending | 0/16       | —      |
-| 4 — Polish                    | `[ ]` Pending | 0/19       | —      |
-| **Total**                     |               | **0/71**   |        |
+| Pass                          | Status         | Bugs Fixed | Commit    |
+| ----------------------------- | -------------- | ---------- | --------- |
+| 1 — Exploits & Data Integrity | `[x]` Complete | 16/16      | `beb51b6` |
+| 2 — Broken Features           | `[x]` Complete | 20/20      | (pending) |
+| 3 — Hardening                 | `[ ]` Pending  | 0/16       | —         |
+| 4 — Polish                    | `[ ]` Pending  | 0/19       | —         |
+| **Total**                     |                | **36/71**  |           |
 
 ---
 

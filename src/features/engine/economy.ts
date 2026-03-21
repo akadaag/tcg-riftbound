@@ -98,7 +98,8 @@ export function calculateDailyTraffic(
   const base = BASE_TRAFFIC_BY_LEVEL[shopLevel] ?? 5;
 
   // Reputation bonus: +1 customer per 10 reputation, soft-capped
-  const reputationBonus = Math.floor(Math.sqrt(reputation) * 0.5);
+  // P2-01: Clamp reputation to 0 to prevent Math.sqrt(negative) → NaN
+  const reputationBonus = Math.floor(Math.sqrt(Math.max(0, reputation)) * 0.5);
 
   // Event traffic multiplier (multiply all event multipliers together)
   const eventMultiplier = activeEvents.reduce(

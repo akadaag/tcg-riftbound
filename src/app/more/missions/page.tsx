@@ -8,6 +8,7 @@ import {
   generateWeeklyMissions,
   getMilestoneMissions,
   evaluateMissionProgress,
+  getTodayContribution,
 } from "@/features/missions";
 import type {
   MissionDefinition,
@@ -287,14 +288,12 @@ function getMissionCurrentValue(
   progress: MissionProgress | undefined,
   save: { shopLevel: number; todayReport: any; stats: any },
 ): number {
-  // For weekly missions, use accumulated progress from the progress entry
+  // For weekly missions, use accumulated progress plus today's live contribution.
+  // P2-20: Use getTodayContribution (which reads todayReport directly) instead of
+  // re-evaluating via evaluateMissionProgress to avoid double-counting: progress.currentValue
+  // is updated at end-of-day, so it reflects all prior days; today's delta comes from todayReport.
   if (mission.scope === "weekly" && progress) {
-    // For weekly missions, currentValue accumulates across days.
-    // Also add today's current contribution for live display.
-    const todayContrib = evaluateMissionProgress(
-      { ...mission, scope: "daily" } as MissionDefinition,
-      save as any,
-    );
+    const todayContrib = getTodayContribution(mission, save as any);
     return progress.currentValue + todayContrib;
   }
 

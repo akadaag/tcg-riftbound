@@ -136,6 +136,8 @@ export function calculateOfflineProgress(
     : { trafficBonus: 0, totalDisplayScore: 0 };
   // Calculate area effects for offline period
   const areaFx = getAreaEffects(save.shopAreas);
+  // Calculate reputation tier bonuses for offline period
+  const offlineRepTierBonuses = getReputationTierBonuses(save.reputation);
 
   // Use tick-based simulation engine (M13)
   const simResult = simulateOfflineTicks(
@@ -147,9 +149,9 @@ export function calculateOfflineProgress(
     save.setHype,
     products,
     productSetMap,
-    upgradeMods.trafficBonus,
+    upgradeMods.trafficBonus + offlineRepTierBonuses.trafficBonus,
     dcBonus.trafficBonus,
-    upgradeMods.toleranceBonus,
+    upgradeMods.toleranceBonus + offlineRepTierBonuses.toleranceBonus,
   );
 
   // Simulate offline singles sales (if unlocked and listings exist)
@@ -172,7 +174,7 @@ export function calculateOfflineProgress(
       save.setHype,
       save.shelves,
       productSetMap,
-      upgradeMods.trafficBonus,
+      upgradeMods.trafficBonus + offlineRepTierBonuses.trafficBonus,
       dcBonus.trafficBonus,
     );
 
@@ -190,7 +192,7 @@ export function calculateOfflineProgress(
       metaLookupFn,
       cardLookupFn,
       eventMods.priceToleranceMultiplier,
-      upgradeMods.toleranceBonus,
+      upgradeMods.toleranceBonus + offlineRepTierBonuses.toleranceBonus,
     );
 
     for (const sale of sales) {
@@ -213,7 +215,6 @@ export function calculateOfflineProgress(
     simResult.daysSimulated;
 
   // Calculate reputation gained during offline period (including rep tier bonus)
-  const offlineRepTierBonuses = getReputationTierBonuses(save.reputation);
   const offlineRepGained =
     simResult.reputationGained +
     Math.floor(offlineRepTierBonuses.reputationPerDay) *
@@ -392,7 +393,7 @@ export function advanceDay(
       save.setHype,
       save.shelves,
       productSetMap,
-      upgradeMods.trafficBonus,
+      upgradeMods.trafficBonus + repTierBonuses.trafficBonus,
       dcBonus.trafficBonus,
     );
 
@@ -403,7 +404,7 @@ export function advanceDay(
       metaLookupFn,
       cardLookupFn,
       eventMods.priceToleranceMultiplier,
-      upgradeMods.toleranceBonus,
+      upgradeMods.toleranceBonus + repTierBonuses.toleranceBonus,
     );
 
     // Apply singles sales
@@ -725,6 +726,7 @@ export function advanceDay(
     xpEarned: 0,
     singlesRevenue: 0,
     singlesSold: 0,
+    tradesCompletedToday: 0,
     activeEvents: getActiveEvents(allEvents, nextDay).map((e) => e.id),
   };
 
@@ -757,13 +759,16 @@ export function advanceDay(
     xpToNextLevel: xpResult.xpToNextLevel,
     reputation: save.reputation + reputationGain,
     // Add singles revenue delta + set completion bonuses + passive income (areas + upgrades + rep tier) + event revenue bonus − staff payroll
-    softCurrency:
+    // P2-04: Clamp to 0 — softCurrency can never go negative
+    softCurrency: Math.max(
+      0,
       save.softCurrency +
-      (singlesRevenue - save.todayReport.singlesRevenue) +
-      setCompletionBonus +
-      totalPassiveIncome +
-      eventRevenueBonus -
-      staffPayrollDeduction,
+        (singlesRevenue - save.todayReport.singlesRevenue) +
+        setCompletionBonus +
+        totalPassiveIncome +
+        eventRevenueBonus -
+        staffPayrollDeduction,
+    ),
     collection: updatedCollection,
     singlesListings: updatedSinglesListings,
     setHype: updatedHype,
@@ -804,15 +809,14 @@ export function advanceDay(
 
   // Record the completed day's XP in the report
   todayReport.xpEarned = xpEarned;
+  // P2-05: Update profit to include passive income and deduct payroll for a true economic profit
+  todayReport.profit =
+    todayReport.profit + totalPassiveIncome - staffPayrollDeduction;
 
-  // Calculate running averages for the end-of-day summary
+  // Calculate running average revenue for the end-of-day summary
   const finalStats = updatedSave.stats;
   const daysPlayed = finalStats.totalDaysPlayed || 1;
   const avgDayRevenue = Math.round(finalStats.totalRevenue / daysPlayed);
-  const avgDayProfit = Math.round(
-    (finalStats.totalRevenue - finalStats.totalSales * 0) / // profit isn't tracked lifetime, approximate from revenue
-      daysPlayed,
-  );
 
   return {
     dayReport: todayReport,
@@ -856,6 +860,7 @@ export function createEmptyDayReport(
     xpEarned: 0,
     singlesRevenue: 0,
     singlesSold: 0,
+    tradesCompletedToday: 0,
     activeEvents: activeEventIds,
   };
 }

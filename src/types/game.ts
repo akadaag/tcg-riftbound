@@ -319,6 +319,8 @@ export interface DayReport {
   singlesSold: number;
   /** Active events during this day. */
   activeEvents: string[];
+  /** Number of card trades completed today (for weekly mission tracking). */
+  tradesCompletedToday?: number;
 }
 
 /** Report generated when the player returns after being away. */

@@ -437,10 +437,12 @@ export const useGameStore = create<GameState>()((set, get) => ({
     set((state) => {
       const shelves = [...state.save.shelves];
       if (shelfIndex < 0 || shelfIndex >= shelves.length) return state;
+      // P2-08: Clamp quantity to non-negative
+      const clampedQty = Math.max(0, Math.round(quantity));
       shelves[shelfIndex] = {
         ...shelves[shelfIndex],
         productId,
-        quantity,
+        quantity: clampedQty,
       };
       return {
         save: { ...state.save, shelves, updatedAt: new Date().toISOString() },
@@ -505,7 +507,9 @@ export const useGameStore = create<GameState>()((set, get) => ({
       const shelves = [...state.save.shelves];
       if (shelfIndex < 0 || shelfIndex >= shelves.length) return state;
       const shelf = shelves[shelfIndex];
-      const newQty = Math.max(0, shelf.quantity - quantity);
+      // P2-09: Clamp quantity to [0, shelf.quantity] to prevent negative inflation
+      const clamped = Math.max(0, Math.min(quantity, shelf.quantity));
+      const newQty = shelf.quantity - clamped;
       shelves[shelfIndex] = {
         ...shelf,
         quantity: newQty,
@@ -542,6 +546,8 @@ export const useGameStore = create<GameState>()((set, get) => ({
     packsProductId?: string,
   ) =>
     set((state) => {
+      // P2-06: Validate inputs — reject negative quantity or cost
+      if (quantity < 1 || totalCost < 0) return state;
       if (state.save.softCurrency < totalCost) return state;
 
       // Enforce inventory capacity (upgrades + area bonus)
@@ -739,28 +745,35 @@ export const useGameStore = create<GameState>()((set, get) => ({
     revenue: number,
     costOfGoods: number,
   ) =>
-    set((state) => ({
-      save: {
-        ...state.save,
-        softCurrency: state.save.softCurrency + revenue,
-        todayReport: {
-          ...state.save.todayReport,
-          revenue: state.save.todayReport.revenue + revenue,
-          costOfGoodsSold: state.save.todayReport.costOfGoodsSold + costOfGoods,
-          productsSold: {
-            ...state.save.todayReport.productsSold,
-            [productId]:
-              (state.save.todayReport.productsSold[productId] ?? 0) + quantity,
+    set((state) => {
+      // P2-11: Validate parameters — reject negative/zero values
+      if (quantity < 1 || revenue < 0 || costOfGoods < 0 || !productId)
+        return state;
+      return {
+        save: {
+          ...state.save,
+          softCurrency: state.save.softCurrency + revenue,
+          todayReport: {
+            ...state.save.todayReport,
+            revenue: state.save.todayReport.revenue + revenue,
+            costOfGoodsSold:
+              state.save.todayReport.costOfGoodsSold + costOfGoods,
+            productsSold: {
+              ...state.save.todayReport.productsSold,
+              [productId]:
+                (state.save.todayReport.productsSold[productId] ?? 0) +
+                quantity,
+            },
           },
+          stats: {
+            ...state.save.stats,
+            totalSales: state.save.stats.totalSales + quantity,
+            totalRevenue: state.save.stats.totalRevenue + revenue,
+          },
+          updatedAt: new Date().toISOString(),
         },
-        stats: {
-          ...state.save.stats,
-          totalSales: state.save.stats.totalSales + quantity,
-          totalRevenue: state.save.stats.totalRevenue + revenue,
-        },
-        updatedAt: new Date().toISOString(),
-      },
-    })),
+      };
+    }),
 
   recordPackOpened: (newCardsDiscovered: number) =>
     set((state) => ({
@@ -823,6 +836,12 @@ export const useGameStore = create<GameState>()((set, get) => ({
   addToDisplayCase: (cardId: string) =>
     set((state) => {
       if (state.save.displayCase.includes(cardId)) return state;
+      // P2-07: Enforce capacity limit from upgrades
+      const capacity = getDisplayCaseCapacity(state.save.upgrades);
+      if (state.save.displayCase.length >= capacity) return state;
+      // P2-07: Verify card exists in collection
+      const owned = state.save.collection.find((c) => c.cardId === cardId);
+      if (!owned || owned.copiesOwned <= 0) return state;
       return {
         save: {
           ...state.save,
@@ -896,13 +915,17 @@ export const useGameStore = create<GameState>()((set, get) => ({
   /**
    * Sell a single card. Removes the listing, decrements copiesOwned,
    * adds revenue, updates stats and todayReport.
+   * P2-10: Revenue is derived from listing.askingPrice, ignoring caller param.
    */
-  sellSingle: (cardId: string, revenue: number) =>
+  sellSingle: (cardId: string, _revenue: number) =>
     set((state) => {
       const listing = state.save.singlesListings.find(
         (l) => l.cardId === cardId,
       );
       if (!listing) return state;
+
+      // P2-10: Use the listing price as authoritative revenue, not the caller's value
+      const revenue = listing.askingPrice;
 
       return {
         save: {
@@ -981,6 +1004,12 @@ export const useGameStore = create<GameState>()((set, get) => ({
             uniqueCardsOwned: existing
               ? state.save.stats.uniqueCardsOwned
               : state.save.stats.uniqueCardsOwned + 1,
+          },
+          // P2-12: Track per-day trade count for weekly mission
+          todayReport: {
+            ...state.save.todayReport,
+            tradesCompletedToday:
+              (state.save.todayReport.tradesCompletedToday ?? 0) + 1,
           },
           updatedAt: now,
         },

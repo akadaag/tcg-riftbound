@@ -243,11 +243,17 @@ export function processTick(
   );
 
   const phaseMultiplier = PHASE_TRAFFIC_MULTIPLIER[newPhase];
-  // Probability that a customer arrives on this tick
-  const arrivalProbability =
-    (dailyTraffic / ticksInActivePhases) * phaseMultiplier;
+  // Probability that a customer arrives on this tick.
+  // P2-18: When probability > 1.0 (late-game high traffic), floor() gives
+  // guaranteed spawns; the remainder is the fractional roll as usual.
+  const rawProbability = (dailyTraffic / ticksInActivePhases) * phaseMultiplier;
+  const guaranteedCount = Math.floor(rawProbability);
+  const fractionalProbability = rawProbability - guaranteedCount;
 
-  if (Math.random() > arrivalProbability) {
+  const customersThisTick =
+    guaranteedCount + (Math.random() < fractionalProbability ? 1 : 0);
+
+  if (customersThisTick === 0) {
     // No customer this tick
     return {
       newDayElapsedMs,
@@ -262,7 +268,7 @@ export function processTick(
     };
   }
 
-  // ── Customer arrived ───────────────────────────────────────────────
+  // ── Customer(s) arrived ────────────────────────────────────────────
   const modifiers = getCombinedEventModifiers(activeEvents);
   const baseWeights = getCustomerWeights(shopLevel);
 
@@ -287,89 +293,88 @@ export function processTick(
   }
 
   const eventAffectedSets = activeEvents.flatMap((e) => e.affectedSets);
-  const type = pickCustomerType(baseWeights, effectiveBonuses);
 
-  let preferredSets: string[] = [];
-  if (
-    eventAffectedSets.length > 0 &&
-    modifiers.customerTypeBonus[type] !== undefined &&
-    Math.random() < 0.5
-  ) {
-    preferredSets = eventAffectedSets;
-  }
+  // Process all customers this tick (P2-18: may be >1 at high traffic)
+  // We maintain a running shelf state so each customer sees up-to-date stock.
+  let workingShelves = shelves;
+  let lastCustomerVisit: TickCustomerVisit | null = null;
+  let lastUpdatedShelves: ShelfSlot[] | null = null;
+  let lastNotification: ShopNotification | null = null;
 
-  const customer = generateCustomer(
-    type,
-    modifiers.budgetMultiplier,
-    preferredSets,
-  );
+  for (let ci = 0; ci < customersThisTick; ci++) {
+    const type = pickCustomerType(baseWeights, effectiveBonuses);
 
-  const visitResult = simulateCustomerVisit(
-    customer,
-    shelves,
-    products,
-    setHype,
-    modifiers.priceToleranceMultiplier,
-    toleranceBonus,
-  );
+    let preferredSets: string[] = [];
+    if (
+      eventAffectedSets.length > 0 &&
+      modifiers.customerTypeBonus[type] !== undefined &&
+      Math.random() < 0.5
+    ) {
+      preferredSets = eventAffectedSets;
+    }
 
-  let updatedShelves: ShelfSlot[] | null = null;
-  let notification: ShopNotification | null = null;
-
-  if (visitResult.purchased && visitResult.productId) {
-    // Deduct stock
-    const newShelves = shelves.map((s) => ({ ...s }));
-    const shelfIdx = newShelves.findIndex(
-      (s) => s.productId === visitResult.productId && s.quantity > 0,
+    const customer = generateCustomer(
+      type,
+      modifiers.budgetMultiplier,
+      preferredSets,
     );
-    if (shelfIdx >= 0) {
-      newShelves[shelfIdx] = {
-        ...newShelves[shelfIdx],
-        quantity: newShelves[shelfIdx].quantity - visitResult.quantity,
-      };
-      if (newShelves[shelfIdx].quantity <= 0) {
+
+    const visitResult = simulateCustomerVisit(
+      customer,
+      workingShelves,
+      products,
+      setHype,
+      modifiers.priceToleranceMultiplier,
+      toleranceBonus,
+    );
+
+    lastCustomerVisit = {
+      customerName: customer.name,
+      customerType: customer.type,
+      purchased: visitResult.purchased,
+      productId: visitResult.productId,
+      productName: visitResult.productId
+        ? (products.get(visitResult.productId)?.name ?? visitResult.productId)
+        : null,
+      quantity: visitResult.quantity,
+      revenue: visitResult.revenue,
+    };
+
+    if (visitResult.purchased && visitResult.productId) {
+      // Deduct stock from working shelves
+      const newShelves = workingShelves.map((s) => ({ ...s }));
+      const shelfIdx = newShelves.findIndex(
+        (s) => s.productId === visitResult.productId && s.quantity > 0,
+      );
+      if (shelfIdx >= 0) {
         newShelves[shelfIdx] = {
           ...newShelves[shelfIdx],
-          productId: null,
-          quantity: 0,
+          quantity: newShelves[shelfIdx].quantity - visitResult.quantity,
         };
+        if (newShelves[shelfIdx].quantity <= 0) {
+          newShelves[shelfIdx] = {
+            ...newShelves[shelfIdx],
+            productId: null,
+            quantity: 0,
+          };
+        }
       }
+      workingShelves = newShelves;
+      lastUpdatedShelves = newShelves;
+
+      const productName =
+        lastCustomerVisit.productName ?? visitResult.productId;
+      const qtyStr =
+        visitResult.quantity > 1 ? ` ×${visitResult.quantity}` : "";
+      lastNotification = {
+        id: `notif-${now}-${ci}-${Math.random().toString(36).slice(2, 7)}`,
+        message: `${customer.name} bought ${productName}${qtyStr} — +${visitResult.revenue.toLocaleString()} G`,
+        at: new Date(now).toISOString(),
+        type: "sale",
+      };
     }
-    updatedShelves = newShelves;
-
-    // Build notification
-    const product = products.get(visitResult.productId);
-    const productName = product?.name ?? visitResult.productId;
-    const qtyStr = visitResult.quantity > 1 ? ` ×${visitResult.quantity}` : "";
-    notification = {
-      id: `notif-${now}-${Math.random().toString(36).slice(2, 7)}`,
-      message: `${customer.name} bought ${productName}${qtyStr} — +${visitResult.revenue.toLocaleString()} G`,
-      at: new Date(now).toISOString(),
-      type: "sale",
-    };
-
-    return {
-      newDayElapsedMs,
-      newLastTickAt,
-      newPhase,
-      phaseChanged,
-      previousPhase,
-      newDayTriggered: false,
-      customerVisit: {
-        customerName: customer.name,
-        customerType: customer.type,
-        purchased: true,
-        productId: visitResult.productId,
-        productName,
-        quantity: visitResult.quantity,
-        revenue: visitResult.revenue,
-      },
-      updatedShelves,
-      notification,
-    };
   }
 
-  // Customer visited but didn't buy
   return {
     newDayElapsedMs,
     newLastTickAt,
@@ -377,17 +382,9 @@ export function processTick(
     phaseChanged,
     previousPhase,
     newDayTriggered: false,
-    customerVisit: {
-      customerName: customer.name,
-      customerType: customer.type,
-      purchased: false,
-      productId: null,
-      productName: null,
-      quantity: 0,
-      revenue: 0,
-    },
-    updatedShelves: null,
-    notification: null,
+    customerVisit: lastCustomerVisit,
+    updatedShelves: lastUpdatedShelves,
+    notification: lastNotification,
   };
 }
 

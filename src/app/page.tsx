@@ -101,9 +101,11 @@ export default function HomePage() {
   // Resolve completed mission names for the modal
   const completedMissionNames = useMemo(() => {
     if (!endDayResult?.completedMissions?.length) return [];
+    // P2-19: Use pre-transition shop level — missions were generated before XP was applied
+    const preLevelUpLevel = endDayResult.newLevel - endDayResult.levelsGained;
     const allDefs = [
-      ...generateDailyMissions(save.shopLevel, endDayResult.dayReport.day),
-      ...generateWeeklyMissions(save.shopLevel, endDayResult.dayReport.day),
+      ...generateDailyMissions(preLevelUpLevel, endDayResult.dayReport.day),
+      ...generateWeeklyMissions(preLevelUpLevel, endDayResult.dayReport.day),
       ...getMilestoneMissions(),
     ];
     return endDayResult.completedMissions
@@ -112,7 +114,7 @@ export default function HomePage() {
         return def?.title ?? id;
       })
       .filter(Boolean);
-  }, [endDayResult, save.shopLevel]);
+  }, [endDayResult]);
 
   return (
     <>

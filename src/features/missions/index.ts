@@ -689,8 +689,8 @@ export function evaluateMissionProgress(
       return save.todayReport.singlesSold ?? 0;
     case "complete_trades":
       if (mission.scope === "milestone") return save.stats.totalTradesCompleted;
-      // Weekly trades are accumulated via getTodayContribution; no daily tracking.
-      return 0;
+      // P2-12/P2-20: Return today's trade count for daily/weekly display
+      return save.todayReport.tradesCompletedToday ?? 0;
     case "buy_upgrades":
       return save.upgrades.reduce((sum, u) => sum + u.levelOwned, 0);
     default:
@@ -749,11 +749,10 @@ export function getTodayContribution(
     case "earn_profit":
       return save.todayReport.profit;
     case "sell_singles":
-      return save.todayReport.singlesSold;
+      return save.todayReport.singlesSold ?? 0;
     case "complete_trades":
-      // Trades don't have per-day tracking yet; return 0 for weekly accumulation.
-      // Future: add tradesCompleted to DayReport for proper weekly tracking.
-      return 0;
+      // P2-12: Use per-day trade count from DayReport
+      return save.todayReport.tradesCompletedToday ?? 0;
     default:
       return 0;
   }

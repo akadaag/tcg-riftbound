@@ -353,7 +353,8 @@ export function canPurchaseUpgrade(
   currentLevel: number,
   shopLevel: number,
   currency: number,
-  ownedUpgrades?: UpgradeState[],
+  // P2-16: Default to [] so prerequisite check is never skipped when called without this arg
+  ownedUpgrades: UpgradeState[] = [],
 ): { canBuy: boolean; reason: string | null } {
   if (currentLevel >= upgrade.maxLevel) {
     return { canBuy: false, reason: "Already at max level" };
@@ -366,7 +367,7 @@ export function canPurchaseUpgrade(
   }
 
   // Check prerequisites
-  if (ownedUpgrades && upgrade.prerequisites?.length) {
+  if (upgrade.prerequisites?.length) {
     const prereqCheck = arePrerequisitesMet(upgrade, ownedUpgrades);
     if (!prereqCheck.met) {
       const missingNames = prereqCheck.missing
