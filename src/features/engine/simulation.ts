@@ -438,6 +438,10 @@ export function simulateOfflineTicks(
   const activeRatio = activePhaseMs / DAY_DURATION_MS;
 
   // Total "active" ms across offline period
+  // P4-02: This slightly overestimates partial-day active time by assuming
+  // the partial leftover starts at morning. This is intentional: the 0.6
+  // OFFLINE_EFFICIENCY factor already compensates for imprecision, and
+  // adding phase-aware tracking would add complexity with no gameplay benefit.
   const totalActiveMs =
     fullDays * activePhaseMs + Math.min(partialMs, activePhaseMs);
 

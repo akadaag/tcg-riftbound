@@ -140,15 +140,23 @@ export default function CollectionPage() {
 
       {/* View toggle */}
       {selectedSet ? (
-        <CardGridView
-          setCode={selectedSet}
-          ownedMap={ownedMap}
-          newCardIds={newCardIds}
-          onBack={() => setSelectedSet(null)}
-          stats={setStats.get(selectedSet)!}
-          set={sets.find((s) => s.setCode === selectedSet)!}
-          onCardTap={setDetailCardId}
-        />
+        (() => {
+          // P4-13: Null-safe lookups instead of non-null assertions
+          const selectedStats = setStats.get(selectedSet);
+          const selectedSetDef = sets.find((s) => s.setCode === selectedSet);
+          if (!selectedStats || !selectedSetDef) return null;
+          return (
+            <CardGridView
+              setCode={selectedSet}
+              ownedMap={ownedMap}
+              newCardIds={newCardIds}
+              onBack={() => setSelectedSet(null)}
+              stats={selectedStats}
+              set={selectedSetDef}
+              onCardTap={setDetailCardId}
+            />
+          );
+        })()
       ) : (
         <SetListView
           sets={sets}

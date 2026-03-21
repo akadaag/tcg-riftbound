@@ -198,7 +198,12 @@ function MissionCard({
   const isClaimed = progress?.claimed ?? false;
   const pct = Math.min(
     100,
-    Math.round((currentValue / mission.targetValue) * 100),
+    // P4-10: Guard against division by zero if targetValue is 0
+    mission.targetValue > 0
+      ? Math.round((currentValue / mission.targetValue) * 100)
+      : currentValue > 0
+        ? 100
+        : 0,
   );
 
   const rewardLabel =

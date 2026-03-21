@@ -233,11 +233,16 @@ export default function StaffPage() {
   }
 
   function handleFire(staffId: string, name: string) {
+    // P4-11: Confirm before firing
+    if (!window.confirm(`Fire ${name}? This cannot be undone.`)) return;
     fireStaffMember(staffId);
     showMsg(`${name} has been let go.`);
   }
 
   function handleRaise(staffId: string) {
+    // P4-11: Confirm before giving a raise
+    if (!window.confirm("Give a +10G/day raise? This increases daily payroll."))
+      return;
     const result = giveStaffRaise(staffId, 10);
     if (!result.success) {
       showMsg(result.reason ?? "Could not give raise");

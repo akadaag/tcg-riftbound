@@ -26,12 +26,13 @@ export default function StatsPage() {
     [stats.uniqueCardsOwned, totalPossibleCards],
   );
 
+  // P4-12: Use totalDaysPlayed from stats instead of currentDay - 1
   const avgRevenuePerDay = useMemo(
     () =>
-      save.currentDay > 1
-        ? Math.round(stats.totalRevenue / (save.currentDay - 1))
+      stats.totalDaysPlayed > 0
+        ? Math.round(stats.totalRevenue / stats.totalDaysPlayed)
         : 0,
-    [stats.totalRevenue, save.currentDay],
+    [stats.totalRevenue, stats.totalDaysPlayed],
   );
 
   const conversionRate = useMemo(

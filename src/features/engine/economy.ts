@@ -43,6 +43,9 @@ export function willCustomerBuy(
   // Can't afford it at all
   if (sellPrice > customerBudget) return false;
 
+  // P4-01: Guard against division by zero when baseSellPrice is 0
+  if (baseSellPrice <= 0) return sellPrice <= 0;
+
   // Price ratio: how much above base
   const priceRatio = sellPrice / baseSellPrice;
   // Max ratio the customer will accept: base price * (1 + tolerance * 1.5)

@@ -6,6 +6,7 @@ import { useGameStore } from "@/stores/game-store";
 import {
   PLAYER_EVENT_DEFINITIONS,
   EVENT_PLANNER_UNLOCK_LEVEL,
+  MAX_CONCURRENT_PLANNED_EVENTS,
   checkEventRequirements,
   getActivePlannedEvents,
   getCompletedPlannedEvents,
@@ -125,9 +126,17 @@ export default function EventsPage() {
 
           {/* Available Events */}
           <section className="mb-6">
-            <h2 className="text-foreground-secondary mb-3 text-xs font-semibold tracking-wider uppercase">
+            <h2 className="text-foreground-secondary mb-1 text-xs font-semibold tracking-wider uppercase">
               Available Events
             </h2>
+            {/* P4-19: Show remaining event slots */}
+            <p className="text-foreground-muted mb-3 text-xs">
+              {Math.max(
+                0,
+                MAX_CONCURRENT_PLANNED_EVENTS - activePlanned.length,
+              )}{" "}
+              of {MAX_CONCURRENT_PLANNED_EVENTS} event slots available
+            </p>
             <div className="space-y-3">
               {PLAYER_EVENT_DEFINITIONS.map((def) => {
                 const check = checkEventRequirements(

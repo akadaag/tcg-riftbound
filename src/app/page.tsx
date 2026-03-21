@@ -68,10 +68,11 @@ export default function HomePage() {
 
   const activeEvents = getActiveEvents(save.activeEvents, save.currentDay);
 
-  const xpPct =
-    save.xpToNextLevel > 0
-      ? Math.round((save.xp / save.xpToNextLevel) * 100)
-      : 100;
+  // P4-16: Show "MAX LEVEL" when xpToNextLevel is 0 (max level reached)
+  const isMaxLevel = save.xpToNextLevel <= 0;
+  const xpPct = isMaxLevel
+    ? 100
+    : Math.round((save.xp / save.xpToNextLevel) * 100);
 
   const totalInventory = save.inventory.reduce(
     (acc, i) => acc + i.ownedQuantity,
@@ -85,7 +86,11 @@ export default function HomePage() {
     () => calculateDisplayCaseBonus(save.displayCase, getGameplayMeta),
     [save.displayCase],
   );
-  const displayCaseCapacity = getDisplayCaseCapacity(save.upgrades);
+  // P4-14: Memoize displayCaseCapacity
+  const displayCaseCapacity = useMemo(
+    () => getDisplayCaseCapacity(save.upgrades),
+    [save.upgrades],
+  );
 
   // Day progress
   const dayProgress = getDayProgress(save.dayElapsedMs);
@@ -95,8 +100,9 @@ export default function HomePage() {
 
   const isNight = currentPhase === "night";
 
-  // Shelf stock gauges — compute max per shelf (rough max = 24)
-  const productMap = getProductMap();
+  // Shelf stock gauges
+  // P4-14: Memoize productMap
+  const productMap = useMemo(() => getProductMap(), []);
 
   // Resolve completed mission names for the modal
   const completedMissionNames = useMemo(() => {
@@ -196,7 +202,9 @@ export default function HomePage() {
                 Lv. {save.shopLevel}
               </span>
               <span className="text-foreground-muted">
-                {save.xp}/{save.xpToNextLevel} XP
+                {isMaxLevel
+                  ? "MAX LEVEL"
+                  : `${save.xp}/${save.xpToNextLevel} XP`}
               </span>
             </div>
             <div className="bg-card-border h-2 overflow-hidden rounded-full">
@@ -335,7 +343,11 @@ export default function HomePage() {
                 if (!shelf.productId) return null;
                 const product = productMap.get(shelf.productId);
                 const name = product?.name ?? shelf.productId;
-                const maxQty = 24;
+                // P4-05: Derive max from product cardsPerUnit (box/pack)
+                // rather than hardcoded 24. Default to 24 as baseline.
+                const maxQty = product?.cardsPerUnit
+                  ? Math.max(24, product.cardsPerUnit)
+                  : 24;
                 const pct = Math.min(100, (shelf.quantity / maxQty) * 100);
                 const color =
                   pct > 50
@@ -379,7 +391,8 @@ export default function HomePage() {
         )}
 
         {/* Display Case Summary */}
-        {save.displayCase.length > 0 && (
+        {/* P4-06: Only show display case if capacity > 0 and cards are showcased */}
+        {displayCaseCapacity > 0 && save.displayCase.length > 0 && (
           <DisplayCaseSummary
             cardIds={save.displayCase}
             capacity={displayCaseCapacity}

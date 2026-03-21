@@ -418,6 +418,8 @@ export const useGameStore = create<GameState>()((set, get) => ({
 
   // ── Currency & Reputation ────────────────────────
 
+  // P4-17: No upper cap on currency — intentional for a tycoon game.
+  // Gold accumulation is the core progression reward. Floor at 0 is sufficient.
   updateCurrency: (amount: number) =>
     set((state) => ({
       save: {

@@ -86,7 +86,40 @@ export function calculateAskingPrice(
   suggestedPrice: number,
   markup: number,
 ): number {
-  return Math.max(1, Math.round(suggestedPrice * (1 + markup / 100)));
+  // P4-03: Clamp markup to [0, 100] range
+  const clampedMarkup = Math.max(0, Math.min(100, markup));
+  return Math.max(1, Math.round(suggestedPrice * (1 + clampedMarkup / 100)));
+}
+
+// ── Listing Validation ──────────────────────────────────────────────
+
+/**
+ * P4-04: Validate whether a card can be listed on the singles counter.
+ *
+ * Returns { valid: true } if listable, or { valid: false, reason: string }
+ * with a human-readable reason if not.
+ */
+export function validateListing(
+  cardId: string,
+  askingPrice: number,
+  collection: CollectionEntry[],
+  currentListings: SinglesListing[],
+  maxSlots: number,
+): { valid: true } | { valid: false; reason: string } {
+  const entry = collection.find((c) => c.cardId === cardId);
+  if (!entry || entry.copiesOwned < 2) {
+    return { valid: false, reason: "Need at least 2 copies to list" };
+  }
+  if (currentListings.some((l) => l.cardId === cardId)) {
+    return { valid: false, reason: "Card is already listed" };
+  }
+  if (currentListings.length >= maxSlots) {
+    return { valid: false, reason: "All listing slots are full" };
+  }
+  if (askingPrice < 1 || !Number.isFinite(askingPrice)) {
+    return { valid: false, reason: "Invalid asking price" };
+  }
+  return { valid: true };
 }
 
 // ── Listable Cards ───────────────────────────────────────────────────

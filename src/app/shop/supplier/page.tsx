@@ -40,9 +40,12 @@ export default function SupplierPage() {
   );
 
   // Combined wholesale multiplier: event modifier * (1 - upgrade discount - staff discount)
-  const combinedWholesaleMultiplier =
+  // P4-09: Clamp to prevent negative multiplier when discounts exceed 100%
+  const combinedWholesaleMultiplier = Math.max(
+    0.01,
     eventMods.wholesaleMultiplier *
-    (1 - upgradeMods.wholesaleDiscount - staffEffects.wholesaleDiscount);
+      (1 - upgradeMods.wholesaleDiscount - staffEffects.wholesaleDiscount),
+  );
 
   return (
     <div className="flex flex-1 flex-col px-4 pt-6 pb-4">
@@ -103,6 +106,7 @@ export default function SupplierPage() {
           currency={save.softCurrency}
           unlockedProducts={save.unlockedProducts}
           wholesaleMultiplier={combinedWholesaleMultiplier}
+          remainingCapacity={totalCapacity - currentStock}
           onBuy={buyFromSupplier}
         />
       ))}
@@ -116,6 +120,7 @@ function SetSection({
   currency,
   unlockedProducts,
   wholesaleMultiplier,
+  remainingCapacity,
   onBuy,
 }: {
   set: SetDefinition;
@@ -123,6 +128,7 @@ function SetSection({
   currency: number;
   unlockedProducts: string[];
   wholesaleMultiplier: number;
+  remainingCapacity: number;
   onBuy: (
     productId: string,
     quantity: number,
@@ -146,6 +152,7 @@ function SetSection({
             unlockedProducts={unlockedProducts}
             wholesaleMultiplier={wholesaleMultiplier}
             allProducts={products}
+            remainingCapacity={remainingCapacity}
             onBuy={onBuy}
           />
         ))}
@@ -161,6 +168,7 @@ function ProductCard({
   unlockedProducts,
   wholesaleMultiplier,
   allProducts,
+  remainingCapacity,
   onBuy,
 }: {
   product: ProductDefinition;
@@ -169,6 +177,7 @@ function ProductCard({
   unlockedProducts: string[];
   wholesaleMultiplier: number;
   allProducts: ProductDefinition[];
+  remainingCapacity: number;
   onBuy: (
     productId: string,
     quantity: number,
@@ -183,6 +192,9 @@ function ProductCard({
   const effectivePrice = Math.round(product.buyPrice * wholesaleMultiplier);
   const totalCost = effectivePrice * quantity;
   const canAfford = currency >= totalCost;
+  // P4-08/P4-18: Cap quantity to remaining inventory capacity
+  const maxQty = Math.max(1, remainingCapacity);
+  const atCapacity = remainingCapacity <= 0;
 
   // For boxes, find the corresponding pack product for conversion
   const packProduct =
@@ -194,7 +206,7 @@ function ProductCard({
       : null;
 
   const handleBuy = () => {
-    if (isLocked || !canAfford) return;
+    if (isLocked || !canAfford || atCapacity) return;
     onBuy(product.id, quantity, totalCost, packProduct?.id);
     setQuantity(1);
   };
@@ -256,7 +268,7 @@ function ProductCard({
               {quantity}
             </span>
             <button
-              onClick={() => setQuantity(quantity + 1)}
+              onClick={() => setQuantity(Math.min(maxQty, quantity + 1))}
               className="text-foreground-secondary hover:text-foreground min-h-[44px] px-3 py-2 text-sm"
             >
               +
@@ -266,14 +278,18 @@ function ProductCard({
           {/* Buy button */}
           <button
             onClick={handleBuy}
-            disabled={!canAfford}
+            disabled={!canAfford || atCapacity}
             className={`min-h-[44px] flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-              canAfford
+              canAfford && !atCapacity
                 ? "bg-accent-primary hover:bg-accent-primary-hover text-white"
                 : "bg-card-border cursor-not-allowed text-gray-500"
             }`}
           >
-            Buy {quantity > 1 ? `(${totalCost.toLocaleString()} G)` : ""}
+            {atCapacity
+              ? "Inventory Full"
+              : quantity > 1
+                ? `Buy (${totalCost.toLocaleString()} G)`
+                : "Buy"}
           </button>
         </div>
       )}

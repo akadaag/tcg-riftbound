@@ -117,25 +117,25 @@ Defensive fixes that prevent edge-case crashes, clean up dead code, and improve 
 
 Cosmetic fixes, performance improvements, and minor hardening.
 
-- [ ] **P4-01** `willCustomerBuy` division by zero when `baseSellPrice` is 0 — `economy.ts` ~L45. **Fix**: Guard with `if (baseSellPrice === 0) return true/false`.
-- [ ] **P4-02** Offline partial day calc slightly overestimates active time — `simulation.ts` ~L444–445. **Fix**: Use floor instead of ceil, or document as intentional.
-- [ ] **P4-03** `calculateAskingPrice()` markup not clamped — `singles/index.ts` ~L85–90. **Fix**: Clamp to `[0, 100]`.
-- [ ] **P4-04** No `createListing()` validation function in singles engine — `singles/index.ts`. **Fix**: Add validation helper.
-- [ ] **P4-05** Hardcoded `maxQty = 24` for shelf gauge — `page.tsx` ~L336. **Fix**: Derive from upgrade-based shelf capacity.
-- [ ] **P4-06** Display case showing "N/0 cards" when capacity is 0 — `page.tsx` ~L524. **Fix**: Hide display case section or show "Unlock display case" message.
-- [ ] **P4-07** Stale `ownedCardIds` in batch pack opens — `packs/page.tsx` ~L72–75. **Fix**: Refresh `ownedCardIds` between batch iterations or pass mutable set.
-- [ ] **P4-08** No upper bound on supplier quantity selector — `supplier/page.tsx` ~L259. **Fix**: Cap at inventory capacity remaining.
-- [ ] **P4-09** `combinedWholesaleMultiplier` can go negative — `supplier/page.tsx` ~L43–45. When discount > 100%. **Fix**: Clamp to `Math.max(0.01, ...)`.
-- [ ] **P4-10** Division by zero if mission `targetValue = 0` — `missions/page.tsx` ~L200. **Fix**: Guard against zero target.
-- [ ] **P4-11** No confirmation dialog on staff Fire/Raise — `staff/page.tsx` ~L133–143. **Fix**: Add confirm dialog.
-- [ ] **P4-12** Stats page uses `currentDay - 1` instead of `totalDaysPlayed` — `stats/page.tsx` ~L29–34. **Fix**: Use `totalDaysPlayed`.
-- [ ] **P4-13** Non-null assertion `!` crash risk — `collection/page.tsx` ~L148. **Fix**: Add null check.
-- [ ] **P4-14** `productMap` and `displayCaseCapacity` not memoized — `page.tsx` ~L88, L99. **Fix**: Wrap in `useMemo`.
-- [ ] **P4-15** `maxExcess` dead parameter — `trader/page.tsx` ~L105. **Fix**: Remove or use.
-- [ ] **P4-16** XP bar shows "X/0 XP" at max level — `page.tsx` ~L71–74. **Fix**: Show "MAX LEVEL" or hide XP bar.
-- [ ] **P4-17** `updateCurrency` no upper bound — `game-store.ts` ~L412–419. **Fix**: Add soft cap or leave uncapped (document decision).
-- [ ] **P4-18** Supplier page no inventory capacity enforcement on buy button — `supplier/page.tsx` ~L196–199. **Fix**: Disable buy when at capacity.
-- [ ] **P4-19** No `createPlannedEvent()` concurrent limit check — already covered by P3-08 but UI should also show limit. **Fix**: Show remaining event slots in events page.
+- [x] **P4-01** `willCustomerBuy` division by zero when `baseSellPrice` is 0 — `economy.ts` ~L45. **Fix**: Guard with `if (baseSellPrice === 0) return true/false`.
+- [x] **P4-02** Offline partial day calc slightly overestimates active time — `simulation.ts` ~L444–445. **Fix**: Use floor instead of ceil, or document as intentional.
+- [x] **P4-03** `calculateAskingPrice()` markup not clamped — `singles/index.ts` ~L85–90. **Fix**: Clamp to `[0, 100]`.
+- [x] **P4-04** No `createListing()` validation function in singles engine — `singles/index.ts`. **Fix**: Add validation helper.
+- [x] **P4-05** Hardcoded `maxQty = 24` for shelf gauge — `page.tsx` ~L336. **Fix**: Derive from upgrade-based shelf capacity.
+- [x] **P4-06** Display case showing "N/0 cards" when capacity is 0 — `page.tsx` ~L524. **Fix**: Hide display case section or show "Unlock display case" message.
+- [x] **P4-07** Stale `ownedCardIds` in batch pack opens — `packs/page.tsx` ~L72–75. **Fix**: Refresh `ownedCardIds` between batch iterations or pass mutable set.
+- [x] **P4-08** No upper bound on supplier quantity selector — `supplier/page.tsx` ~L259. **Fix**: Cap at inventory capacity remaining.
+- [x] **P4-09** `combinedWholesaleMultiplier` can go negative — `supplier/page.tsx` ~L43–45. When discount > 100%. **Fix**: Clamp to `Math.max(0.01, ...)`.
+- [x] **P4-10** Division by zero if mission `targetValue = 0` — `missions/page.tsx` ~L200. **Fix**: Guard against zero target.
+- [x] **P4-11** No confirmation dialog on staff Fire/Raise — `staff/page.tsx` ~L133–143. **Fix**: Add confirm dialog.
+- [x] **P4-12** Stats page uses `currentDay - 1` instead of `totalDaysPlayed` — `stats/page.tsx` ~L29–34. **Fix**: Use `totalDaysPlayed`.
+- [x] **P4-13** Non-null assertion `!` crash risk — `collection/page.tsx` ~L148. **Fix**: Add null check.
+- [x] **P4-14** `productMap` and `displayCaseCapacity` not memoized — `page.tsx` ~L88, L99. **Fix**: Wrap in `useMemo`.
+- [x] **P4-15** `maxExcess` dead parameter — `trader/page.tsx` ~L105. **Fix**: Remove or use.
+- [x] **P4-16** XP bar shows "X/0 XP" at max level — `page.tsx` ~L71–74. **Fix**: Show "MAX LEVEL" or hide XP bar.
+- [x] **P4-17** `updateCurrency` no upper bound — `game-store.ts` ~L412–419. **Fix**: Add soft cap or leave uncapped (document decision).
+- [x] **P4-18** Supplier page no inventory capacity enforcement on buy button — `supplier/page.tsx` ~L196–199. **Fix**: Disable buy when at capacity.
+- [x] **P4-19** No `createPlannedEvent()` concurrent limit check — already covered by P3-08 but UI should also show limit. **Fix**: Show remaining event slots in events page.
 
 ---
 
@@ -190,9 +190,9 @@ listSingle: (cardId, askingPrice) => {
 | ----------------------------- | -------------- | ---------- | --------- |
 | 1 — Exploits & Data Integrity | `[x]` Complete | 16/16      | `beb51b6` |
 | 2 — Broken Features           | `[x]` Complete | 20/20      | `76680a2` |
-| 3 — Hardening                 | `[x]` Complete | 16/16      | (pending) |
-| 4 — Polish                    | `[ ]` Pending  | 0/19       | —         |
-| **Total**                     |                | **52/71**  |           |
+| 3 — Hardening                 | `[x]` Complete | 16/16      | `d534a8d` |
+| 4 — Polish                    | `[x]` Complete | 19/19      | (pending) |
+| **Total**                     |                | **71/71**  |           |
 
 ---
 

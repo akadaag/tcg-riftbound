@@ -69,6 +69,9 @@ export default function PacksPage() {
     );
   });
 
+  // P4-07: ownedCardIds is used as the starting set for dupe detection.
+  // openPackBatch() clones this into a mutable set internally and tracks
+  // new pulls across the batch, so dupe detection within a batch is correct.
   const ownedCardIds = useMemo(
     () => new Set(save.collection.map((c) => c.cardId)),
     [save.collection],

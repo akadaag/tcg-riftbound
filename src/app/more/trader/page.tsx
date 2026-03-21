@@ -101,8 +101,9 @@ export default function CardTraderPage() {
     return counts;
   }, [selectedCards]);
 
+  // P4-15: Removed dead maxExcess parameter — excess is computed internally
   const handleSelectCard = useCallback(
-    (cardId: string, maxExcess: number) => {
+    (cardId: string) => {
       const currentCount = selectedCards.filter((id) => id === cardId).length;
       if (selectedCards.length >= TRADE_RATIO) return;
 
@@ -334,7 +335,7 @@ export default function CardTraderPage() {
                   tc={tc}
                   selectedCount={selectedCount}
                   canSelect={canSelect}
-                  onSelect={() => handleSelectCard(tc.card.id, tc.excessCopies)}
+                  onSelect={() => handleSelectCard(tc.card.id)}
                   onDeselect={() => handleDeselectCard(tc.card.id)}
                   rarity={selectedRarity}
                 />
