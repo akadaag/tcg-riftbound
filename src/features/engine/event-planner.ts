@@ -33,6 +33,9 @@ import type {
 /** Minimum shop level required to access the Event Planner. */
 export const EVENT_PLANNER_UNLOCK_LEVEL = 4;
 
+/** P3-08: Maximum number of concurrent planned events (preparing + active). */
+export const MAX_CONCURRENT_PLANNED_EVENTS = 3;
+
 // ── Event type definitions ─────────────────────────────────────────────
 
 export interface PlayerEventRequirement {
@@ -326,16 +329,24 @@ export function checkEventRequirements(
     }
   }
 
-  // Already have one of this type scheduled/preparing/active?
+  // Already have one of this type preparing/active?
+  // P3-11: Removed "scheduled" check — that status is no longer used
   const alreadyPending = plannedEvents.some(
     (e) =>
-      e.type === type &&
-      (e.status === "scheduled" ||
-        e.status === "preparing" ||
-        e.status === "active"),
+      e.type === type && (e.status === "preparing" || e.status === "active"),
   );
   if (alreadyPending) {
     reasons.push("This event is already planned or running");
+  }
+
+  // P3-08: Enforce max concurrent planned events
+  const concurrentCount = plannedEvents.filter(
+    (e) => e.status === "preparing" || e.status === "active",
+  ).length;
+  if (concurrentCount >= MAX_CONCURRENT_PLANNED_EVENTS) {
+    reasons.push(
+      `Maximum of ${MAX_CONCURRENT_PLANNED_EVENTS} concurrent events reached`,
+    );
   }
 
   // Cooldown check
@@ -352,11 +363,11 @@ export function checkEventRequirements(
 
 // ── Plan / Cancel ──────────────────────────────────────────────────────
 
-let eventPlannerCounter = 0;
+// P3-12: Replaced module-level mutable counter with deterministic ID generation
+// to maintain pure-function contract (no module-level mutable state).
 
 function generatePlanId(): string {
-  eventPlannerCounter++;
-  return `pe-${Date.now()}-${eventPlannerCounter}`;
+  return `pe-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
 /**
@@ -398,11 +409,10 @@ export function cancelPlannedEvent(event: PlannedEvent): PlannedEvent {
 
 // ── Day advance integration ────────────────────────────────────────────
 
-let gameEventCounter = 0;
+// P3-12: Replaced module-level mutable counter with deterministic ID generation
 
 function generateGameEventId(): string {
-  gameEventCounter++;
-  return `pe-evt-${Date.now()}-${gameEventCounter}`;
+  return `pe-evt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
 export interface EventPlannerDayResult {

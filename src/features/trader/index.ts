@@ -143,6 +143,7 @@ export function getTradeLanes(
  * @param sourceRarity - The rarity being traded.
  * @param collection - Player's collection.
  * @param allCards - Card definition lookup.
+ * @param shopLevel - Current shop level (must be >= TRADER_UNLOCK_LEVEL).
  *
  * @returns null if valid, or an error message string.
  */
@@ -151,7 +152,13 @@ export function validateTrade(
   sourceRarity: Rarity,
   collection: CollectionEntry[],
   allCards: Map<string, CardDefinition>,
+  shopLevel?: number,
 ): string | null {
+  // P3-14: Enforce shop level requirement
+  if (shopLevel !== undefined && shopLevel < TRADER_UNLOCK_LEVEL) {
+    return `Card Trader requires Shop Level ${TRADER_UNLOCK_LEVEL}`;
+  }
+
   if (selectedCardIds.length !== TRADE_RATIO) {
     return `Must select exactly ${TRADE_RATIO} cards`;
   }
@@ -246,6 +253,8 @@ export function pickTradeResult(
  * Returns the trade result or an error string.
  *
  * This is a pure function — the caller (store) applies the state changes.
+ *
+ * @param shopLevel - Current shop level (must be >= TRADER_UNLOCK_LEVEL).
  */
 export function executeTrade(
   selectedCardIds: string[],
@@ -254,12 +263,14 @@ export function executeTrade(
   allCards: Map<string, CardDefinition>,
   allCardsByTargetRarity: CardDefinition[],
   allMeta: Map<string, CardGameplayMeta>,
+  shopLevel?: number,
 ): TradeResult | string {
   const error = validateTrade(
     selectedCardIds,
     sourceRarity,
     collection,
     allCards,
+    shopLevel,
   );
   if (error) return error;
 

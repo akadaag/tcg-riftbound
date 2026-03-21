@@ -26,7 +26,8 @@ import type {
 } from "@/types/game";
 import { MAX_OFFLINE_HOURS } from "@/types/game";
 
-import { simulateOfflinePeriod, generateCustomerWave } from "./customers";
+// P3-09: Removed dead import of simulateOfflinePeriod
+import { generateCustomerWave } from "./customers";
 import { simulateOfflineTicks } from "./simulation";
 import { calculateDayXP, applyXP } from "./economy";
 import { decayHype, applyEventHype } from "./hype";

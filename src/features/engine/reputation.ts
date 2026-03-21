@@ -102,13 +102,8 @@ export function getReputationTierBonuses(
   return bonuses;
 }
 
-/** Internal helper to accumulate tolerance. */
-function toleranceBonusAdd(
-  bonuses: ReputationTierBonuses,
-  inc: Partial<ReputationTierBonuses>,
-): void {
-  bonuses.toleranceBonus += inc.toleranceBonus ?? 0;
-}
+// P3-10: Removed dead toleranceBonusAdd helper — tolerance accumulation
+// is done inline in getReputationTierBonuses() at L95.
 
 /**
  * Get the next tier threshold above the player's current reputation.

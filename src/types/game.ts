@@ -825,9 +825,9 @@ export type PlayerEventType =
   | "pack_cracking_stream";
 
 /** Status of a planned event. */
+// P3-11: Removed unused "scheduled" status — events start as "preparing" directly
 export type PlayerEventStatus =
-  | "scheduled" // Planned, countdown not yet started
-  | "preparing" // 1-3 day prep countdown in progress
+  | "preparing" // Prep countdown in progress
   | "active" // Event is live (fires as a GameEvent)
   | "completed" // Event finished
   | "cancelled"; // Player cancelled before it fired

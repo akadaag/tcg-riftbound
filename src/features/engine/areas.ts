@@ -390,14 +390,25 @@ export function canBuildArea(
 
 /**
  * Check whether the player can afford to upgrade an area to the next tier.
+ * P3-15: Added shopLevel validation — area upgrades require meeting the area's unlock level.
  */
 export function canUpgradeArea(
   shopAreas: ShopArea[],
   id: ShopAreaType,
   softCurrency: number,
+  shopLevel?: number,
 ): { canUpgrade: boolean; reason: string | null; cost: number } {
   const def = getAreaDefinition(id);
   if (!def) return { canUpgrade: false, reason: "Area not found", cost: 0 };
+
+  // P3-15: Enforce shop level requirement (same as build requirement)
+  if (shopLevel !== undefined && shopLevel < def.unlockLevel) {
+    return {
+      canUpgrade: false,
+      reason: `Requires shop level ${def.unlockLevel}`,
+      cost: 0,
+    };
+  }
 
   const area = shopAreas.find((a) => a.areaId === id && a.isBuilt);
   if (!area) return { canUpgrade: false, reason: "Area not built", cost: 0 };

@@ -111,7 +111,8 @@ function randomInRange(min: number, max: number): number {
   return min + Math.random() * (max - min);
 }
 
-let customerCounter = 0;
+// P3-12: Removed module-level mutable customerCounter.
+// ID generation now uses Date.now() + Math.random() to avoid mutable module state.
 
 /**
  * Generate a single customer.
@@ -123,13 +124,14 @@ export function generateCustomer(
   budgetMultiplier: number = 1.0,
   preferredSets: string[] = [],
 ): Customer {
-  customerCounter++;
+  // P3-12: Use Date.now() + Math.random() for unique IDs without mutable module state
+  const custId = `cust-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   const [bMin, bMax] = BUDGET_RANGES[type];
   const [tMin, tMax] = TOLERANCE_RANGES[type];
   const [pMin, pMax] = PATIENCE_RANGES[type];
 
   return {
-    id: `cust-${Date.now()}-${customerCounter}`,
+    id: custId,
     type,
     name: randomName(),
     budget: Math.round(randomInRange(bMin, bMax) * budgetMultiplier),
@@ -221,10 +223,13 @@ export function simulateCustomerVisit(
   // Determine how many shelves the customer will check (based on patience)
   const maxShelves = Math.max(1, Math.ceil(customer.patience * shelves.length));
 
-  // Shuffle shelves (customers browse randomly)
-  const shuffled = [...shelves.entries()]
-    .sort(() => Math.random() - 0.5)
-    .slice(0, maxShelves);
+  // Shuffle shelves (customers browse randomly) — P3-07: Fisher-Yates for uniform distribution
+  const indexed = [...shelves.entries()];
+  for (let i = indexed.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indexed[i], indexed[j]] = [indexed[j], indexed[i]];
+  }
+  const shuffled = indexed.slice(0, maxShelves);
 
   let bestShelf: {
     index: number;
@@ -322,134 +327,5 @@ export function simulateCustomerVisit(
   };
 }
 
-// ── Offline Simulation ───────────────────────────────────────────────
-
-export interface OfflineSimResult {
-  /** Revenue earned while offline. */
-  revenue: number;
-  /** Products sold: productId → quantity. */
-  productsSold: Record<string, number>;
-  /** Total items sold. */
-  totalItemsSold: number;
-  /** Total customers who visited. */
-  customersServed: number;
-  /** Updated shelves after offline sales. */
-  updatedShelves: ShelfSlot[];
-  /** Reputation gained. */
-  reputationGained: number;
-}
-
-/**
- * Simulate offline sales over a period of time.
- *
- * Simplified simulation: we simulate day-by-day at reduced fidelity
- * (fewer customers, no pack opening, no events changing mid-period).
- *
- * @param hours - Hours elapsed (capped at 8)
- * @param shelves - Current shelf state
- * @param shopLevel - Current shop level
- * @param reputation - Current reputation
- * @param activeEvents - Events active during offline period
- * @param setHype - Hype state
- * @param products - Product definitions map
- * @param upgradeTrafficBonus — additive traffic multiplier from upgrades
- * @param displayCaseBonus — flat traffic bonus from display case
- * @param toleranceBonus — additive tolerance bonus from upgrades
- */
-export function simulateOfflinePeriod(
-  hours: number,
-  shelves: ShelfSlot[],
-  shopLevel: number,
-  reputation: number,
-  activeEvents: GameEvent[],
-  setHype: SetHype[],
-  products: Map<string, ProductDefinition>,
-  productSetMap: Map<string, string>,
-  upgradeTrafficBonus: number = 0,
-  displayCaseBonus: number = 0,
-  toleranceBonus: number = 0,
-): OfflineSimResult {
-  // Each hour ~ roughly 1/8th of a day's traffic
-  const offlineEfficiency = 0.6; // Offline sells at 60% efficiency
-  const totalCustomers = Math.round(
-    calculateDailyTraffic(
-      shopLevel,
-      reputation,
-      activeEvents,
-      calculateAverageHype(shelves, setHype, productSetMap),
-      upgradeTrafficBonus,
-      displayCaseBonus,
-    ) *
-      (hours / 8) *
-      offlineEfficiency,
-  );
-
-  const modifiers = getCombinedEventModifiers(activeEvents);
-  const weights = getCustomerWeights(shopLevel);
-  const updatedShelves = shelves.map((s) => ({ ...s }));
-
-  let totalRevenue = 0;
-  let totalItemsSold = 0;
-  let customersServed = 0;
-  const productsSold: Record<string, number> = {};
-
-  for (let i = 0; i < totalCustomers; i++) {
-    // Check if any shelves still have stock
-    const hasStock = updatedShelves.some(
-      (s) => s.productId !== null && s.quantity > 0,
-    );
-    if (!hasStock) break;
-
-    const type = pickCustomerType(weights, modifiers.customerTypeBonus);
-    const customer = generateCustomer(type, modifiers.budgetMultiplier);
-
-    const result = simulateCustomerVisit(
-      customer,
-      updatedShelves,
-      products,
-      setHype,
-      modifiers.priceToleranceMultiplier,
-      toleranceBonus,
-    );
-
-    customersServed++;
-
-    if (result.purchased && result.productId) {
-      totalRevenue += result.revenue;
-      totalItemsSold += result.quantity;
-      productsSold[result.productId] =
-        (productsSold[result.productId] ?? 0) + result.quantity;
-
-      // Reduce shelf stock
-      const shelfIdx = updatedShelves.findIndex(
-        (s) => s.productId === result.productId && s.quantity > 0,
-      );
-      if (shelfIdx >= 0) {
-        updatedShelves[shelfIdx] = {
-          ...updatedShelves[shelfIdx],
-          quantity: updatedShelves[shelfIdx].quantity - result.quantity,
-        };
-        // Clear shelf if empty
-        if (updatedShelves[shelfIdx].quantity <= 0) {
-          updatedShelves[shelfIdx] = {
-            ...updatedShelves[shelfIdx],
-            productId: null,
-            quantity: 0,
-          };
-        }
-      }
-    }
-  }
-
-  // Reputation gained from satisfied customers
-  const reputationGained = Math.floor(totalItemsSold * 0.5);
-
-  return {
-    revenue: totalRevenue,
-    productsSold,
-    totalItemsSold,
-    customersServed,
-    updatedShelves,
-    reputationGained,
-  };
-}
+// P3-09: simulateOfflinePeriod was dead code — removed.
+// The codebase uses simulateOfflineTicks from simulation.ts instead.

@@ -13,7 +13,7 @@
  * All engine logic remains in pure functions (simulation.ts, day-cycle.ts).
  */
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import { useGameStore } from "@/stores/game-store";
 import { processTick } from "@/features/engine/simulation";
 import { advanceDay } from "@/features/engine/day-cycle";
@@ -35,16 +35,15 @@ import { getReputationTierBonuses } from "@/features/engine/reputation";
 import { TICK_INTERVAL_MS } from "@/types/game";
 
 export function useSimulation() {
-  const { save, applyTickResult, applyDayTransition, addNotification } =
+  const { applyTickResult, applyDayTransition, addNotification } =
     useGameStore();
 
-  const saveRef = useRef(save);
-  useEffect(() => {
-    saveRef.current = save;
-  }, [save]);
-
   const tick = useCallback(() => {
-    const currentSave = saveRef.current;
+    // P3-06: Read directly from the store to avoid saveRef staleness (one-render lag)
+    const currentSave = useGameStore.getState().save;
+
+    // P3-05: Hydration guard — don't tick before save is loaded
+    if (!currentSave?.lastTickAt && !currentSave?.currentPhase) return;
 
     // Don't run during night — the dashboard shows the summary
     if (currentSave.currentPhase === "night") return;

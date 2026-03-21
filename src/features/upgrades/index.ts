@@ -527,20 +527,31 @@ export function getDisplayCaseCapacity(upgrades: UpgradeState[]): number {
  * Sums the displayScore of all showcased cards and applies diminishing returns.
  * Returns a flat bonus to customer traffic (additive with reputation bonus).
  *
+ * P3-16: Added deduplication (same card ID counted once) and capacity enforcement.
+ *
  * @param displayCaseCardIds — card IDs currently in the display case
  * @param getMetaFn — function to look up gameplay meta by card ID
+ * @param upgrades — player's upgrade state (used to calculate capacity limit)
  * @returns flat traffic bonus (e.g. 3 = +3 customers)
  */
 export function calculateDisplayCaseBonus(
   displayCaseCardIds: string[],
   getMetaFn: (cardId: string) => { displayScore: number } | undefined,
+  upgrades?: UpgradeState[],
 ): { trafficBonus: number; totalDisplayScore: number } {
   if (displayCaseCardIds.length === 0) {
     return { trafficBonus: 0, totalDisplayScore: 0 };
   }
 
+  // P3-16: Deduplicate card IDs and enforce capacity limit
+  const uniqueIds = [...new Set(displayCaseCardIds)];
+  const capacity = upgrades
+    ? getDisplayCaseCapacity(upgrades)
+    : uniqueIds.length; // No limit if upgrades not provided (backward compat)
+  const capped = uniqueIds.slice(0, capacity);
+
   let totalDisplayScore = 0;
-  for (const cardId of displayCaseCardIds) {
+  for (const cardId of capped) {
     const meta = getMetaFn(cardId);
     if (meta) {
       totalDisplayScore += meta.displayScore;

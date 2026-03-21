@@ -52,6 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [displayName, setDisplayName] = useState("");
   const [isReady, setIsReady] = useState(false);
 
+  // P3-13: Removed unused applySave and setSetHype destructures
   const {
     loadSave,
     setAuthenticated,
@@ -59,8 +60,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading,
     setHydrated,
     setOfflineReport,
-    applySave,
-    setSetHype,
     setMissions,
   } = useGameStore();
 
@@ -96,12 +95,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         let resolvedSave = resolveConflict(localSave, cloudSave);
 
+        // P3-02: If resolveConflict returns null (both saves missing/corrupt),
+        // fall back to a fresh initial save instead of silently doing nothing
+        if (!resolvedSave) {
+          resolvedSave = createInitialSave();
+        }
+
         if (resolvedSave) {
           // Ensure userId matches current user
           resolvedSave = { ...resolvedSave, userId: currentUser.id };
 
           // 3. Initialize set hype if missing (new game or legacy save)
-          if (!resolvedSave.setHype || resolvedSave.setHype.length === 0) {
+          // P3-03: Use optional chaining — setHype may be undefined on very old saves
+          if (!resolvedSave.setHype || resolvedSave.setHype?.length === 0) {
             resolvedSave = {
               ...resolvedSave,
               setHype: initializeHype(getAllSets()),
@@ -305,6 +311,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setDisplayName(
           session.user.user_metadata?.display_name || session.user.email || "",
         );
+        // P3-01: Reload save data on SIGNED_IN (e.g. login from another tab)
+        // so the store picks up cloud save instead of stale/default state
+        initAuth();
       }
     });
 

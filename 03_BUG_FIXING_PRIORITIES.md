@@ -88,28 +88,28 @@ Defensive fixes that prevent edge-case crashes, clean up dead code, and improve 
 
 ### Save & Auth Hardening
 
-- [ ] **P3-01** `SIGNED_IN` auth event handler doesn't reload save data — `auth-provider.tsx` ~L270–276. **Fix**: Trigger save load on sign-in event.
-- [ ] **P3-02** No default save when `resolveConflict` returns null — `auth-provider.tsx` ~L97–249. `createInitialSave` is imported but never used. **Fix**: Fall back to `createInitialSave()` when both local and cloud saves are null.
-- [ ] **P3-03** `setHype.length` crash if `setHype` undefined on old saves — `auth-provider.tsx` ~L104. Runs before shopAreas/staff migrations. **Fix**: Add `?.` or move setHype migration earlier.
-- [ ] **P3-04** `patchSave`/`applySave` no validation — `game-store.ts` ~L398–408. **Fix**: Add basic shape validation or at minimum null checks.
+- [x] **P3-01** `SIGNED_IN` auth event handler doesn't reload save data — `auth-provider.tsx` ~L270–276. **Fix**: Trigger save load on sign-in event.
+- [x] **P3-02** No default save when `resolveConflict` returns null — `auth-provider.tsx` ~L97–249. `createInitialSave` is imported but never used. **Fix**: Fall back to `createInitialSave()` when both local and cloud saves are null.
+- [x] **P3-03** `setHype.length` crash if `setHype` undefined on old saves — `auth-provider.tsx` ~L104. Runs before shopAreas/staff migrations. **Fix**: Add `?.` or move setHype migration earlier.
+- [x] **P3-04** `patchSave`/`applySave` no validation — `game-store.ts` ~L398–408. **Fix**: Add basic shape validation or at minimum null checks.
 
 ### Simulation Hardening
 
-- [ ] **P3-05** Simulation runs before save loaded — `useSimulation.ts` ~L49. No hydration guard. **Fix**: Add `if (!save || !save.lastTickAt) return` guard.
-- [ ] **P3-06** `saveRef` lags by one render cycle — `useSimulation.ts` ~L40–43. Stale tick data. **Fix**: Use `useRef` + `useEffect` to sync, or read directly from store in tick callback.
-- [ ] **P3-07** Biased shuffle `sort(() => Math.random() - 0.5)` — `customers.ts` ~L225–227. Favors earlier shelf slots. **Fix**: Fisher-Yates shuffle.
-- [ ] **P3-08** No limit on concurrent planned events — `event-planner.ts` ~L330–339. Only per-type duplicate check. **Fix**: Add max concurrent events limit (e.g., 3).
+- [x] **P3-05** Simulation runs before save loaded — `useSimulation.ts` ~L49. No hydration guard. **Fix**: Add `if (!save || !save.lastTickAt) return` guard.
+- [x] **P3-06** `saveRef` lags by one render cycle — `useSimulation.ts` ~L40–43. Stale tick data. **Fix**: Use `useRef` + `useEffect` to sync, or read directly from store in tick callback.
+- [x] **P3-07** Biased shuffle `sort(() => Math.random() - 0.5)` — `customers.ts` ~L225–227. Favors earlier shelf slots. **Fix**: Fisher-Yates shuffle.
+- [x] **P3-08** No limit on concurrent planned events — `event-planner.ts` ~L330–339. Only per-type duplicate check. **Fix**: Add max concurrent events limit (e.g., 3).
 
 ### Dead Code & Purity Violations
 
-- [ ] **P3-09** `simulateOfflinePeriod` dead code — `customers.ts` ~L359. Imported in `day-cycle.ts` L29 but never called. **Fix**: Remove.
-- [ ] **P3-10** `toleranceBonusAdd` dead code — `reputation.ts` ~L106–111. **Fix**: Remove or wire up.
-- [ ] **P3-11** `"scheduled"` PlayerEventStatus never used — `createPlannedEvent` sets `"preparing"` directly. **Fix**: Remove from union type or document as reserved.
-- [ ] **P3-12** Module-level mutable counters violate purity contract — `event-planner.ts` ~L355, L397. **Fix**: Pass counters as parameters or use deterministic IDs.
-- [ ] **P3-13** `applySave` and `setSetHype` imported but never used — `auth-provider.tsx` ~L62–63. **Fix**: Remove unused imports.
-- [ ] **P3-14** No `shopLevel` check in `executeTrade()`/`validateTrade()` — `trader/index.ts`. **Fix**: Add level check if trader has unlock requirements.
-- [ ] **P3-15** `canUpgradeArea()` missing `shopLevel` parameter — `areas.ts` ~L394–398. **Fix**: Add `shopLevel` param and validate.
-- [ ] **P3-16** `calculateDisplayCaseBonus()` no capacity or duplicate card check — `upgrades/index.ts` ~L533–555. **Fix**: Enforce capacity limit and deduplicate.
+- [x] **P3-09** `simulateOfflinePeriod` dead code — `customers.ts` ~L359. Imported in `day-cycle.ts` L29 but never called. **Fix**: Remove.
+- [x] **P3-10** `toleranceBonusAdd` dead code — `reputation.ts` ~L106–111. **Fix**: Remove or wire up.
+- [x] **P3-11** `"scheduled"` PlayerEventStatus never used — `createPlannedEvent` sets `"preparing"` directly. **Fix**: Remove from union type or document as reserved.
+- [x] **P3-12** Module-level mutable counters violate purity contract — `event-planner.ts` ~L355, L397. **Fix**: Pass counters as parameters or use deterministic IDs.
+- [x] **P3-13** `applySave` and `setSetHype` imported but never used — `auth-provider.tsx` ~L62–63. **Fix**: Remove unused imports.
+- [x] **P3-14** No `shopLevel` check in `executeTrade()`/`validateTrade()` — `trader/index.ts`. **Fix**: Add level check if trader has unlock requirements.
+- [x] **P3-15** `canUpgradeArea()` missing `shopLevel` parameter — `areas.ts` ~L394–398. **Fix**: Add `shopLevel` param and validate.
+- [x] **P3-16** `calculateDisplayCaseBonus()` no capacity or duplicate card check — `upgrades/index.ts` ~L533–555. **Fix**: Enforce capacity limit and deduplicate.
 
 ---
 
@@ -189,10 +189,10 @@ listSingle: (cardId, askingPrice) => {
 | Pass                          | Status         | Bugs Fixed | Commit    |
 | ----------------------------- | -------------- | ---------- | --------- |
 | 1 — Exploits & Data Integrity | `[x]` Complete | 16/16      | `beb51b6` |
-| 2 — Broken Features           | `[x]` Complete | 20/20      | (pending) |
-| 3 — Hardening                 | `[ ]` Pending  | 0/16       | —         |
+| 2 — Broken Features           | `[x]` Complete | 20/20      | `76680a2` |
+| 3 — Hardening                 | `[x]` Complete | 16/16      | (pending) |
 | 4 — Polish                    | `[ ]` Pending  | 0/19       | —         |
-| **Total**                     |                | **36/71**  |           |
+| **Total**                     |                | **52/71**  |           |
 
 ---
 

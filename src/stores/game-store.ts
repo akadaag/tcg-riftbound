@@ -395,17 +395,26 @@ export const useGameStore = create<GameState>()((set, get) => ({
   resetSave: () => set({ save: createInitialSave(), offlineReport: null }),
 
   /** Shallow-merge a partial update into save. */
+  // P3-04: Basic shape validation — reject null/undefined/non-object patches
   patchSave: (patch: Partial<SaveGame>) =>
-    set((state) => ({
-      save: {
-        ...state.save,
-        ...patch,
-        updatedAt: new Date().toISOString(),
-      },
-    })),
+    set((state) => {
+      if (!patch || typeof patch !== "object" || Array.isArray(patch))
+        return state;
+      return {
+        save: {
+          ...state.save,
+          ...patch,
+          updatedAt: new Date().toISOString(),
+        },
+      };
+    }),
 
   /** Replace entire save (e.g. after day advance or offline calc). */
-  applySave: (save: SaveGame) => set({ save }),
+  // P3-04: Basic shape validation — reject null/undefined/non-object saves
+  applySave: (save: SaveGame) => {
+    if (!save || typeof save !== "object" || Array.isArray(save)) return;
+    set({ save });
+  },
 
   // ── Currency & Reputation ────────────────────────
 
@@ -1386,10 +1395,12 @@ export const useGameStore = create<GameState>()((set, get) => ({
       reason: "Cannot upgrade area",
     };
     set((state) => {
+      // P3-15: Pass shopLevel to canUpgradeArea for level validation
       const check = canUpgradeArea(
         state.save.shopAreas,
         areaId,
         state.save.softCurrency,
+        state.save.shopLevel,
       );
       if (!check.canUpgrade) {
         result = { success: false, reason: check.reason };
