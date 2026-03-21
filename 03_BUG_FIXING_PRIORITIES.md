@@ -191,7 +191,7 @@ listSingle: (cardId, askingPrice) => {
 | 1 — Exploits & Data Integrity | `[x]` Complete | 16/16      | `beb51b6` |
 | 2 — Broken Features           | `[x]` Complete | 20/20      | `76680a2` |
 | 3 — Hardening                 | `[x]` Complete | 16/16      | `d534a8d` |
-| 4 — Polish                    | `[x]` Complete | 19/19      | (pending) |
+| 4 — Polish                    | `[x]` Complete | 19/19      | `58dfa38` |
 | **Total**                     |                | **71/71**  |           |
 
 ---
