@@ -10,7 +10,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { useGameStore, createInitialSave } from "@/stores/game-store";
 import { loadCloudSave, resolveConflict } from "@/features/save/cloud-save";
-import { loadLocalSave } from "@/features/save/local-save";
+import { loadLocalSave, clearLocalSave } from "@/features/save/local-save";
 import { calculateOfflineProgress } from "@/features/engine/day-cycle";
 import { notifyOfflineReturn } from "@/lib/notifications";
 import { initializeHype } from "@/features/engine/hype";
@@ -305,6 +305,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
         setDisplayName("");
         clearAuth();
+        // Clear stale IndexedDB save to prevent cross-user data contamination
+        clearLocalSave().catch(() => {});
       } else if (event === "SIGNED_IN" && session?.user) {
         setUser(session.user);
         setAuthenticated(session.user.id);

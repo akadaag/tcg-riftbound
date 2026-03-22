@@ -16,6 +16,11 @@ const CLOUD_SYNC_INTERVAL_MS = 30_000; // 30 seconds
  * - Cloud sync every 30 seconds
  * - Cloud sync on tab hidden (visibilitychange)
  * - Cloud sync on beforeunload
+ *
+ * BUG FIX: Previously, the effect checked `hasHydrated` once when `user`
+ * changed, but hydration completes asynchronously AFTER `user` is set.
+ * The effect returned early and never started auto-save intervals.
+ * Now we use `useGameStore.subscribe` to wait for hydration before starting.
  */
 export function SaveProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
@@ -24,48 +29,57 @@ export function SaveProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!user) return;
 
-    const { save, setSyncStatus, hasHydrated } = useGameStore.getState();
+    let localInterval: ReturnType<typeof setInterval> | null = null;
+    let cloudInterval: ReturnType<typeof setInterval> | null = null;
+    let unsubscribeHydration: (() => void) | null = null;
 
-    // Don't start saving until the store has been hydrated with loaded data
-    if (!hasHydrated) return;
+    /**
+     * Start the auto-save intervals and event listeners.
+     * Called once hydration is confirmed.
+     */
+    function startAutoSave(userId: string) {
+      // Initialize snapshot from current (hydrated) save
+      const { save, setSyncStatus } = useGameStore.getState();
+      lastSavedRef.current = JSON.stringify(save);
 
-    // Initialize snapshot
-    lastSavedRef.current = JSON.stringify(save);
+      // ---- Local auto-save (every 2s, only if dirty) ----
+      localInterval = setInterval(async () => {
+        const currentSave = useGameStore.getState().save;
+        const currentJson = JSON.stringify(currentSave);
 
-    // ---- Local auto-save (every 2s, only if dirty) ----
-    const localInterval = setInterval(async () => {
-      const currentSave = useGameStore.getState().save;
-      const currentJson = JSON.stringify(currentSave);
+        if (currentJson === lastSavedRef.current) return;
 
-      if (currentJson === lastSavedRef.current) return;
+        try {
+          setSyncStatus("saving_locally");
+          await saveLocally(currentSave);
+          lastSavedRef.current = currentJson;
+          // Don't set "synced" here — that's for cloud
+          setSyncStatus("offline"); // Still needs cloud sync
+        } catch {
+          console.error("[save-provider] Local save failed");
+        }
+      }, LOCAL_SAVE_INTERVAL_MS);
 
-      try {
-        setSyncStatus("saving_locally");
-        await saveLocally(currentSave);
-        lastSavedRef.current = currentJson;
-        // Don't set "synced" here — that's for cloud
-        setSyncStatus("offline"); // Still needs cloud sync
-      } catch {
-        console.error("[save-provider] Local save failed");
-      }
-    }, LOCAL_SAVE_INTERVAL_MS);
+      // ---- Cloud sync (every 30s) ----
+      cloudInterval = setInterval(() => {
+        syncToCloud(userId);
+      }, CLOUD_SYNC_INTERVAL_MS);
 
-    // ---- Cloud sync (every 30s) ----
-    const cloudInterval = setInterval(() => {
-      syncToCloud(user.id);
-    }, CLOUD_SYNC_INTERVAL_MS);
+      // ---- Cloud sync on tab hidden ----
+      document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    // ---- Cloud sync on tab hidden ----
+      // ---- Cloud sync on beforeunload / pagehide ----
+      window.addEventListener("beforeunload", handleBeforeUnload);
+      window.addEventListener("pagehide", handlePageHide);
+    }
+
+    // Event handlers (defined at effect scope so cleanup can reference them)
     function handleVisibilityChange() {
       if (document.visibilityState === "hidden" && user) {
         syncToCloud(user.id);
       }
     }
-    document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    // ---- Cloud sync on beforeunload / pagehide ----
-    // iOS Safari does not reliably fire beforeunload; pagehide is the
-    // reliable counterpart on mobile Safari and all modern browsers.
     function handlePageHide() {
       if (user) {
         const currentSave = useGameStore.getState().save;
@@ -73,22 +87,37 @@ export function SaveProvider({ children }: { children: ReactNode }) {
         saveLocally(currentSave).catch(() => {});
       }
     }
+
     function handleBeforeUnload() {
       if (user) {
-        // Best-effort save on page close
         const currentSave = useGameStore.getState().save;
-        saveToCloud(user.id, currentSave).catch(() => {
-          // Best effort — already saved locally
-        });
+        saveToCloud(user.id, currentSave).catch(() => {});
         saveLocally(currentSave).catch(() => {});
       }
     }
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    window.addEventListener("pagehide", handlePageHide);
+
+    // Check if already hydrated; if not, subscribe and wait
+    const { hasHydrated } = useGameStore.getState();
+    if (hasHydrated) {
+      startAutoSave(user.id);
+    } else {
+      // Subscribe to store changes and start auto-save once hydrated
+      unsubscribeHydration = useGameStore.subscribe((state) => {
+        if (state.hasHydrated) {
+          unsubscribeHydration?.();
+          unsubscribeHydration = null;
+          startAutoSave(user.id);
+        }
+      });
+    }
 
     return () => {
-      clearInterval(localInterval);
-      clearInterval(cloudInterval);
+      // Clean up subscription if still waiting
+      unsubscribeHydration?.();
+      // Clean up intervals
+      if (localInterval) clearInterval(localInterval);
+      if (cloudInterval) clearInterval(cloudInterval);
+      // Clean up event listeners
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("beforeunload", handleBeforeUnload);
       window.removeEventListener("pagehide", handlePageHide);
@@ -100,7 +129,6 @@ export function SaveProvider({ children }: { children: ReactNode }) {
 
 /**
  * Sync current save to the cloud.
- * Debounced via isSavingRef to prevent concurrent writes.
  */
 async function syncToCloud(userId: string) {
   const { save, setSyncStatus } = useGameStore.getState();
