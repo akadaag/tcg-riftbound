@@ -165,6 +165,13 @@ export function createInitialSave(): SaveGame {
     plannedEvents: [],
     totalPlayerEventsHosted: 0,
     playerEventCooldowns: {},
+
+    // C1: Prestige
+    prestigeCount: 0,
+    prestigeBonus: 0,
+
+    // C4: Satisfaction
+    satisfactionScore: 50,
   };
 }
 
@@ -297,6 +304,8 @@ interface GameState {
     notification: ShopNotification | null;
     /** A4: Reputation penalty from stock-outs (negative number or 0). */
     reputationPenalty: number;
+    /** C4: Customer satisfaction score (0-1) from this visit. */
+    satisfaction: number;
   }) => void;
   /** Advance to the next day (called when night→morning transition fires). */
   applyDayTransition: (result: EndDayResult) => void;
@@ -350,6 +359,17 @@ interface GameState {
     reason: string | null;
   };
   cancelPlannedEvent: (eventId: string) => void;
+
+  // Actions — Limited Products (C2)
+  buyLimitedProduct: (
+    limitedProductId: string,
+    quantity: number,
+    totalCost: number,
+    packsProductId?: string,
+  ) => { success: boolean; reason: string | null };
+
+  // Actions — Prestige (C1)
+  prestigeReset: () => { success: boolean; reason: string | null };
 
   // Actions — UI
   setLoading: (loading: boolean) => void;
@@ -1247,6 +1267,7 @@ export const useGameStore = create<GameState>()((set, get) => ({
         updatedShelves,
         notification,
         reputationPenalty,
+        satisfaction,
       } = patch;
 
       const now = new Date().toISOString();
@@ -1292,6 +1313,10 @@ export const useGameStore = create<GameState>()((set, get) => ({
             customersPurchased:
               newSave.todayReport.customersPurchased +
               (customerPurchased ? 1 : 0),
+            // C4: Accumulate satisfaction for daily averaging
+            satisfactionSum:
+              (newSave.todayReport.satisfactionSum ?? 0) + satisfaction,
+            satisfactionCount: (newSave.todayReport.satisfactionCount ?? 0) + 1,
           },
           stats: {
             ...newSave.stats,
@@ -1610,4 +1635,149 @@ export const useGameStore = create<GameState>()((set, get) => ({
         },
       };
     }),
+
+  // ── Limited Products (C2) ─────────────────────────────────────────
+
+  buyLimitedProduct: (
+    limitedProductId: string,
+    quantity: number,
+    totalCost: number,
+    packsProductId?: string,
+  ) => {
+    let result: { success: boolean; reason: string | null } = {
+      success: false,
+      reason: "Cannot buy limited product",
+    };
+    set((state) => {
+      if (quantity < 1 || totalCost < 0) return state;
+      if (state.save.softCurrency < totalCost) {
+        result = { success: false, reason: "Not enough G" };
+        return state;
+      }
+
+      const rotation = state.save.limitedProductRotation;
+      if (!rotation) {
+        result = { success: false, reason: "No limited products available" };
+        return state;
+      }
+
+      // Check remaining stock
+      const remaining = rotation.remainingStock[limitedProductId] ?? 0;
+      if (remaining < quantity) {
+        result = { success: false, reason: "Not enough stock" };
+        return state;
+      }
+
+      // Enforce inventory capacity
+      const areaFx = getAreaEffects(state.save.shopAreas);
+      const capacity =
+        getTotalInventoryCapacity(state.save.upgrades) +
+        areaFx.inventoryCapacityBonus;
+      const currentTotal = state.save.inventory.reduce(
+        (acc, i) => acc + i.ownedQuantity,
+        0,
+      );
+      const wouldAdd = packsProductId ? quantity * 24 : quantity;
+      if (currentTotal + wouldAdd > capacity) {
+        result = { success: false, reason: "Inventory full" };
+        return state;
+      }
+
+      // Extract base product ID from the limited product ID
+      // Format: "limited-{baseProductId}-w{week}"
+      const baseProductId = limitedProductId
+        .replace(/^limited-/, "")
+        .replace(/-w\d+$/, "");
+
+      // Add to inventory (same logic as buyFromSupplier)
+      let inventory = [...state.save.inventory];
+      const targetProductId = packsProductId ?? baseProductId;
+      const targetQuantity = packsProductId ? quantity * 24 : quantity;
+
+      const existing = inventory.find((i) => i.productId === targetProductId);
+      if (existing) {
+        inventory = inventory.map((i) =>
+          i.productId === targetProductId
+            ? { ...i, ownedQuantity: i.ownedQuantity + targetQuantity }
+            : i,
+        );
+      } else {
+        inventory.push({
+          productId: targetProductId,
+          ownedQuantity: targetQuantity,
+        });
+      }
+
+      // Update remaining stock
+      const updatedRemainingStock = {
+        ...rotation.remainingStock,
+        [limitedProductId]: remaining - quantity,
+      };
+
+      result = { success: true, reason: null };
+      return {
+        save: {
+          ...state.save,
+          softCurrency: state.save.softCurrency - totalCost,
+          inventory,
+          limitedProductRotation: {
+            ...rotation,
+            remainingStock: updatedRemainingStock,
+          },
+          todayReport: {
+            ...state.save.todayReport,
+            costOfGoodsSold: state.save.todayReport.costOfGoodsSold + totalCost,
+          },
+          updatedAt: new Date().toISOString(),
+        },
+      };
+    });
+    return result;
+  },
+
+  // ── Prestige (C1) ─────────────────────────────────────────────────
+
+  prestigeReset: () => {
+    let result: { success: boolean; reason: string | null } = {
+      success: false,
+      reason: "Cannot prestige",
+    };
+    set((state) => {
+      const PRESTIGE_MIN_LEVEL = 15;
+      if (state.save.shopLevel < PRESTIGE_MIN_LEVEL) {
+        result = {
+          success: false,
+          reason: `Requires Shop Level ${PRESTIGE_MIN_LEVEL}`,
+        };
+        return state;
+      }
+
+      const currentPrestigeCount = state.save.prestigeCount ?? 0;
+      const newPrestigeCount = currentPrestigeCount + 1;
+      // Each prestige grants +5% permanent bonus (multiplicative with income)
+      const newPrestigeBonus = newPrestigeCount * 0.05;
+
+      // Create a fresh save but preserve prestige data, userId, and stats
+      const freshSave = createInitialSave();
+      freshSave.userId = state.save.userId;
+      freshSave.prestigeCount = newPrestigeCount;
+      freshSave.prestigeBonus = newPrestigeBonus;
+      // Prestige starting gold bonus: 750 base + 250 per prestige
+      freshSave.softCurrency = 750 + newPrestigeCount * 250;
+      // Keep satisfaction at default (fresh start feel)
+      freshSave.satisfactionScore = 50;
+      // Preserve lifetime stats for bragging rights
+      freshSave.stats = {
+        ...state.save.stats,
+        // Reset daily stats
+        totalDaysPlayed: 0,
+        bestDayRevenue: 0,
+        bestDayProfit: 0,
+      };
+
+      result = { success: true, reason: null };
+      return { save: freshSave };
+    });
+    return result;
+  },
 }));

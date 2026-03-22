@@ -71,6 +71,24 @@ import {
   getReputationTierBonuses,
 } from "@/features/engine/reputation";
 import { generateDailyTrends } from "@/features/engine/market-trends";
+import { calculateRent } from "@/features/engine/costs";
+import {
+  calculateDailySatisfaction,
+  updateRollingSatisfaction,
+  getSatisfactionRepMultiplier,
+  DEFAULT_SATISFACTION,
+} from "@/features/engine/satisfaction";
+import {
+  shouldRefreshRotation,
+  generateLimitedRotation,
+  getWeekNumber,
+  rotationToSaveState,
+  LIMITED_PRODUCTS_UNLOCK_LEVEL,
+} from "@/features/engine/limited-products";
+import {
+  getPrestigeIncomeMultiplier,
+  getPrestigeXPMultiplier,
+} from "@/features/engine/prestige";
 
 // ── Offline Progress ─────────────────────────────────────────────────
 
@@ -324,6 +342,12 @@ export interface EndDayResult {
   avgDayProfit: number;
   /** A3: Gold bonus awarded for leveling up (0 if no level-up). */
   levelUpGoldBonus: number;
+  /** C3: Daily rent paid. */
+  rentPaid: number;
+  /** C4: Rolling satisfaction score (0-100) after today's update. */
+  satisfactionScore: number;
+  /** C4: Today's daily satisfaction score (0-100). */
+  satisfactionDailyScore: number;
 }
 
 /**
@@ -460,14 +484,18 @@ export function advanceDay(
   const activeEvents = getActiveEvents(save.activeEvents, currentDay);
   const eventMods = getCombinedEventModifiers(activeEvents);
 
-  const xpEarned = calculateDayXP(
-    todayReport.customersPurchased,
-    todayReport.packsOpened,
-    todayReport.newCardsDiscovered,
-    todayReport.revenue,
-    eventMods.xpMultiplier,
-    upgradeMods.xpBonus + repTierBonuses.xpBonus,
-    todayReport.singlesSold,
+  // C1: Apply prestige XP multiplier
+  const prestigeXPMult = getPrestigeXPMultiplier(save.prestigeCount ?? 0);
+  const xpEarned = Math.floor(
+    calculateDayXP(
+      todayReport.customersPurchased,
+      todayReport.packsOpened,
+      todayReport.newCardsDiscovered,
+      todayReport.revenue,
+      eventMods.xpMultiplier,
+      upgradeMods.xpBonus + repTierBonuses.xpBonus,
+      todayReport.singlesSold,
+    ) * prestigeXPMult,
   );
 
   const xpResult = applyXP(
@@ -516,11 +544,28 @@ export function advanceDay(
   }
 
   // 3b. Apply reputation-per-day from upgrades + areas + player events + reputation tier
+  // C4: Apply satisfaction multiplier to reputation gain
+  const dailySatisfaction = calculateDailySatisfaction(
+    todayReport.satisfactionSum ?? 0,
+    todayReport.satisfactionCount ?? 0,
+    todayReport.customersVisited,
+    todayReport.customersPurchased,
+    save.staff ?? [],
+  );
+  const satisfactionRepMult = getSatisfactionRepMultiplier(
+    save.satisfactionScore ?? DEFAULT_SATISFACTION,
+  );
   const reputationGain = Math.floor(
-    upgradeMods.reputationPerDay +
+    (upgradeMods.reputationPerDay +
       areaEffects.reputationPerDay +
       eventPlannerResult.reputationReward +
-      repTierBonuses.reputationPerDay,
+      repTierBonuses.reputationPerDay) *
+      satisfactionRepMult,
+  );
+  // C4: Update rolling satisfaction score
+  const updatedSatisfactionScore = updateRollingSatisfaction(
+    save.satisfactionScore ?? DEFAULT_SATISFACTION,
+    dailySatisfaction,
   );
 
   // 3c. Calculate event revenue bonus (upgrade effect applied to completed player events)
@@ -537,12 +582,18 @@ export function advanceDay(
   }
 
   // 3d. Calculate upgrade passive income + reputation tier passive income
+  // C1: Apply prestige income multiplier to passive income
+  const prestigeIncomeMult = getPrestigeIncomeMultiplier(
+    save.prestigeCount ?? 0,
+  );
   const upgradePassiveIncome = Math.floor(upgradeMods.passiveIncome);
   const repTierPassiveIncome = Math.floor(repTierBonuses.passiveIncomePerDay);
-  const totalPassiveIncome =
-    Math.floor(areaEffects.passiveIncomePerDay) +
-    upgradePassiveIncome +
-    repTierPassiveIncome;
+  const totalPassiveIncome = Math.floor(
+    (Math.floor(areaEffects.passiveIncomePerDay) +
+      upgradePassiveIncome +
+      repTierPassiveIncome) *
+      prestigeIncomeMult,
+  );
 
   // 7. Maybe schedule a new event
   let newEvent: GameEvent | null = null;
@@ -783,6 +834,9 @@ export function advanceDay(
   const staffDayResult = applyDayToStaff(save.staff ?? [], canPayStaff);
   const staffPayrollDeduction = canPayStaff ? payroll : 0;
 
+  // C3: Calculate daily rent
+  const rentPaid = calculateRent(save.shopLevel, save.prestigeCount ?? 0);
+
   // Refresh candidate pool for the new day
   const candidateRefresh = refreshCandidatesIfNeeded(
     save.staffCandidates ?? [],
@@ -799,17 +853,22 @@ export function advanceDay(
     xp: xpResult.xp,
     xpToNextLevel: xpResult.xpToNextLevel,
     reputation: save.reputation + reputationGain,
-    // Add singles revenue delta + set completion bonuses + passive income (areas + upgrades + rep tier) + event revenue bonus + level-up gold bonus − staff payroll
+    // Add singles revenue delta + set completion bonuses + passive income (areas + upgrades + rep tier) + event revenue bonus + level-up gold bonus − staff payroll − rent
+    // C1: Prestige income multiplier applied to revenue-based income (singles delta, event revenue)
     // P2-04: Clamp to 0 — softCurrency can never go negative
     softCurrency: Math.max(
       0,
       save.softCurrency +
-        (singlesRevenue - save.todayReport.singlesRevenue) +
+        Math.floor(
+          (singlesRevenue - save.todayReport.singlesRevenue) *
+            prestigeIncomeMult,
+        ) +
         setCompletionBonus +
         totalPassiveIncome +
-        eventRevenueBonus +
+        Math.floor(eventRevenueBonus * prestigeIncomeMult) +
         levelUpGoldBonus -
-        staffPayrollDeduction,
+        staffPayrollDeduction -
+        rentPaid,
     ),
     collection: updatedCollection,
     singlesListings: updatedSinglesListings,
@@ -850,13 +909,28 @@ export function advanceDay(
     // Market Trends (B1)
     dailyMarketTrends: nextDayTrends,
     dailyMarketTrendDay: nextDay,
+    // C4: Satisfaction
+    satisfactionScore: updatedSatisfactionScore,
+    // C2: Refresh limited product rotation if week changed
+    ...(xpResult.level >= LIMITED_PRODUCTS_UNLOCK_LEVEL &&
+    shouldRefreshRotation(nextDay, save.limitedProductRotation)
+      ? {
+          limitedProductRotation: rotationToSaveState(
+            generateLimitedRotation(getWeekNumber(nextDay), xpResult.level),
+          ),
+        }
+      : {}),
   };
 
   // Record the completed day's XP in the report
   todayReport.xpEarned = xpEarned;
-  // P2-05: Update profit to include passive income and deduct payroll for a true economic profit
+  // P2-05: Update profit to include passive income and deduct payroll + rent for a true economic profit
   todayReport.profit =
-    todayReport.profit + totalPassiveIncome - staffPayrollDeduction;
+    todayReport.profit + totalPassiveIncome - staffPayrollDeduction - rentPaid;
+  // C3: Record rent in today's report
+  todayReport.rentPaid = rentPaid;
+  // C4: Record satisfaction in today's report
+  todayReport.avgSatisfaction = dailySatisfaction;
 
   // Calculate running average revenue for the end-of-day summary
   const finalStats = updatedSave.stats;
@@ -881,6 +955,9 @@ export function advanceDay(
     avgDayRevenue,
     avgDayProfit: Math.round(todayReport.profit), // Use today's actual profit for comparison base
     levelUpGoldBonus,
+    rentPaid,
+    satisfactionScore: updatedSatisfactionScore,
+    satisfactionDailyScore: dailySatisfaction,
   };
 }
 

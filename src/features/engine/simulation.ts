@@ -153,6 +153,8 @@ export interface TickCustomerVisit {
   revenue: number;
   /** B3: How the customer felt about the price. */
   priceSentiment: PriceSentiment;
+  /** C4: Customer satisfaction score (0-1). Only set when purchased. */
+  satisfaction: number;
 }
 
 // ── Core tick function ────────────────────────────────────────────────
@@ -362,6 +364,7 @@ export function processTick(
       quantity: visitResult.quantity,
       revenue: visitResult.revenue,
       priceSentiment: visitResult.priceSentiment,
+      satisfaction: visitResult.satisfaction,
     };
 
     if (visitResult.purchased && visitResult.productId) {

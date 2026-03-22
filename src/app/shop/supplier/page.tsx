@@ -18,9 +18,16 @@ import {
   getTotalInventoryCapacity,
 } from "@/features/upgrades";
 import { getStaffEffects } from "@/features/engine/staff";
+import {
+  LIMITED_PRODUCTS_UNLOCK_LEVEL,
+  restoreRotationFromSave,
+  generateLimitedRotation,
+  getWeekNumber,
+  type LimitedProduct,
+} from "@/features/engine/limited-products";
 
 export default function SupplierPage() {
-  const { save, buyFromSupplier } = useGameStore();
+  const { save, buyFromSupplier, buyLimitedProduct } = useGameStore();
   const sets = getAllSets();
 
   const activeEvents = getActiveEvents(save.activeEvents, save.currentDay);
@@ -46,6 +53,22 @@ export default function SupplierPage() {
     eventMods.wholesaleMultiplier *
       (1 - upgradeMods.wholesaleDiscount - staffEffects.wholesaleDiscount),
   );
+
+  // C2: Limited products
+  const showLimited = save.shopLevel >= LIMITED_PRODUCTS_UNLOCK_LEVEL;
+  let limitedProducts: LimitedProduct[] = [];
+  if (showLimited && save.limitedProductRotation) {
+    const rotation = restoreRotationFromSave(
+      save.limitedProductRotation,
+      save.shopLevel,
+    );
+    limitedProducts = rotation.products;
+  } else if (showLimited) {
+    // Generate on-the-fly if not yet saved (first visit)
+    const weekNum = getWeekNumber(save.currentDay);
+    const rotation = generateLimitedRotation(weekNum, save.shopLevel);
+    limitedProducts = rotation.products;
+  }
 
   return (
     <div className="flex flex-1 flex-col px-4 pt-6 pb-4">
@@ -97,6 +120,16 @@ export default function SupplierPage() {
         </div>
       </div>
 
+      {/* C2: Limited Products Section */}
+      {showLimited && limitedProducts.length > 0 && (
+        <LimitedSection
+          products={limitedProducts}
+          currency={save.softCurrency}
+          remainingCapacity={totalCapacity - currentStock}
+          onBuy={buyLimitedProduct}
+        />
+      )}
+
       {/* Products by set */}
       {sets.map((set) => (
         <SetSection
@@ -113,6 +146,176 @@ export default function SupplierPage() {
     </div>
   );
 }
+
+// ── C2: Limited Products Section ──────────────────────────────────────
+
+function LimitedSection({
+  products,
+  currency,
+  remainingCapacity,
+  onBuy,
+}: {
+  products: LimitedProduct[];
+  currency: number;
+  remainingCapacity: number;
+  onBuy: (
+    limitedProductId: string,
+    quantity: number,
+    totalCost: number,
+    packsProductId?: string,
+  ) => { success: boolean; reason: string | null };
+}) {
+  return (
+    <section className="mb-6">
+      <div className="mb-3 flex items-center gap-2">
+        <h2 className="text-lg font-semibold">Limited Edition</h2>
+        <span className="rounded bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-400">
+          This Week Only
+        </span>
+      </div>
+      <p className="text-foreground-secondary mb-3 text-xs">
+        Exclusive products with higher margins. Limited stock — refreshes
+        weekly.
+      </p>
+      <div className="space-y-3">
+        {products.map((product) => (
+          <LimitedProductCard
+            key={product.id}
+            product={product}
+            currency={currency}
+            remainingCapacity={remainingCapacity}
+            onBuy={onBuy}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function LimitedProductCard({
+  product,
+  currency,
+  remainingCapacity,
+  onBuy,
+}: {
+  product: LimitedProduct;
+  currency: number;
+  remainingCapacity: number;
+  onBuy: (
+    limitedProductId: string,
+    quantity: number,
+    totalCost: number,
+    packsProductId?: string,
+  ) => { success: boolean; reason: string | null };
+}) {
+  const [quantity, setQuantity] = useState(1);
+
+  const totalCost = product.buyPrice * quantity;
+  const canAfford = currency >= totalCost;
+  const soldOut = product.remainingStock <= 0;
+  const maxQty = Math.min(product.remainingStock, remainingCapacity);
+  const atCapacity = remainingCapacity <= 0;
+
+  // For boxes, find the corresponding pack product ID
+  const isBox = product.baseProductId.includes("box");
+  const packsProductId = isBox
+    ? product.baseProductId.replace("-box", "-booster")
+    : undefined;
+
+  const handleBuy = () => {
+    if (soldOut || !canAfford || atCapacity) return;
+    const result = onBuy(product.id, quantity, totalCost, packsProductId);
+    if (result.success) setQuantity(1);
+  };
+
+  return (
+    <div
+      className={`rounded-xl border p-4 ${
+        soldOut
+          ? "border-card-border bg-card-background opacity-50"
+          : "border-amber-500/30 bg-amber-500/5"
+      }`}
+    >
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <h3 className="font-medium">{product.name}</h3>
+            {isBox && (
+              <span className="rounded bg-purple-500/20 px-1.5 py-0.5 text-xs text-purple-400">
+                Box
+              </span>
+            )}
+          </div>
+          <p className="text-foreground-secondary mt-0.5 text-sm">
+            {product.cardsPerUnit} cards
+          </p>
+          <p className="mt-1 text-xs text-amber-400/70 italic">
+            {product.flavourText}
+          </p>
+          <div className="mt-1 flex items-center gap-2">
+            <span
+              className={`text-xs font-medium ${soldOut ? "text-red-400" : "text-amber-300"}`}
+            >
+              {soldOut
+                ? "Sold Out"
+                : `${product.remainingStock}/${product.totalStock} left`}
+            </span>
+          </div>
+        </div>
+        <div className="text-right">
+          <p className="text-currency-gold font-bold">
+            {product.buyPrice.toLocaleString()} G
+          </p>
+          <p className="mt-0.5 text-xs text-green-400">
+            Sells for ~{product.sellPriceBase.toLocaleString()} G
+          </p>
+        </div>
+      </div>
+
+      {!soldOut && (
+        <div className="mt-3 flex items-center gap-3">
+          {/* Quantity control */}
+          <div className="border-card-border flex items-center rounded-lg border">
+            <button
+              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              className="text-foreground-secondary hover:text-foreground min-h-[44px] px-3 py-2 text-sm"
+            >
+              -
+            </button>
+            <span className="min-w-[2rem] text-center text-sm font-medium">
+              {quantity}
+            </span>
+            <button
+              onClick={() => setQuantity(Math.min(maxQty, quantity + 1))}
+              className="text-foreground-secondary hover:text-foreground min-h-[44px] px-3 py-2 text-sm"
+            >
+              +
+            </button>
+          </div>
+
+          {/* Buy button */}
+          <button
+            onClick={handleBuy}
+            disabled={!canAfford || atCapacity}
+            className={`min-h-[44px] flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+              canAfford && !atCapacity
+                ? "bg-amber-600 text-white hover:bg-amber-500"
+                : "bg-card-border cursor-not-allowed text-gray-500"
+            }`}
+          >
+            {atCapacity
+              ? "Inventory Full"
+              : quantity > 1
+                ? `Buy (${totalCost.toLocaleString()} G)`
+                : "Buy"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Regular Products ──────────────────────────────────────────────────
 
 function SetSection({
   set,

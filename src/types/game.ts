@@ -334,6 +334,14 @@ export interface DayReport {
   tradesCompletedToday?: number;
   /** A4: Total reputation lost from stock-outs today (used to enforce daily cap). */
   stockOutRepLoss?: number;
+  /** C3: Rent paid this day. */
+  rentPaid?: number;
+  /** C4: Average customer satisfaction this day (0-1). */
+  avgSatisfaction?: number;
+  /** C4: Total satisfaction points accumulated (for averaging). */
+  satisfactionSum?: number;
+  /** C4: Number of customer visits that contributed to satisfaction. */
+  satisfactionCount?: number;
 }
 
 /** Report generated when the player returns after being away. */
@@ -615,6 +623,27 @@ export interface SaveGame {
   }>;
   /** Day number for which dailyMarketTrends were generated. */
   dailyMarketTrendDay?: number;
+
+  // --- Prestige (C1) ---
+  /** Number of times the player has prestiged (0 = never). */
+  prestigeCount?: number;
+  /** Permanent bonus multiplier from prestige (e.g. 0.10 = +10% to income). */
+  prestigeBonus?: number;
+
+  // --- Limited Products (C2) ---
+  /** Weekly rotation of limited products. */
+  limitedProductRotation?: {
+    /** Week number when this rotation was generated. */
+    weekGenerated: number;
+    /** Limited product IDs available this week. */
+    productIds: string[];
+    /** Remaining stock per product: productId → remaining units. */
+    remainingStock: Record<string, number>;
+  };
+
+  // --- Satisfaction (C4) ---
+  /** Rolling average satisfaction score (0-100). Updated daily. */
+  satisfactionScore?: number;
 }
 
 // ============================================

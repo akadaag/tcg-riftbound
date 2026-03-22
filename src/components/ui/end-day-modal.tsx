@@ -10,6 +10,7 @@ import {
   staggerItem,
 } from "@/lib/animations";
 import type { DayReport, GameEvent } from "@/types/game";
+import { getSatisfactionLabel } from "@/features/engine/satisfaction";
 
 interface EndDayModalProps {
   isOpen: boolean;
@@ -34,6 +35,12 @@ interface EndDayModalProps {
   avgDayRevenue?: number;
   /** A3: Gold bonus for leveling up. */
   levelUpGoldBonus?: number;
+  /** C3: Daily rent paid. */
+  rentPaid?: number;
+  /** C4: Rolling satisfaction score (0-100). */
+  satisfactionScore?: number;
+  /** C4: Today's daily satisfaction score (0-100). */
+  satisfactionDailyScore?: number;
   onClose: () => void;
 }
 
@@ -53,6 +60,9 @@ export function EndDayModal({
   reputationTierName,
   avgDayRevenue,
   levelUpGoldBonus,
+  rentPaid,
+  satisfactionScore,
+  satisfactionDailyScore,
   onClose,
 }: EndDayModalProps) {
   // Escape key handler
@@ -177,6 +187,13 @@ export function EndDayModal({
                   color="text-red-400"
                 />
               )}
+              {(rentPaid ?? 0) > 0 && (
+                <StatRow
+                  label="Rent"
+                  value={`-${(rentPaid ?? 0).toLocaleString()} G`}
+                  color="text-red-400"
+                />
+              )}
               <StatRow
                 label="Customers"
                 value={`${dayReport.customersPurchased}/${dayReport.customersVisited}`}
@@ -196,6 +213,14 @@ export function EndDayModal({
                 value={dayReport.newCardsDiscovered.toString()}
                 color="text-green-400"
               />
+
+              {satisfactionScore !== undefined && (
+                <StatRow
+                  label="Satisfaction"
+                  value={`${satisfactionDailyScore ?? satisfactionScore}/100 (${getSatisfactionLabel(satisfactionScore).label})`}
+                  color={getSatisfactionLabel(satisfactionScore).color}
+                />
+              )}
 
               {/* Divider */}
               <div className="border-card-border border-t" />

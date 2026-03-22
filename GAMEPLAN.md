@@ -29,10 +29,10 @@ Structured improvement plan to transform the daily loop from "watch numbers go u
 
 | #   | Feature                                   | Why                                                                                                                                                                          | Status |
 | --- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| C1  | **Prestige / New Shop mechanic**          | At Level 15+, allow opening a "second location" (prestige reset with permanent bonuses). Classic tycoon scaling mechanic that solves the late-game content drought entirely. | `[ ]`  |
-| C2  | **Rare/Limited products**                 | Add 2-3 "limited edition" products that rotate weekly with higher margins but limited stock from supplier. Creates buying urgency and variety beyond 5 products.             | `[ ]`  |
-| C3  | **Rent / Operating costs**                | Small daily rent scaling with shop level (50G at L1, 500G at L20). Forces the player to stay profitable. Adds mild tension without being punishing.                          | `[ ]`  |
-| C4  | **Customer reviews / satisfaction score** | Track a satisfaction metric based on pricing, stock availability, and staff. Affects reputation gain rate. Gives the player something to optimize beyond pure profit.        | `[ ]`  |
+| C1  | **Prestige / New Shop mechanic**          | At Level 15+, allow opening a "second location" (prestige reset with permanent bonuses). Classic tycoon scaling mechanic that solves the late-game content drought entirely. | `[x]`  |
+| C2  | **Rare/Limited products**                 | Add 2-3 "limited edition" products that rotate weekly with higher margins but limited stock from supplier. Creates buying urgency and variety beyond 5 products.             | `[x]`  |
+| C3  | **Rent / Operating costs**                | Small daily rent scaling with shop level (50G at L1, 500G at L20). Forces the player to stay profitable. Adds mild tension without being punishing.                          | `[x]`  |
+| C4  | **Customer reviews / satisfaction score** | Track a satisfaction metric based on pricing, stock availability, and staff. Affects reputation gain rate. Gives the player something to optimize beyond pure profit.        | `[x]`  |
 
 ---
 

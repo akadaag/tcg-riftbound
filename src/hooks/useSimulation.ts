@@ -36,6 +36,10 @@ import {
   getCombinedTrendModifiers,
   generateDailyTrends,
 } from "@/features/engine/market-trends";
+import {
+  getPrestigeTrafficBonus,
+  getPrestigeIncomeMultiplier,
+} from "@/features/engine/prestige";
 import { TICK_INTERVAL_MS } from "@/types/game";
 
 export function useSimulation() {
@@ -95,6 +99,11 @@ export function useSimulation() {
       currentSave.dailyMarketTrends ?? [],
     );
 
+    // C1: Prestige traffic bonus
+    const prestigeTrafficBonus = getPrestigeTrafficBonus(
+      currentSave.prestigeCount ?? 0,
+    );
+
     const result = processTick(
       Date.now(),
       currentSave.dayElapsedMs,
@@ -110,7 +119,8 @@ export function useSimulation() {
         areaEffects.trafficBonus +
         staffEffects.trafficBonus +
         repTierBonuses.trafficBonus +
-        trendMods.trafficFlat,
+        trendMods.trafficFlat +
+        prestigeTrafficBonus,
       dcBonus.trafficBonus,
       upgradeMods.toleranceBonus +
         areaEffects.toleranceBonus +
@@ -153,12 +163,19 @@ export function useSimulation() {
       });
     }
 
+    // C1: Prestige income multiplier for tick revenue
+    const prestigeIncomeMult = getPrestigeIncomeMultiplier(
+      currentSave.prestigeCount ?? 0,
+    );
+
     // Dispatch tick result
     applyTickResult({
       dayElapsedMs: result.newDayElapsedMs,
       lastTickAt: result.newLastTickAt,
       currentPhase: result.newPhase,
-      revenue: result.customerVisit?.revenue ?? 0,
+      revenue: Math.floor(
+        (result.customerVisit?.revenue ?? 0) * prestigeIncomeMult,
+      ),
       costOfGoods: 0, // shelved items have no per-sale COGS tracked here
       productId: result.customerVisit?.productId ?? null,
       quantity: result.customerVisit?.quantity ?? 0,
@@ -167,6 +184,7 @@ export function useSimulation() {
       updatedShelves: result.updatedShelves,
       notification: result.notification,
       reputationPenalty: result.reputationPenalty,
+      satisfaction: result.customerVisit?.satisfaction ?? 0,
     });
 
     // B2: Dispatch extra notifications (shelf empty, low stock)

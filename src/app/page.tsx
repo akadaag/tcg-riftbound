@@ -581,6 +581,9 @@ export default function HomePage() {
         reputationTierName={endDayResult?.reputationTierName}
         avgDayRevenue={endDayResult?.avgDayRevenue}
         levelUpGoldBonus={endDayResult?.levelUpGoldBonus}
+        rentPaid={endDayResult?.rentPaid}
+        satisfactionScore={endDayResult?.satisfactionScore}
+        satisfactionDailyScore={endDayResult?.satisfactionDailyScore}
         onClose={clearEndDayResult}
       />
     </>

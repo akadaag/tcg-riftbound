@@ -5,6 +5,7 @@ import { useGameStore } from "@/stores/game-store";
 import { TRADER_UNLOCK_LEVEL } from "@/features/trader";
 import { STAFF_UNLOCK_LEVEL } from "@/features/engine/staff";
 import { EVENT_PLANNER_UNLOCK_LEVEL } from "@/features/engine/event-planner";
+import { PRESTIGE_MIN_LEVEL } from "@/features/engine/prestige";
 
 interface MenuItem {
   label: string;
@@ -36,6 +37,12 @@ const menuItems: MenuItem[] = [
     description: "Plan and host events to drive traffic and revenue",
     href: "/more/events",
     unlockLevel: EVENT_PLANNER_UNLOCK_LEVEL,
+  },
+  {
+    label: "Prestige",
+    description: "Open a new location with permanent bonuses",
+    href: "/more/prestige",
+    unlockLevel: PRESTIGE_MIN_LEVEL,
   },
   {
     label: "Missions",
