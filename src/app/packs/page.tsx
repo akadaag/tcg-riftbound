@@ -18,17 +18,24 @@ import {
 } from "@/features/engine/events";
 import type { CardDefinition, CardGameplayMeta, Rarity } from "@/types/game";
 import { getCardById } from "@/features/catalog";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import {
-  cardFlip,
+  revealCardFlip,
+  revealCardFlipFast,
+  cardDetailsSlide,
+  cardDetailsSlideFast,
+  newBadgeBounce,
+  summaryStaggerContainer,
+  summaryStaggerItem,
+  counterPillVariants,
   staggerContainer,
   staggerItem,
   fadeSlideUp,
 } from "@/lib/animations";
 
-type PageState = "select" | "opening" | "reveal" | "batch_reveal";
+type PageState = "select" | "opening" | "reveal" | "batch_reveal" | "summary";
 
 interface RevealCard {
   card: CardDefinition;
@@ -43,6 +50,9 @@ export default function PacksPage() {
   const [pageState, setPageState] = useState<PageState>("select");
   const [revealCards, setRevealCards] = useState<RevealCard[]>([]);
   const [revealIndex, setRevealIndex] = useState(0);
+  const [flippedSet, setFlippedSet] = useState<Set<number>>(new Set());
+  const [isBatchMode, setIsBatchMode] = useState(false);
+  const autoAdvanceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [lastStats, setLastStats] = useState<{
     newCount: number;
     dupeCount: number;
@@ -125,6 +135,8 @@ export default function PacksPage() {
 
       setRevealCards(cards);
       setRevealIndex(0);
+      setFlippedSet(new Set());
+      setIsBatchMode(false);
       setLastStats({ newCount: newUniqueCount, dupeCount: duplicateCount });
 
       // Pack animation: shake (500ms) then burst (400ms) then reveal
@@ -142,9 +154,20 @@ export default function PacksPage() {
     ],
   );
 
-  const handleNextCard = useCallback(() => {
-    setRevealIndex((i) => Math.min(i + 1, revealCards.length - 1));
-  }, [revealCards.length]);
+  // Flip the current card, then after a delay move to the next (or summary)
+  const handleTapReveal = useCallback(() => {
+    // If current card isn't flipped yet, flip it
+    if (!flippedSet.has(revealIndex)) {
+      setFlippedSet((prev) => new Set(prev).add(revealIndex));
+      return;
+    }
+    // Card is already flipped — advance to next or go to summary
+    if (revealIndex < revealCards.length - 1) {
+      setRevealIndex((i) => i + 1);
+    } else {
+      setPageState("summary");
+    }
+  }, [revealIndex, revealCards.length, flippedSet]);
 
   const handleOpenPackBatch = useCallback(
     (productId: string, count: number) => {
@@ -193,13 +216,15 @@ export default function PacksPage() {
       }
 
       setRevealCards(cards);
-      setRevealIndex(cards.length - 1); // Show all immediately in batch mode
+      setRevealIndex(0);
+      setFlippedSet(new Set());
+      setIsBatchMode(true);
       setLastStats({
         newCount: batchResult.newCount,
         dupeCount: batchResult.dupeCount,
       });
 
-      setTimeout(() => setPageState("batch_reveal"), 900);
+      setTimeout(() => setPageState("reveal"), 900);
     },
     [
       save.inventory,
@@ -212,16 +237,66 @@ export default function PacksPage() {
     ],
   );
 
-  const handleRevealAll = () => {
+  const handleSkipToSummary = () => {
+    if (autoAdvanceRef.current) {
+      clearTimeout(autoAdvanceRef.current);
+      autoAdvanceRef.current = null;
+    }
+    // Flip all cards and go to summary
+    const allFlipped = new Set<number>();
+    for (let i = 0; i < revealCards.length; i++) allFlipped.add(i);
+    setFlippedSet(allFlipped);
     setRevealIndex(revealCards.length - 1);
+    setPageState("summary");
   };
 
   const handleDone = () => {
+    if (autoAdvanceRef.current) {
+      clearTimeout(autoAdvanceRef.current);
+      autoAdvanceRef.current = null;
+    }
     setPageState("select");
     setRevealCards([]);
     setRevealIndex(0);
+    setFlippedSet(new Set());
+    setIsBatchMode(false);
     setLastStats(null);
   };
+
+  // Auto-advance for batch mode: flip current card, wait, advance
+  useEffect(() => {
+    if (pageState !== "reveal" || !isBatchMode) return;
+
+    const currentCard = revealCards[revealIndex];
+    const isEpicPlus =
+      currentCard &&
+      (currentCard.rarity === "epic" || currentCard.rarity === "showcase");
+
+    // If not flipped, auto-flip after a short delay
+    if (!flippedSet.has(revealIndex)) {
+      const flipDelay = 200;
+      autoAdvanceRef.current = setTimeout(() => {
+        setFlippedSet((prev) => new Set(prev).add(revealIndex));
+      }, flipDelay);
+      return () => {
+        if (autoAdvanceRef.current) clearTimeout(autoAdvanceRef.current);
+      };
+    }
+
+    // If flipped, auto-advance to next (or summary)
+    // Epic+ cards pause longer even in auto-advance
+    const advanceDelay = isEpicPlus ? 1800 : 1200;
+    autoAdvanceRef.current = setTimeout(() => {
+      if (revealIndex < revealCards.length - 1) {
+        setRevealIndex((i) => i + 1);
+      } else {
+        setPageState("summary");
+      }
+    }, advanceDelay);
+    return () => {
+      if (autoAdvanceRef.current) clearTimeout(autoAdvanceRef.current);
+    };
+  }, [pageState, isBatchMode, revealIndex, flippedSet, revealCards]);
 
   // ── Opening animation ────────────────────────────
   if (pageState === "opening") {
@@ -254,78 +329,110 @@ export default function PacksPage() {
     );
   }
 
-  // ── Reveal sequence ──────────────────────────────
+  // ── Reveal sequence (2A, 2B, 2C, 2E) ──────────────────
   if (pageState === "reveal" && revealCards.length > 0) {
-    const showingAll = revealIndex >= revealCards.length - 1;
     const currentCard = revealCards[revealIndex];
-    const visibleCards = revealCards.slice(0, revealIndex + 1);
+    const isFlipped = flippedSet.has(revealIndex);
+    const isLastCard = revealIndex >= revealCards.length - 1;
+    const progressPct = ((revealIndex + 1) / revealCards.length) * 100;
+    const flipVariants = isBatchMode ? revealCardFlipFast : revealCardFlip;
+    const detailVariants = isBatchMode
+      ? cardDetailsSlideFast
+      : cardDetailsSlide;
 
     return (
-      <m.div
-        className="flex flex-1 flex-col px-4 pt-6 pb-4"
-        variants={fadeSlideUp}
-        initial="initial"
-        animate="animate"
+      <div
+        className="flex flex-1 flex-col px-4 pt-4 pb-4"
+        onClick={handleTapReveal}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === " " || e.key === "Enter") handleTapReveal();
+        }}
       >
-        {/* Progress */}
-        <div className="mb-4 flex items-center justify-between">
-          <span className="text-foreground-secondary text-sm">
-            {revealIndex + 1} / {revealCards.length}
-          </span>
-          {lastStats && (
-            <span className="text-sm">
-              <span className="text-green-400">{lastStats.newCount} new</span>
-              {" / "}
-              <span className="text-foreground-muted">
-                {lastStats.dupeCount} dupes
-              </span>
+        {/* 2C: Counter pill + progress bar */}
+        <m.div
+          className="mx-auto mb-3 flex flex-col items-center gap-1.5"
+          variants={counterPillVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <div className="bg-card-background border-card-border flex items-center gap-2 rounded-full border px-3 py-1">
+            <span className="text-foreground-secondary text-xs font-medium">
+              {revealIndex + 1} / {revealCards.length}
             </span>
-          )}
-        </div>
+            {lastStats && (
+              <>
+                <span className="bg-card-border h-3 w-px" />
+                <span className="text-xs">
+                  <span className="font-medium text-green-400">
+                    {lastStats.newCount} new
+                  </span>
+                </span>
+              </>
+            )}
+          </div>
+          <div className="reveal-counter-bar w-32">
+            <div
+              className="reveal-counter-fill"
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
+        </m.div>
 
-        {/* Current card highlight — 3D flip */}
-        <div className="mb-6 flex justify-center" style={{ perspective: 800 }}>
+        {/* 2A: Full-screen card — 70% width */}
+        <div
+          className="relative mb-4 flex flex-1 items-center justify-center"
+          style={{ perspective: 1200 }}
+        >
           <AnimatePresence mode="wait">
             <m.div
               key={revealIndex}
-              className="preserve-3d relative"
-              style={{ width: 128, height: 176 }}
-              variants={cardFlip}
+              className="preserve-3d relative w-[70vw] max-w-[280px]"
+              style={{ aspectRatio: "5 / 7" }}
+              variants={flipVariants}
               initial="hidden"
-              animate="visible"
-              exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.15 } }}
+              animate={isFlipped ? "visible" : "hidden"}
             >
-              {/* Back face — card back image */}
+              {/* 2B: Rarity burst effect (behind card) */}
+              {isFlipped && <RarityBurst rarity={currentCard.rarity} />}
+
+              {/* Back face */}
               <div
-                className={`absolute inset-0 overflow-hidden rounded-xl border-2 backface-hidden ${getRarityBorderClass(currentCard.rarity)}`}
+                className={`absolute inset-0 overflow-hidden rounded-2xl border-2 backface-hidden ${getRarityBorderClass(currentCard.rarity)}`}
               >
                 <Image
                   src="/images/card-back.png"
                   alt="Card back"
                   fill
-                  sizes="128px"
+                  sizes="70vw"
                   className="object-cover"
                   priority
                 />
               </div>
 
-              {/* Front face — card art (pre-rotated 180° in CSS) */}
+              {/* Front face */}
               <div
-                className={`absolute inset-0 rotate-y-180 overflow-hidden rounded-xl border-2 backface-hidden ${getRarityBorderClass(currentCard.rarity)} ${getRarityGlowClass(currentCard.rarity)}`}
+                className={`absolute inset-0 rotate-y-180 overflow-hidden rounded-2xl border-2 backface-hidden ${getRarityBorderClass(currentCard.rarity)} ${getRarityGlowClass(currentCard.rarity)}`}
               >
                 <Image
                   src={currentCard.card.imageUrl}
                   alt={currentCard.card.name}
                   fill
-                  sizes="128px"
+                  sizes="70vw"
                   className="object-cover"
                 />
+                {/* Showcase shimmer overlay */}
+                {currentCard.rarity === "showcase" && (
+                  <div className="showcase-shimmer-overlay" />
+                )}
+                {/* 2C: NEW badge with bounce */}
                 {currentCard.isNew && (
                   <m.span
-                    className="absolute top-2 right-2 rounded bg-green-500/90 px-1.5 py-0.5 text-[10px] font-bold text-white"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.4, type: "spring", stiffness: 500 }}
+                    className="new-badge-sparkle absolute top-3 right-3 rounded-md bg-green-500/90 px-2 py-0.5 text-xs font-bold text-white shadow-lg"
+                    variants={newBadgeBounce}
+                    initial="hidden"
+                    animate={isFlipped ? "visible" : "hidden"}
                   >
                     NEW
                   </m.span>
@@ -333,76 +440,90 @@ export default function PacksPage() {
               </div>
             </m.div>
           </AnimatePresence>
+
+          {/* 2B: Screen flash for epic/showcase */}
+          {isFlipped && currentCard.rarity === "epic" && (
+            <div className="screen-flash-epic" />
+          )}
+          {isFlipped && currentCard.rarity === "showcase" && (
+            <div className="screen-flash-showcase" />
+          )}
         </div>
 
-        {/* Card grid (all revealed so far) */}
-        <m.div
-          className="mb-4 grid grid-cols-4 gap-1.5 sm:grid-cols-5"
-          variants={staggerContainer}
-          initial="hidden"
-          animate="visible"
-        >
-          {visibleCards.map((c, i) => (
+        {/* Card details (appear after flip) */}
+        <AnimatePresence mode="wait">
+          {isFlipped && (
             <m.div
-              key={i}
-              className={`relative aspect-[5/7] overflow-hidden rounded-md border ${getRarityBorderClass(c.rarity)} ${
-                i === revealIndex ? "ring-1 ring-white/50" : "opacity-70"
-              }`}
-              variants={staggerItem}
+              key={`details-${revealIndex}`}
+              className="mb-4 text-center"
+              variants={detailVariants}
+              initial="hidden"
+              animate="visible"
+              exit={{ opacity: 0, transition: { duration: 0.1 } }}
             >
-              <Image
-                src={c.card.imageUrl}
-                alt={c.card.name}
-                fill
-                sizes="80px"
-                className="object-cover"
-                unoptimized
-              />
-              {c.isNew && (
-                <span className="absolute top-0.5 right-0.5 h-1.5 w-1.5 rounded-full bg-green-400" />
-              )}
+              <p className="text-lg font-bold">{currentCard.card.name}</p>
+              <div className="mt-1 flex items-center justify-center gap-2 text-xs">
+                <span className={getRarityTextClass(currentCard.rarity)}>
+                  {currentCard.rarity.charAt(0).toUpperCase() +
+                    currentCard.rarity.slice(1)}
+                </span>
+                <span className="text-foreground-muted">
+                  {currentCard.card.setName}
+                </span>
+                <span className="text-foreground-muted">
+                  {currentCard.card.cardType}
+                </span>
+              </div>
             </m.div>
-          ))}
-        </m.div>
+          )}
+        </AnimatePresence>
 
-        {/* Actions */}
-        <div className="mt-auto flex gap-3">
-          {!showingAll ? (
-            <>
-              <m.button
-                onClick={handleNextCard}
-                className="bg-accent-primary hover:bg-accent-primary-hover min-h-[44px] flex-1 rounded-xl py-3 text-sm font-medium text-white transition-colors"
-                whileTap={{ scale: 0.97 }}
-              >
-                Next Card
-              </m.button>
-              <m.button
-                onClick={handleRevealAll}
-                className="border-card-border bg-card-background text-foreground-secondary hover:bg-card-hover min-h-[44px] rounded-xl border px-4 py-3 text-sm font-medium transition-colors"
-                whileTap={{ scale: 0.97 }}
-              >
-                Reveal All
-              </m.button>
-            </>
-          ) : (
+        {/* Bottom actions */}
+        <div className="flex gap-3" onClick={(e) => e.stopPropagation()}>
+          {!isFlipped ? (
             <m.button
-              onClick={handleDone}
+              onClick={handleTapReveal}
+              className="bg-accent-primary hover:bg-accent-primary-hover min-h-[44px] flex-1 rounded-xl py-3 text-sm font-medium text-white transition-colors"
+              whileTap={{ scale: 0.97 }}
+            >
+              Tap to Reveal
+            </m.button>
+          ) : isLastCard ? (
+            <m.button
+              onClick={() => setPageState("summary")}
               className="bg-accent-primary hover:bg-accent-primary-hover min-h-[44px] flex-1 rounded-xl py-3 text-sm font-medium text-white transition-colors"
               whileTap={{ scale: 0.97 }}
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 400 }}
             >
-              Done
+              View Summary
             </m.button>
+          ) : (
+            <>
+              <m.button
+                onClick={handleTapReveal}
+                className="bg-accent-primary hover:bg-accent-primary-hover min-h-[44px] flex-1 rounded-xl py-3 text-sm font-medium text-white transition-colors"
+                whileTap={{ scale: 0.97 }}
+              >
+                Next Card
+              </m.button>
+              <m.button
+                onClick={handleSkipToSummary}
+                className="border-card-border bg-card-background text-foreground-secondary hover:bg-card-hover min-h-[44px] rounded-xl border px-4 py-3 text-sm font-medium transition-colors"
+                whileTap={{ scale: 0.97 }}
+              >
+                Skip
+              </m.button>
+            </>
           )}
         </div>
-      </m.div>
+      </div>
     );
   }
 
-  // ── Batch reveal (all cards at once) ────────────────
-  if (pageState === "batch_reveal" && revealCards.length > 0) {
+  // ── Summary screen (2D) ────────────────────────────
+  if (pageState === "summary" && revealCards.length > 0) {
     return (
       <m.div
         className="flex flex-1 flex-col px-4 pt-6 pb-4"
@@ -410,55 +531,64 @@ export default function PacksPage() {
         initial="initial"
         animate="animate"
       >
-        {/* Summary banner */}
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold">Batch Reveal</h2>
+        {/* Summary header */}
+        <div className="mb-4 text-center">
+          <h2 className="text-xl font-bold">Pack Summary</h2>
           {lastStats && (
-            <p className="text-sm">
+            <p className="text-foreground-secondary mt-1 text-sm">
+              {revealCards.length} cards
+              {" \u2022 "}
               <span className="font-medium text-green-400">
                 {lastStats.newCount} new
               </span>
-              {" / "}
+              {" \u2022 "}
               <span className="text-foreground-muted">
                 {lastStats.dupeCount} dupes
-              </span>
-              {" · "}
-              <span className="text-foreground-secondary">
-                {revealCards.length} cards total
               </span>
             </p>
           )}
         </div>
 
-        {/* All cards grid */}
+        {/* Card grid with stagger */}
         <m.div
-          className="mb-4 grid grid-cols-4 gap-1.5 overflow-y-auto sm:grid-cols-5"
-          variants={staggerContainer}
+          className="mb-4 grid grid-cols-3 gap-2 overflow-y-auto sm:grid-cols-4"
+          variants={summaryStaggerContainer}
           initial="hidden"
           animate="visible"
         >
           {revealCards.map((c, i) => (
             <m.div
               key={i}
-              className={`relative aspect-[5/7] overflow-hidden rounded-md border ${getRarityBorderClass(c.rarity)} ${getRarityGlowClass(c.rarity)}`}
-              variants={staggerItem}
+              className={`relative overflow-hidden rounded-xl border-2 ${getRarityBorderClass(c.rarity)} ${getRarityGlowClass(c.rarity)}`}
+              style={{ aspectRatio: "5 / 7" }}
+              variants={summaryStaggerItem}
             >
               <Image
                 src={c.card.imageUrl}
                 alt={c.card.name}
                 fill
-                sizes="80px"
+                sizes="30vw"
                 className="object-cover"
                 unoptimized
               />
               {c.isNew && (
-                <span className="absolute top-0.5 right-0.5 h-1.5 w-1.5 rounded-full bg-green-400" />
+                <span className="new-badge-sparkle absolute top-1 right-1 rounded bg-green-500/90 px-1 py-0.5 text-[9px] font-bold text-white">
+                  NEW
+                </span>
               )}
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 pt-4 pb-1.5">
+                <p className="truncate text-[10px] font-medium text-white">
+                  {c.card.name}
+                </p>
+                <p className={`text-[9px] ${getRarityTextClass(c.rarity)}`}>
+                  {c.rarity.charAt(0).toUpperCase() + c.rarity.slice(1)}
+                </p>
+              </div>
             </m.div>
           ))}
         </m.div>
 
-        {/* Done */}
+        {/* Done button */}
         <m.button
           onClick={handleDone}
           className="bg-accent-primary hover:bg-accent-primary-hover mt-auto min-h-[44px] w-full rounded-xl py-3 text-sm font-medium text-white transition-colors"
@@ -648,4 +778,74 @@ function getRarityGlowClass(rarity: Rarity): string {
     default:
       return "";
   }
+}
+
+// ── 2B: Rarity burst effect component ─────────────────
+
+function RarityBurst({ rarity }: { rarity: Rarity }) {
+  if (rarity === "rare") {
+    return <div className="rarity-burst-rare" />;
+  }
+  if (rarity === "epic") {
+    return (
+      <>
+        <div className="rarity-burst-epic" />
+        <RarityParticles color="rgba(156, 39, 176, 0.8)" count={8} />
+      </>
+    );
+  }
+  if (rarity === "showcase") {
+    return (
+      <>
+        <div className="rarity-burst-showcase" />
+        <RarityParticles color="rgba(255, 152, 0, 0.9)" count={12} />
+      </>
+    );
+  }
+  return null;
+}
+
+/** Particle dots for epic/showcase reveals */
+function RarityParticles({ color, count }: { color: string; count: number }) {
+  // Generate deterministic-ish particle positions
+  const particles = useMemo(() => {
+    const result: Array<{
+      x: number;
+      y: number;
+      delay: number;
+      size: number;
+    }> = [];
+    for (let i = 0; i < count; i++) {
+      const angle = (i / count) * Math.PI * 2;
+      result.push({
+        x: Math.cos(angle) * (30 + (i % 3) * 15),
+        y: Math.sin(angle) * (30 + (i % 3) * 15),
+        delay: i * 0.05,
+        size: 3 + (i % 3),
+      });
+    }
+    return result;
+  }, [count]);
+
+  return (
+    <>
+      {particles.map((p, i) => (
+        <span
+          key={i}
+          className="rarity-particle"
+          style={{
+            top: "50%",
+            left: "50%",
+            width: p.size,
+            height: p.size,
+            backgroundColor: color,
+            animationDelay: `${p.delay}s`,
+            // @ts-expect-error CSS custom properties
+            "--particle-x": `${p.x}px`,
+            "--particle-y": `${p.y}px`,
+          }}
+        />
+      ))}
+    </>
+  );
 }

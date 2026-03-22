@@ -172,3 +172,87 @@ export const hoverGlow = {
   whileHover: { scale: 1.02 },
   transition: { type: "spring", stiffness: 300, damping: 20 },
 };
+
+// ── Phase 2: Pack Opening Revamp ──────────────────────
+
+/** Full-screen card flip — larger, slower for dramatic effect */
+export const revealCardFlip: Variants = {
+  hidden: { rotateY: 0, scale: 0.92 },
+  visible: {
+    rotateY: 180,
+    scale: 1,
+    transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] },
+  },
+};
+
+/** Faster flip for batch mode */
+export const revealCardFlipFast: Variants = {
+  hidden: { rotateY: 0, scale: 0.95 },
+  visible: {
+    rotateY: 180,
+    scale: 1,
+    transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] },
+  },
+};
+
+/** Card details slide in below the card after flip */
+export const cardDetailsSlide: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.3, delay: 0.45, ease: "easeOut" },
+  },
+};
+
+/** Card details slide in faster for batch mode */
+export const cardDetailsSlideFast: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.2, delay: 0.3, ease: "easeOut" },
+  },
+};
+
+/** NEW badge bounce-in with sparkle feel */
+export const newBadgeBounce: Variants = {
+  hidden: { opacity: 0, scale: 0, rotate: -15 },
+  visible: {
+    opacity: 1,
+    scale: [0, 1.3, 0.9, 1.05, 1],
+    rotate: [-15, 5, -3, 0],
+    transition: { duration: 0.5, delay: 0.55, ease: "easeOut" },
+  },
+};
+
+/** Summary grid stagger — slightly slower for pack summary */
+export const summaryStaggerContainer: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.04,
+      delayChildren: 0.15,
+    },
+  },
+};
+
+export const summaryStaggerItem: Variants = {
+  hidden: { opacity: 0, y: 12, scale: 0.9 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.3, ease: "easeOut" },
+  },
+};
+
+/** Counter pill at top of reveal screen */
+export const counterPillVariants: Variants = {
+  hidden: { opacity: 0, y: -10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.2, ease: "easeOut" },
+  },
+};

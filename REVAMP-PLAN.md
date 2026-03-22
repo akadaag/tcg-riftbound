@@ -38,11 +38,11 @@ Full-screen card reveal with tap-to-advance and summary at the end.
 
 | #   | Feature                          | Description                                                                                                                                                                                  | Status |
 | --- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| 2A  | **Full-Screen Card Reveal**      | Card fills ~70% of screen width, centered vertically. Card back shown first, 3D flip reveals front. Card details (name, rarity, set, type) appear below after flip. Tap anywhere to advance. | `[ ]`  |
-| 2B  | **Rarity-Specific Enhancements** | Common/Uncommon: standard flip. Rare: blue energy burst behind card. Epic: purple screen flash + particle dots. Showcase: gold/rainbow sweep, shimmer overlay, 500ms hold before tap.        | `[ ]`  |
-| 2C  | **Card Reveal Counter**          | Small pill at top "3 / 8" with mini progress bar. "NEW" badge with bounce-in + sparkle effect.                                                                                               | `[ ]`  |
-| 2D  | **Summary Screen**               | After last card tap, transition to summary grid. All cards in 3-4 column grid with stagger entrance. Names, rarity borders, NEW badges. Stats: "X new, Y dupes". Done button.                | `[ ]`  |
-| 2E  | **Batch Open (5x) Revision**     | Same full-screen flip sequence but faster (0.4s flip). Auto-advances every 1.2s, tap to skip ahead. "Skip to Summary" button. Epic+ cards pause even in auto-advance. Summary at end.        | `[ ]`  |
+| 2A  | **Full-Screen Card Reveal**      | Card fills ~70% of screen width, centered vertically. Card back shown first, 3D flip reveals front. Card details (name, rarity, set, type) appear below after flip. Tap anywhere to advance. | `[x]`  |
+| 2B  | **Rarity-Specific Enhancements** | Common/Uncommon: standard flip. Rare: blue energy burst behind card. Epic: purple screen flash + particle dots. Showcase: gold/rainbow sweep, shimmer overlay, 500ms hold before tap.        | `[x]`  |
+| 2C  | **Card Reveal Counter**          | Small pill at top "3 / 8" with mini progress bar. "NEW" badge with bounce-in + sparkle effect.                                                                                               | `[x]`  |
+| 2D  | **Summary Screen**               | After last card tap, transition to summary grid. All cards in 3-4 column grid with stagger entrance. Names, rarity borders, NEW badges. Stats: "X new, Y dupes". Done button.                | `[x]`  |
+| 2E  | **Batch Open (5x) Revision**     | Same full-screen flip sequence but faster (0.4s flip). Auto-advances every 1.2s, tap to skip ahead. "Skip to Summary" button. Epic+ cards pause even in auto-advance. Summary at end.        | `[x]`  |
 
 **Edited files:**
 
