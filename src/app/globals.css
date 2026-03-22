@@ -299,3 +299,126 @@ body {
 .rotate-y-180 {
   transform: rotateY(180deg);
 }
+
+/* ============================================
+   Phase 1 — Juice & Micro-feedback
+   ============================================ */
+
+/* 1D: Number change flash */
+@keyframes flash-up {
+  0% {
+    background-color: rgba(76, 175, 80, 0.35);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes flash-down {
+  0% {
+    background-color: rgba(244, 67, 54, 0.35);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.stat-flash-up {
+  animation: flash-up 0.4s ease-out;
+  border-radius: 4px;
+}
+
+.stat-flash-down {
+  animation: flash-down 0.4s ease-out;
+  border-radius: 4px;
+}
+
+/* 1C: Time-of-day atmosphere */
+:root {
+  --atmosphere-from: rgba(251, 191, 36, 0.04);
+  --atmosphere-to: transparent;
+}
+
+@keyframes atmosphere-pulse {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.atmosphere {
+  position: relative;
+}
+
+.atmosphere::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    180deg,
+    var(--atmosphere-from) 0%,
+    var(--atmosphere-to) 60%
+  );
+  transition:
+    --atmosphere-from 2s ease,
+    --atmosphere-to 2s ease;
+  animation: atmosphere-pulse 8s ease-in-out infinite;
+}
+
+/* Phase-specific atmosphere colors */
+.atmosphere-morning {
+  --atmosphere-from: rgba(251, 191, 36, 0.06);
+  --atmosphere-to: rgba(251, 191, 36, 0.01);
+}
+
+.atmosphere-afternoon {
+  --atmosphere-from: rgba(249, 115, 22, 0.05);
+  --atmosphere-to: rgba(249, 115, 22, 0.01);
+}
+
+.atmosphere-evening {
+  --atmosphere-from: rgba(168, 85, 247, 0.06);
+  --atmosphere-to: rgba(168, 85, 247, 0.01);
+}
+
+.atmosphere-night {
+  --atmosphere-from: rgba(59, 130, 246, 0.06);
+  --atmosphere-to: rgba(59, 130, 246, 0.01);
+}
+
+/* 1E: Progress bar fill animation */
+@keyframes fill-bar {
+  from {
+    width: 0%;
+  }
+}
+
+.animate-fill-bar {
+  animation: fill-bar 0.8s ease-out;
+}
+
+/* 1B: Floating sale indicator */
+@keyframes float-up-fade {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  70% {
+    opacity: 0.8;
+    transform: translateY(-30px) scale(1.05);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.95);
+  }
+}
+
+.floating-indicator {
+  animation: float-up-fade 1.4s ease-out forwards;
+  pointer-events: none;
+}

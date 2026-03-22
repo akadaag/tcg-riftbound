@@ -31,7 +31,17 @@ import {
   getNextTierThreshold,
 } from "@/features/engine/reputation";
 import Link from "next/link";
+import { AnimatedCounter } from "@/components/ui/animated-counter";
+import { FloatingIndicator } from "@/components/ui/floating-indicator";
 import type { DayPhase, ShopNotification } from "@/types/game";
+
+// Atmosphere class per phase (1C)
+const PHASE_ATMOSPHERE: Record<DayPhase, string> = {
+  morning: "atmosphere-morning",
+  afternoon: "atmosphere-afternoon",
+  evening: "atmosphere-evening",
+  night: "atmosphere-night",
+};
 
 // Phase display config
 const PHASE_LABELS: Record<DayPhase, string> = {
@@ -174,7 +184,9 @@ export default function HomePage() {
 
   return (
     <>
-      <div className="flex flex-1 flex-col px-4 pt-6 pb-4">
+      <div
+        className={`atmosphere ${PHASE_ATMOSPHERE[currentPhase]} relative flex flex-1 flex-col px-4 pt-6 pb-4`}
+      >
         {/* Offline Report Banner */}
         {offlineReport && (
           <div className="border-accent-primary/30 bg-accent-primary/5 mb-4 rounded-xl border p-4">
@@ -273,7 +285,7 @@ export default function HomePage() {
             </div>
             <div className="bg-card-border h-2 overflow-hidden rounded-full">
               <div
-                className="bg-xp-bar h-full rounded-full transition-all duration-500"
+                className="bg-xp-bar animate-fill-bar h-full rounded-full transition-all duration-500"
                 style={{ width: `${xpPct}%` }}
               />
             </div>
@@ -297,7 +309,7 @@ export default function HomePage() {
             {/* Day progress bar */}
             <div className="bg-card-border h-1.5 overflow-hidden rounded-full">
               <div
-                className="h-full rounded-full bg-yellow-500/70 transition-all duration-1000"
+                className="animate-fill-bar h-full rounded-full bg-yellow-500/70 transition-all duration-1000"
                 style={{ width: `${Math.round(dayProgress * 100)}%` }}
               />
             </div>
@@ -409,21 +421,33 @@ export default function HomePage() {
         )}
 
         {/* Quick Stats */}
-        <div className="mb-4 grid grid-cols-2 gap-3">
-          <StatCard
-            label="Balance"
-            value={`${save.softCurrency.toLocaleString()} G`}
-            accent
-          />
-          <StatCard label="Shop Level" value={`Lv. ${save.shopLevel}`} />
-          <StatCard
-            label="Today's Revenue"
-            value={`${save.todayReport.revenue.toLocaleString()} G`}
-          />
-          <StatCard
-            label={`Rep — ${getReputationTier(save.reputation).name}`}
-            value={save.reputation.toLocaleString()}
-          />
+        <div className="relative mb-4 grid grid-cols-2 gap-3">
+          <StatCard label="Balance" accent>
+            <AnimatedCounter
+              value={save.softCurrency}
+              suffix=" G"
+              className="text-accent-primary mt-1 text-lg font-bold"
+            />
+          </StatCard>
+          <StatCard label="Shop Level">
+            <span className="text-foreground mt-1 text-lg font-bold">
+              Lv. {save.shopLevel}
+            </span>
+          </StatCard>
+          <StatCard label="Today's Revenue">
+            <AnimatedCounter
+              value={save.todayReport.revenue}
+              suffix=" G"
+              className="text-foreground mt-1 text-lg font-bold"
+            />
+          </StatCard>
+          <StatCard label={`Rep — ${getReputationTier(save.reputation).name}`}>
+            <AnimatedCounter
+              value={save.reputation}
+              className="text-foreground mt-1 text-lg font-bold"
+            />
+          </StatCard>
+          <FloatingIndicator notifications={notifications} />
         </div>
 
         {/* Shelf Stock Gauges */}
@@ -468,7 +492,7 @@ export default function HomePage() {
                     </div>
                     <div className="bg-card-border h-1 overflow-hidden rounded-full">
                       <div
-                        className={`h-full rounded-full transition-all duration-500 ${color}`}
+                        className={`animate-fill-bar h-full rounded-full transition-all duration-500 ${color}`}
                         style={{ width: `${pct}%` }}
                       />
                     </div>
@@ -677,12 +701,12 @@ function DisplayCaseSummary({
 
 function StatCard({
   label,
-  value,
   accent = false,
+  children,
 }: {
   label: string;
-  value: string;
   accent?: boolean;
+  children: React.ReactNode;
 }) {
   return (
     <m.div
@@ -691,11 +715,7 @@ function StatCard({
       transition={{ type: "spring", stiffness: 400, damping: 17 }}
     >
       <p className="text-foreground-muted text-xs">{label}</p>
-      <p
-        className={`mt-1 text-lg font-bold ${accent ? "text-accent-primary" : "text-foreground"}`}
-      >
-        {value}
-      </p>
+      {children}
     </m.div>
   );
 }
