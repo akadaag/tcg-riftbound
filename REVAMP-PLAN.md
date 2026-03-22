@@ -58,12 +58,12 @@ The centerpiece. A minimal geometric shop visualization on the home page.
 
 | #   | Feature                        | Description                                                                                                                                                                                                     | Status |
 | --- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| 3A  | **Shop View Component**        | Compact (200-240px) visual shop. CSS shapes: rounded rect background with time-of-day gradient, horizontal shelf rectangles filled proportionally, counter/register area, door on left.                         | `[ ]`  |
-| 3B  | **Customer Animation**         | Customer dots (12-16px colored circles by type: casual=blue, collector=purple, competitive=red, kid=green, whale=gold). Enter from door, move to shelf, buy (coin particle) or leave (? bubble). One at a time. | `[ ]`  |
-| 3C  | **Staff Presence**             | Staff dots (squares/diamonds) stationed near shelves. Color-coded by role. Static placement.                                                                                                                    | `[ ]`  |
-| 3D  | **Sale Flash + Revenue Float** | Register area flashes gold on sale. "+N G" floats up from register (reuses floating-indicator).                                                                                                                 | `[ ]`  |
-| 3E  | **Night Mode**                 | Shop dims during night phase. "CLOSED" text overlay. No customer dots. Moon/star icon on register.                                                                                                              | `[ ]`  |
-| 3F  | **Home Page Integration**      | Insert between Day Phase Indicator and stat cards. Shelf stock gauges simplified (shop view shows stock visually).                                                                                              | `[ ]`  |
+| 3A  | **Shop View Component**        | Compact (200-240px) visual shop. CSS shapes: rounded rect background with time-of-day gradient, horizontal shelf rectangles filled proportionally, counter/register area, door on left.                         | `[x]`  |
+| 3B  | **Customer Animation**         | Customer dots (12-16px colored circles by type: casual=blue, collector=purple, competitive=red, kid=green, whale=gold). Enter from door, move to shelf, buy (coin particle) or leave (? bubble). One at a time. | `[x]`  |
+| 3C  | **Staff Presence**             | Staff dots (squares/diamonds) stationed near shelves. Color-coded by role. Static placement.                                                                                                                    | `[x]`  |
+| 3D  | **Sale Flash + Revenue Float** | Register area flashes gold on sale. "+N G" floats up from register (reuses floating-indicator).                                                                                                                 | `[x]`  |
+| 3E  | **Night Mode**                 | Shop dims during night phase. "CLOSED" text overlay. No customer dots. Moon/star icon on register.                                                                                                              | `[x]`  |
+| 3F  | **Home Page Integration**      | Insert between Day Phase Indicator and stat cards. Shelf stock gauges simplified (shop view shows stock visually).                                                                                              | `[x]`  |
 
 **New files:**
 

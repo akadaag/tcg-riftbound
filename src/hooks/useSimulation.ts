@@ -185,6 +185,7 @@ export function useSimulation() {
       notification: result.notification,
       reputationPenalty: result.reputationPenalty,
       satisfaction: result.customerVisit?.satisfaction ?? 0,
+      customerVisit: result.customerVisit ?? null,
     });
 
     // B2: Dispatch extra notifications (shelf empty, low stock)

@@ -33,6 +33,7 @@ import {
 import Link from "next/link";
 import { AnimatedCounter } from "@/components/ui/animated-counter";
 import { FloatingIndicator } from "@/components/ui/floating-indicator";
+import { ShopView } from "@/components/ui/shop-view";
 import type { DayPhase, ShopNotification } from "@/types/game";
 
 // Atmosphere class per phase (1C)
@@ -69,6 +70,7 @@ export default function HomePage() {
     notifications,
     endDayResult,
     clearEndDayResult,
+    lastCustomerVisit,
   } = useGameStore();
   const { displayName } = useAuth();
 
@@ -333,6 +335,14 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* 3A-3E: Shop Visualization */}
+        <ShopView
+          shelves={save.shelves}
+          staff={save.staff}
+          currentPhase={currentPhase}
+          lastCustomerVisit={lastCustomerVisit}
+        />
 
         {/* Night — daily summary */}
         {isNight && (

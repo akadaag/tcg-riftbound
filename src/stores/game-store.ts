@@ -26,6 +26,7 @@ import type {
 } from "@/types/game";
 import { XP_THRESHOLDS, STARTING_SHELVES } from "@/types/game";
 import type { EndDayResult } from "@/features/engine/day-cycle";
+import type { TickCustomerVisit } from "@/features/engine/simulation";
 import {
   getUpgradeById,
   getUpgradeCost,
@@ -200,6 +201,8 @@ interface GameState {
   notifications: ShopNotification[];
   /** End-of-day result shown in the night summary modal. */
   endDayResult: EndDayResult | null;
+  /** Last customer visit data for the shop view animation. Not persisted. */
+  lastCustomerVisit: TickCustomerVisit | null;
 
   // Actions — Auth
   setAuthenticated: (userId: string) => void;
@@ -306,6 +309,8 @@ interface GameState {
     reputationPenalty: number;
     /** C4: Customer satisfaction score (0-1) from this visit. */
     satisfaction: number;
+    /** Phase 3: Full customer visit data for shop view animation. */
+    customerVisit: TickCustomerVisit | null;
   }) => void;
   /** Advance to the next day (called when night→morning transition fires). */
   applyDayTransition: (result: EndDayResult) => void;
@@ -391,8 +396,7 @@ export const useGameStore = create<GameState>()((set, get) => ({
   offlineReport: null,
   notifications: [],
   endDayResult: null,
-
-  // ── Auth ─────────────────────────────────────────
+  lastCustomerVisit: null,
 
   setAuthenticated: (userId: string) =>
     set({
@@ -1268,6 +1272,7 @@ export const useGameStore = create<GameState>()((set, get) => ({
         notification,
         reputationPenalty,
         satisfaction,
+        customerVisit,
       } = patch;
 
       const now = new Date().toISOString();
@@ -1351,11 +1356,20 @@ export const useGameStore = create<GameState>()((set, get) => ({
         ? [notification, ...state.notifications].slice(0, 50)
         : state.notifications;
 
-      return { save: newSave, notifications: newNotifications };
+      return {
+        save: newSave,
+        notifications: newNotifications,
+        lastCustomerVisit: customerVisit,
+      };
     }),
 
   applyDayTransition: (result: EndDayResult) =>
-    set({ save: result.updatedSave, notifications: [], endDayResult: result }),
+    set({
+      save: result.updatedSave,
+      notifications: [],
+      endDayResult: result,
+      lastCustomerVisit: null,
+    }),
 
   clearEndDayResult: () => set({ endDayResult: null }),
 
