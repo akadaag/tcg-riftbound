@@ -321,6 +321,8 @@ export interface DayReport {
   activeEvents: string[];
   /** Number of card trades completed today (for weekly mission tracking). */
   tradesCompletedToday?: number;
+  /** A4: Total reputation lost from stock-outs today (used to enforce daily cap). */
+  stockOutRepLoss?: number;
 }
 
 /** Report generated when the player returns after being away. */

@@ -295,6 +295,8 @@ interface GameState {
     customerPurchased: boolean;
     updatedShelves: ShelfSlot[] | null;
     notification: ShopNotification | null;
+    /** A4: Reputation penalty from stock-outs (negative number or 0). */
+    reputationPenalty: number;
   }) => void;
   /** Advance to the next day (called when night→morning transition fires). */
   applyDayTransition: (result: EndDayResult) => void;
@@ -1244,6 +1246,7 @@ export const useGameStore = create<GameState>()((set, get) => ({
         customerPurchased,
         updatedShelves,
         notification,
+        reputationPenalty,
       } = patch;
 
       const now = new Date().toISOString();
@@ -1295,6 +1298,27 @@ export const useGameStore = create<GameState>()((set, get) => ({
             totalCustomersServed: newSave.stats.totalCustomersServed + 1,
           },
         };
+      }
+
+      // A4: Apply stock-out reputation penalty (capped at -3 per day)
+      if (reputationPenalty < 0) {
+        const DAILY_REP_LOSS_CAP = 3;
+        const alreadyLost = newSave.todayReport.stockOutRepLoss ?? 0;
+        const remainingBudget = Math.max(0, DAILY_REP_LOSS_CAP - alreadyLost);
+        const actualLoss = Math.min(
+          Math.abs(reputationPenalty),
+          remainingBudget,
+        );
+        if (actualLoss > 0) {
+          newSave = {
+            ...newSave,
+            reputation: Math.max(0, newSave.reputation - actualLoss),
+            todayReport: {
+              ...newSave.todayReport,
+              stockOutRepLoss: alreadyLost + actualLoss,
+            },
+          };
+        }
       }
 
       // Add notification (cap at 50)

@@ -62,6 +62,56 @@ export default function HomePage() {
   } = useGameStore();
   const { displayName } = useAuth();
 
+  // ── Onboarding state (A1) ──────────────────────────
+  const totalInventory0 = save.inventory.reduce(
+    (acc, i) => acc + i.ownedQuantity,
+    0,
+  );
+  const hasInventory = totalInventory0 > 0;
+  const hasStockedShelves = save.shelves.some(
+    (s) => s.productId !== null && s.quantity > 0,
+  );
+  const isEarlyGame = save.currentDay <= 3;
+
+  const onboardingBanners: Array<{
+    id: string;
+    message: string;
+    action: string;
+    href: string;
+  }> = [];
+
+  if (isEarlyGame && !hasInventory && !hasStockedShelves) {
+    onboardingBanners.push({
+      id: "buy-stock",
+      message:
+        "Your shop is empty! Buy some stock from the Supplier to start selling.",
+      action: "Buy Stock",
+      href: "/shop/supplier",
+    });
+  }
+  if (isEarlyGame && hasInventory && !hasStockedShelves) {
+    onboardingBanners.push({
+      id: "stock-shelves",
+      message:
+        "You have products in storage. Stock your shelves so customers can buy!",
+      action: "Manage Shelves",
+      href: "/shop",
+    });
+  }
+  if (
+    isEarlyGame &&
+    hasStockedShelves &&
+    save.shelves.every((s) => !s.productId || s.markup === 20)
+  ) {
+    onboardingBanners.push({
+      id: "set-markup",
+      message:
+        "Tip: Adjust your shelf markup in the Shop. Higher markup = more profit, but fewer sales.",
+      action: "Adjust Markup",
+      href: "/shop",
+    });
+  }
+
   const greeting = displayName
     ? `Welcome back, ${displayName}.`
     : "Welcome back, shopkeeper.";
@@ -184,6 +234,20 @@ export default function HomePage() {
             </button>
           </div>
         )}
+
+        {/* Onboarding Banners (A1) */}
+        {onboardingBanners.map((banner) => (
+          <Link
+            key={banner.id}
+            href={banner.href}
+            className="border-accent-primary/40 bg-accent-primary/10 hover:bg-accent-primary/15 mb-3 flex items-center justify-between rounded-xl border p-4 transition-colors"
+          >
+            <p className="text-foreground pr-3 text-sm">{banner.message}</p>
+            <span className="text-accent-primary shrink-0 text-sm font-semibold">
+              {banner.action} &rarr;
+            </span>
+          </Link>
+        ))}
 
         {/* Header */}
         <div className="mb-4">
@@ -479,6 +543,7 @@ export default function HomePage() {
         passiveIncome={endDayResult?.passiveIncome}
         reputationTierName={endDayResult?.reputationTierName}
         avgDayRevenue={endDayResult?.avgDayRevenue}
+        levelUpGoldBonus={endDayResult?.levelUpGoldBonus}
         onClose={clearEndDayResult}
       />
     </>

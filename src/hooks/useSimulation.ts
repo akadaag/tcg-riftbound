@@ -132,6 +132,7 @@ export function useSimulation() {
       customerPurchased: result.customerVisit?.purchased ?? false,
       updatedShelves: result.updatedShelves,
       notification: result.notification,
+      reputationPenalty: result.reputationPenalty,
     });
   }, [applyTickResult, applyDayTransition, addNotification]);
 

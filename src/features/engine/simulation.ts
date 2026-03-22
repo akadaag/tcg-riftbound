@@ -136,6 +136,8 @@ export interface TickResult {
   updatedShelves: ShelfSlot[] | null;
   /** Notification to show in the live feed (null if nothing to report). */
   notification: ShopNotification | null;
+  /** A4: Reputation penalty this tick (negative number, e.g. -1). 0 if no penalty. */
+  reputationPenalty: number;
 }
 
 export interface TickCustomerVisit {
@@ -220,6 +222,7 @@ export function processTick(
       customerVisit: null,
       updatedShelves: null,
       notification: null,
+      reputationPenalty: 0,
     };
   }
 
@@ -265,6 +268,7 @@ export function processTick(
       customerVisit: null,
       updatedShelves: null,
       notification: null,
+      reputationPenalty: 0,
     };
   }
 
@@ -375,6 +379,22 @@ export function processTick(
     }
   }
 
+  // A4: Stock-out detection — if a customer arrived but ALL shelves were empty,
+  // apply a reputation penalty and show a "lost sale" notification.
+  let reputationPenalty = 0;
+  const allShelvesEmpty = workingShelves.every(
+    (s) => s.productId === null || s.quantity <= 0,
+  );
+  if (allShelvesEmpty && lastCustomerVisit && !lastCustomerVisit.purchased) {
+    reputationPenalty = -1;
+    lastNotification = {
+      id: `notif-stockout-${now}-${Math.random().toString(36).slice(2, 7)}`,
+      message: `${lastCustomerVisit.customerName} left — all shelves empty! (-1 rep)`,
+      at: new Date(now).toISOString(),
+      type: "info",
+    };
+  }
+
   return {
     newDayElapsedMs,
     newLastTickAt,
@@ -385,6 +405,7 @@ export function processTick(
     customerVisit: lastCustomerVisit,
     updatedShelves: lastUpdatedShelves,
     notification: lastNotification,
+    reputationPenalty,
   };
 }
 

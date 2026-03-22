@@ -58,28 +58,28 @@ export function willCustomerBuy(
 
 // ── Traffic ──────────────────────────────────────────────────────────
 
-/** Base customers per day by shop level. */
+/** Base customers per day by shop level. A2: L1-L7 bumped for livelier early game. */
 const BASE_TRAFFIC_BY_LEVEL: Record<number, number> = {
-  1: 5,
-  2: 7,
-  3: 10,
-  4: 13,
-  5: 16,
-  6: 20,
-  7: 24,
-  8: 28,
-  9: 32,
-  10: 38,
-  11: 42,
-  12: 46,
-  13: 50,
-  14: 55,
-  15: 60,
-  16: 66,
-  17: 72,
-  18: 78,
-  19: 85,
-  20: 95,
+  1: 8,
+  2: 10,
+  3: 13,
+  4: 17,
+  5: 21,
+  6: 25,
+  7: 29,
+  8: 33,
+  9: 37,
+  10: 42,
+  11: 47,
+  12: 52,
+  13: 57,
+  14: 62,
+  15: 68,
+  16: 74,
+  17: 80,
+  18: 87,
+  19: 94,
+  20: 102,
 };
 
 /**

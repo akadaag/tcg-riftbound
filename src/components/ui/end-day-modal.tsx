@@ -32,6 +32,8 @@ interface EndDayModalProps {
   reputationTierName?: string;
   /** Average daily revenue (lifetime). */
   avgDayRevenue?: number;
+  /** A3: Gold bonus for leveling up. */
+  levelUpGoldBonus?: number;
   onClose: () => void;
 }
 
@@ -50,6 +52,7 @@ export function EndDayModal({
   passiveIncome,
   reputationTierName,
   avgDayRevenue,
+  levelUpGoldBonus,
   onClose,
 }: EndDayModalProps) {
   // Escape key handler
@@ -96,7 +99,7 @@ export function EndDayModal({
               End of day summary
             </p>
 
-            {/* Level up animation */}
+            {/* Level up animation (A3: with gold bonus) */}
             <AnimatePresence>
               {levelsGained > 0 && (
                 <m.div
@@ -111,6 +114,20 @@ export function EndDayModal({
                   <p className="text-foreground-secondary text-sm">
                     Shop is now Level {newLevel}
                   </p>
+                  {(levelUpGoldBonus ?? 0) > 0 && (
+                    <m.p
+                      className="text-currency-gold mt-2 text-sm font-semibold"
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{
+                        delay: 0.3,
+                        type: "spring",
+                        stiffness: 300,
+                      }}
+                    >
+                      +{(levelUpGoldBonus ?? 0).toLocaleString()} G bonus!
+                    </m.p>
+                  )}
                 </m.div>
               )}
             </AnimatePresence>

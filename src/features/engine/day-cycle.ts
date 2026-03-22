@@ -321,6 +321,8 @@ export interface EndDayResult {
   avgDayRevenue: number;
   /** Average daily profit (lifetime). */
   avgDayProfit: number;
+  /** A3: Gold bonus awarded for leveling up (0 if no level-up). */
+  levelUpGoldBonus: number;
 }
 
 /**
@@ -473,6 +475,14 @@ export function advanceDay(
     save.xpToNextLevel,
     xpEarned,
   );
+
+  // A3: Level-up gold bonus — 50 + (newLevel * 25) for each level gained
+  let levelUpGoldBonus = 0;
+  if (xpResult.levelsGained > 0) {
+    for (let lvl = save.shopLevel + 1; lvl <= xpResult.level; lvl++) {
+      levelUpGoldBonus += 50 + lvl * 25;
+    }
+  }
 
   // 4. Decay hype (with upgrade-based reduction)
   let updatedHype = decayHype(save.setHype, upgradeMods.hypeDecayReduction);
@@ -759,7 +769,7 @@ export function advanceDay(
     xp: xpResult.xp,
     xpToNextLevel: xpResult.xpToNextLevel,
     reputation: save.reputation + reputationGain,
-    // Add singles revenue delta + set completion bonuses + passive income (areas + upgrades + rep tier) + event revenue bonus − staff payroll
+    // Add singles revenue delta + set completion bonuses + passive income (areas + upgrades + rep tier) + event revenue bonus + level-up gold bonus − staff payroll
     // P2-04: Clamp to 0 — softCurrency can never go negative
     softCurrency: Math.max(
       0,
@@ -767,7 +777,8 @@ export function advanceDay(
         (singlesRevenue - save.todayReport.singlesRevenue) +
         setCompletionBonus +
         totalPassiveIncome +
-        eventRevenueBonus -
+        eventRevenueBonus +
+        levelUpGoldBonus -
         staffPayrollDeduction,
     ),
     collection: updatedCollection,
@@ -836,6 +847,7 @@ export function advanceDay(
     reputationTierName: repTier.name,
     avgDayRevenue,
     avgDayProfit: Math.round(todayReport.profit), // Use today's actual profit for comparison base
+    levelUpGoldBonus,
   };
 }
 
