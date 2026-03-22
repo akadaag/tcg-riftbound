@@ -83,10 +83,10 @@ Reward the player emotionally at key milestones.
 
 | #   | Feature                     | Description                                                                                                                                                            | Status |
 | --- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| 4A  | **Level-Up Celebration**    | On level-up in end-day modal: level number scales up with `levelUpPulse`, gold coin particles rain (8-12 falling circles), new unlocks listed. Auto-dismiss 3s or tap. | `[ ]`  |
-| 4B  | **Mission Claim Animation** | Reward icon flies from claim button to header balance. Curved path via Framer Motion keyframes.                                                                        | `[ ]`  |
-| 4C  | **Day-End Stat Stamps**     | Stat rows in end-day modal "stamp" with scale overshoot (1.0 -> 1.05 -> 1.0). Profit row: green glow if positive, red flash if negative.                               | `[ ]`  |
-| 4D  | **Prestige Ceremony**       | Full-screen: shop fades to white, prestige badge animates in (spring scale), bonuses stagger in, "Your new journey begins..." text, fade back.                         | `[ ]`  |
+| 4A  | **Level-Up Celebration**    | On level-up in end-day modal: level number scales up with `levelUpPulse`, gold coin particles rain (8-12 falling circles), new unlocks listed. Auto-dismiss 3s or tap. | `[x]`  |
+| 4B  | **Mission Claim Animation** | Reward icon flies from claim button to header balance. Curved path via Framer Motion keyframes.                                                                        | `[x]`  |
+| 4C  | **Day-End Stat Stamps**     | Stat rows in end-day modal "stamp" with scale overshoot (1.0 -> 1.05 -> 1.0). Profit row: green glow if positive, red flash if negative.                               | `[x]`  |
+| 4D  | **Prestige Ceremony**       | Full-screen: shop fades to white, prestige badge animates in (spring scale), bonuses stagger in, "Your new journey begins..." text, fade back.                         | `[x]`  |
 
 **Edited files:**
 

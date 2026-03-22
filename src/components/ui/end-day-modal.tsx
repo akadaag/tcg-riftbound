@@ -7,7 +7,7 @@ import {
   modalVariants,
   levelUpPulse,
   staggerContainer,
-  staggerItem,
+  stampItem,
 } from "@/lib/animations";
 import type { DayReport, GameEvent } from "@/types/game";
 import { getSatisfactionLabel } from "@/features/engine/satisfaction";
@@ -113,11 +113,12 @@ export function EndDayModal({
             <AnimatePresence>
               {levelsGained > 0 && (
                 <m.div
-                  className="border-accent-primary/50 bg-accent-primary/10 mb-4 rounded-xl border p-4 text-center"
+                  className="border-accent-primary/50 bg-accent-primary/10 relative mb-4 overflow-hidden rounded-xl border p-4 text-center"
                   variants={levelUpPulse}
                   initial="hidden"
                   animate="visible"
                 >
+                  <CoinParticles />
                   <p className="text-accent-primary text-lg font-bold">
                     Level Up!
                   </p>
@@ -165,6 +166,7 @@ export function EndDayModal({
                 color={
                   dayReport.profit >= 0 ? "text-green-400" : "text-red-400"
                 }
+                profitGlow={dayReport.profit >= 0 ? "positive" : "negative"}
               />
               {(singlesRevenue ?? 0) > 0 && (
                 <StatRow
@@ -344,21 +346,69 @@ function formatComparison(
   };
 }
 
+// ── Coin rain for level-up (4A) ───────────────────────
+
+/** Stable coin positions — defined outside component to avoid instability. */
+const COINS = [
+  { id: 0, x: 5, delay: 0, size: 7 },
+  { id: 1, x: 16, delay: 0.07, size: 6 },
+  { id: 2, x: 27, delay: 0.13, size: 8 },
+  { id: 3, x: 37, delay: 0.04, size: 7 },
+  { id: 4, x: 48, delay: 0.19, size: 9 },
+  { id: 5, x: 58, delay: 0.1, size: 6 },
+  { id: 6, x: 68, delay: 0.23, size: 8 },
+  { id: 7, x: 77, delay: 0.08, size: 7 },
+  { id: 8, x: 87, delay: 0.16, size: 6 },
+  { id: 9, x: 94, delay: 0.03, size: 8 },
+] as const;
+
+function CoinParticles() {
+  return (
+    <>
+      {COINS.map((coin) => (
+        <span
+          key={coin.id}
+          className="coin-particle absolute rounded-full"
+          style={{
+            left: `${coin.x}%`,
+            top: "15%",
+            width: coin.size,
+            height: coin.size,
+            backgroundColor: "var(--currency-gold)",
+            animationDelay: `${coin.delay}s`,
+          }}
+          aria-hidden="true"
+        />
+      ))}
+    </>
+  );
+}
+
+// ── Stat Row (4C: stamp-in + profit glow) ────────────
+
 function StatRow({
   label,
   value,
   color,
   comparison,
+  profitGlow,
 }: {
   label: string;
   value: string;
   color?: string;
   comparison?: { text: string; color: string };
+  profitGlow?: "positive" | "negative";
 }) {
+  const glowClass =
+    profitGlow === "positive"
+      ? "stat-profit-positive"
+      : profitGlow === "negative"
+        ? "stat-profit-negative"
+        : "";
   return (
     <m.div
-      className="flex items-center justify-between text-sm"
-      variants={staggerItem}
+      className={`flex items-center justify-between text-sm ${glowClass}`}
+      variants={stampItem}
     >
       <span className="text-foreground-secondary">{label}</span>
       <span className="flex items-center gap-2">

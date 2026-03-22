@@ -256,3 +256,59 @@ export const counterPillVariants: Variants = {
     transition: { duration: 0.2, ease: "easeOut" },
   },
 };
+
+// ── Phase 4: Big Moment Celebrations ─────────────────
+
+/**
+ * Spring stamp-in with natural overshoot — used for day-end stat rows.
+ * The spring (stiffness 480, damping 18) naturally overshoots ~1.05 before settling at 1.
+ */
+export const stampItem: Variants = {
+  hidden: { opacity: 0, scale: 0.82 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 480,
+      damping: 18,
+      mass: 0.7,
+    },
+  },
+};
+
+/** Spring scale-in for the prestige tier badge in the ceremony overlay. */
+export const prestigeBadge: Variants = {
+  hidden: { opacity: 0, scale: 0.3 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 280,
+      damping: 14,
+      delay: 0.25,
+    },
+  },
+};
+
+/** Stagger container for prestige ceremony content. */
+export const ceremonyContainer: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.8,
+    },
+  },
+};
+
+/** Each staggered item in the prestige ceremony. */
+export const ceremonyItem: Variants = {
+  hidden: { opacity: 0, y: 18 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: "easeOut" },
+  },
+};

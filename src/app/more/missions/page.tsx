@@ -193,6 +193,8 @@ function MissionCard({
   currentValue: number;
   onClaim: () => void;
 }) {
+  const [showRewardFloat, setShowRewardFloat] = useState(false);
+
   const isCompleted =
     progress?.completed ?? currentValue >= mission.targetValue;
   const isClaimed = progress?.claimed ?? false;
@@ -220,67 +222,97 @@ function MissionCard({
         ? "text-accent-primary"
         : "text-green-400";
 
+  // Inline style for the floating reward label (CSS var-based colors)
+  const rewardFloatStyle: React.CSSProperties =
+    mission.rewardType === "currency"
+      ? { color: "var(--currency-gold)" }
+      : mission.rewardType === "xp"
+        ? { color: "var(--accent-primary)" }
+        : { color: "#4caf50" };
+
+  function handleClaimClick() {
+    onClaim();
+    setShowRewardFloat(true);
+    setTimeout(() => setShowRewardFloat(false), 1400);
+  }
+
   return (
-    <div
-      className={`border-card-border bg-card-background rounded-xl border p-4 transition-opacity ${
-        isClaimed ? "opacity-50" : ""
-      }`}
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-medium">{mission.title}</h3>
-            {isCompleted && !isClaimed && (
-              <span className="rounded-full bg-green-500/20 px-1.5 py-0.5 text-[10px] font-medium text-green-400">
-                Complete
-              </span>
-            )}
-            {isClaimed && (
-              <span className="text-foreground-muted bg-card-hover rounded-full px-1.5 py-0.5 text-[10px] font-medium">
-                Claimed
-              </span>
-            )}
+    <div className="relative">
+      {/* Main card — dims when claimed */}
+      <div
+        className={`border-card-border bg-card-background rounded-xl border p-4 transition-opacity ${
+          isClaimed ? "opacity-50" : ""
+        }`}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-medium">{mission.title}</h3>
+              {isCompleted && !isClaimed && (
+                <span className="rounded-full bg-green-500/20 px-1.5 py-0.5 text-[10px] font-medium text-green-400">
+                  Complete
+                </span>
+              )}
+              {isClaimed && (
+                <span className="text-foreground-muted bg-card-hover rounded-full px-1.5 py-0.5 text-[10px] font-medium">
+                  Claimed
+                </span>
+              )}
+            </div>
+            <p className="text-foreground-secondary mt-0.5 text-xs">
+              {mission.description}
+            </p>
           </div>
-          <p className="text-foreground-secondary mt-0.5 text-xs">
-            {mission.description}
-          </p>
+
+          {/* Reward */}
+          <div className="shrink-0 text-right">
+            <p className={`text-xs font-medium ${rewardColor}`}>
+              {rewardLabel}
+            </p>
+          </div>
         </div>
 
-        {/* Reward */}
-        <div className="shrink-0 text-right">
-          <p className={`text-xs font-medium ${rewardColor}`}>{rewardLabel}</p>
-        </div>
+        {/* Progress bar */}
+        {!isClaimed && (
+          <div className="mt-3">
+            <div className="mb-1 flex items-center justify-between text-xs">
+              <span className="text-foreground-muted">
+                {currentValue.toLocaleString()}/
+                {mission.targetValue.toLocaleString()}
+              </span>
+              <span className="text-foreground-muted">{pct}%</span>
+            </div>
+            <div className="bg-card-border h-1.5 w-full overflow-hidden rounded-full">
+              <div
+                className={`h-full rounded-full transition-all ${
+                  isCompleted ? "bg-green-500" : "bg-accent-primary"
+                }`}
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Claim button */}
+        {isCompleted && !isClaimed && (
+          <button
+            onClick={handleClaimClick}
+            className="bg-accent-primary hover:bg-accent-primary-hover mt-3 min-h-[44px] w-full rounded-lg py-2 text-sm font-medium text-white transition-colors"
+          >
+            Claim Reward
+          </button>
+        )}
       </div>
 
-      {/* Progress bar */}
-      {!isClaimed && (
-        <div className="mt-3">
-          <div className="mb-1 flex items-center justify-between text-xs">
-            <span className="text-foreground-muted">
-              {currentValue.toLocaleString()}/
-              {mission.targetValue.toLocaleString()}
-            </span>
-            <span className="text-foreground-muted">{pct}%</span>
-          </div>
-          <div className="bg-card-border h-1.5 w-full overflow-hidden rounded-full">
-            <div
-              className={`h-full rounded-full transition-all ${
-                isCompleted ? "bg-green-500" : "bg-accent-primary"
-              }`}
-              style={{ width: `${pct}%` }}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Claim button */}
-      {isCompleted && !isClaimed && (
-        <button
-          onClick={onClaim}
-          className="bg-accent-primary hover:bg-accent-primary-hover mt-3 min-h-[44px] w-full rounded-lg py-2 text-sm font-medium text-white transition-colors"
+      {/* Reward float animation — outside opacity wrapper so it stays visible (4B) */}
+      {showRewardFloat && (
+        <span
+          className="floating-indicator pointer-events-none absolute right-4 bottom-16 text-sm font-bold"
+          style={rewardFloatStyle}
+          aria-hidden="true"
         >
-          Claim Reward
-        </button>
+          +{rewardLabel}
+        </span>
       )}
     </div>
   );
