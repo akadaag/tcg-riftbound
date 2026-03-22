@@ -218,6 +218,10 @@ function ShelfCard({
     ? calculateSellPrice(product.sellPriceBase, shelf.markup, hypeMult)
     : 0;
 
+  // B2: Low stock detection
+  const isLowStock =
+    shelf.productId !== null && shelf.quantity > 0 && shelf.quantity < 3;
+
   // Available in storage for this product
   const inStorage = shelf.productId
     ? (inventory.find((i) => i.productId === shelf.productId)?.ownedQuantity ??
@@ -228,7 +232,7 @@ function ShelfCard({
     <div
       className={`border-card-border bg-card-background rounded-xl border transition-all ${
         isSelected ? "ring-accent-primary/50 ring-2" : ""
-      }`}
+      } ${isLowStock ? "border-red-500/40" : ""}`}
     >
       <button
         onClick={onSelect}
@@ -248,9 +252,11 @@ function ShelfCard({
             {product ? (
               <>
                 <p className="font-medium">{product.name}</p>
-                <p className="text-foreground-secondary text-sm">
-                  {shelf.quantity} in stock &middot;{" "}
-                  {sellPrice.toLocaleString()} G each
+                <p
+                  className={`text-sm ${isLowStock ? "font-medium text-red-400" : "text-foreground-secondary"}`}
+                >
+                  {shelf.quantity} in stock{isLowStock ? " — Low!" : ""}{" "}
+                  &middot; {sellPrice.toLocaleString()} G each
                 </p>
               </>
             ) : (

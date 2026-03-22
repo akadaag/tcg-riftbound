@@ -380,6 +380,34 @@ export default function HomePage() {
           </div>
         )}
 
+        {/* Market Trends (B1) */}
+        {(save.dailyMarketTrends ?? []).length > 0 && (
+          <section className="mb-4">
+            <h2 className="mb-2 text-sm font-semibold">Today&apos;s Market</h2>
+            <div className="space-y-2">
+              {(save.dailyMarketTrends ?? []).map((trend) => {
+                const colors: Record<string, string> = {
+                  traffic: "border-cyan-500/30 bg-cyan-500/10 text-cyan-300",
+                  tolerance:
+                    "border-orange-500/30 bg-orange-500/10 text-orange-300",
+                  hype: "border-pink-500/30 bg-pink-500/10 text-pink-300",
+                  budget: "border-green-500/30 bg-green-500/10 text-green-300",
+                };
+                const colorClass = colors[trend.category] ?? colors.traffic;
+                return (
+                  <div
+                    key={trend.id}
+                    className={`rounded-lg border px-3 py-2 ${colorClass}`}
+                  >
+                    <p className="text-sm font-medium">{trend.label}</p>
+                    <p className="text-xs opacity-70">{trend.description}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
         {/* Quick Stats */}
         <div className="mb-4 grid grid-cols-2 gap-3">
           <StatCard
@@ -425,8 +453,17 @@ export default function HomePage() {
                       <span className="text-foreground-secondary max-w-[70%] truncate">
                         {name}
                       </span>
-                      <span className="text-foreground-muted">
+                      <span
+                        className={
+                          shelf.quantity > 0 && shelf.quantity < 3
+                            ? "font-medium text-red-400"
+                            : "text-foreground-muted"
+                        }
+                      >
                         {shelf.quantity}
+                        {shelf.quantity > 0 && shelf.quantity < 3
+                          ? " Low!"
+                          : ""}
                       </span>
                     </div>
                     <div className="bg-card-border h-1 overflow-hidden rounded-full">

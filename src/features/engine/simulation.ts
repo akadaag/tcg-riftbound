@@ -21,6 +21,7 @@ import type {
   ShopNotification,
   SaveGame,
   DayReport,
+  PriceSentiment,
 } from "@/types/game";
 import {
   PHASE_DURATION_MS,
@@ -136,6 +137,8 @@ export interface TickResult {
   updatedShelves: ShelfSlot[] | null;
   /** Notification to show in the live feed (null if nothing to report). */
   notification: ShopNotification | null;
+  /** B2: Additional notifications (e.g. shelf empty, low stock). */
+  extraNotifications: ShopNotification[];
   /** A4: Reputation penalty this tick (negative number, e.g. -1). 0 if no penalty. */
   reputationPenalty: number;
 }
@@ -148,6 +151,8 @@ export interface TickCustomerVisit {
   productName: string | null;
   quantity: number;
   revenue: number;
+  /** B3: How the customer felt about the price. */
+  priceSentiment: PriceSentiment;
 }
 
 // ── Core tick function ────────────────────────────────────────────────
@@ -176,6 +181,9 @@ export interface TickCustomerVisit {
  * @param toleranceBonus       Additive tolerance bonus from upgrades (and areas)
  * @param competitiveCustomerBonus  Additive weight bonus for competitive customer type (from areas)
  * @param whaleCustomerBonus        Additive weight bonus for whale customer type (from areas)
+ * @param trendToleranceMult        Multiplicative tolerance mod from daily trends (1.0 = no change)
+ * @param trendBudgetMult           Multiplicative budget mod from daily trends (1.0 = no change)
+ * @param trendCustomerTypeBonus    Additive customer type weight bonuses from daily trends
  */
 export function processTick(
   now: number,
@@ -193,6 +201,9 @@ export function processTick(
   toleranceBonus: number = 0,
   competitiveCustomerBonus: number = 0,
   whaleCustomerBonus: number = 0,
+  trendToleranceMult: number = 1.0,
+  trendBudgetMult: number = 1.0,
+  trendCustomerTypeBonus: Partial<Record<CustomerType, number>> = {},
 ): TickResult {
   // Advance day elapsed time by one tick
   const newDayElapsedMs = dayElapsedMs + TICK_INTERVAL_MS;
@@ -222,6 +233,7 @@ export function processTick(
       customerVisit: null,
       updatedShelves: null,
       notification: null,
+      extraNotifications: [],
       reputationPenalty: 0,
     };
   }
@@ -268,6 +280,7 @@ export function processTick(
       customerVisit: null,
       updatedShelves: null,
       notification: null,
+      extraNotifications: [],
       reputationPenalty: 0,
     };
   }
@@ -295,6 +308,16 @@ export function processTick(
   if (whaleCustomerBonus > 0) {
     effectiveBonuses.whale = (effectiveBonuses.whale ?? 0) + whaleCustomerBonus;
   }
+  // B1: Merge trend customer type bonuses
+  for (const [ct, bonus] of Object.entries(trendCustomerTypeBonus) as [
+    CustomerType,
+    number,
+  ][]) {
+    effectiveBonuses[ct] = (effectiveBonuses[ct] ?? 0) + bonus;
+  }
+
+  // B1: Combine event + trend budget multiplier
+  const effectiveBudgetMult = modifiers.budgetMultiplier * trendBudgetMult;
 
   const eventAffectedSets = activeEvents.flatMap((e) => e.affectedSets);
 
@@ -317,18 +340,14 @@ export function processTick(
       preferredSets = eventAffectedSets;
     }
 
-    const customer = generateCustomer(
-      type,
-      modifiers.budgetMultiplier,
-      preferredSets,
-    );
+    const customer = generateCustomer(type, effectiveBudgetMult, preferredSets);
 
     const visitResult = simulateCustomerVisit(
       customer,
       workingShelves,
       products,
       setHype,
-      modifiers.priceToleranceMultiplier,
+      modifiers.priceToleranceMultiplier * trendToleranceMult,
       toleranceBonus,
     );
 
@@ -342,6 +361,7 @@ export function processTick(
         : null,
       quantity: visitResult.quantity,
       revenue: visitResult.revenue,
+      priceSentiment: visitResult.priceSentiment,
     };
 
     if (visitResult.purchased && visitResult.productId) {
@@ -370,12 +390,65 @@ export function processTick(
         lastCustomerVisit.productName ?? visitResult.productId;
       const qtyStr =
         visitResult.quantity > 1 ? ` ×${visitResult.quantity}` : "";
+      // B3: Append price sentiment to sale notification
+      const sentimentStr = visitResult.priceSentiment
+        ? ` (${visitResult.priceSentiment})`
+        : "";
       lastNotification = {
         id: `notif-${now}-${ci}-${Math.random().toString(36).slice(2, 7)}`,
-        message: `${customer.name} bought ${productName}${qtyStr} — +${visitResult.revenue.toLocaleString()} G`,
+        message: `${customer.name} bought ${productName}${qtyStr} — +${visitResult.revenue.toLocaleString()} G${sentimentStr}`,
         at: new Date(now).toISOString(),
         type: "sale",
       };
+    } else if (visitResult.priceSentiment === "too expensive") {
+      // B3: Customer left because prices were too high — show feedback
+      lastNotification = {
+        id: `notif-${now}-${ci}-${Math.random().toString(36).slice(2, 7)}`,
+        message: `${customer.name} browsed but left — prices too expensive.`,
+        at: new Date(now).toISOString(),
+        type: "info",
+      };
+    }
+  }
+
+  // B2: Detect shelves that just emptied or dropped below 3 after a sale
+  const extraNotifications: ShopNotification[] = [];
+  if (lastUpdatedShelves) {
+    for (let si = 0; si < lastUpdatedShelves.length; si++) {
+      const oldShelf = shelves[si];
+      const newShelf = lastUpdatedShelves[si];
+      // Shelf just emptied (had stock before, now empty)
+      if (
+        oldShelf.productId &&
+        oldShelf.quantity > 0 &&
+        (newShelf.quantity <= 0 || !newShelf.productId)
+      ) {
+        const productName =
+          products.get(oldShelf.productId)?.name ?? oldShelf.productId;
+        extraNotifications.push({
+          id: `notif-empty-${now}-${si}-${Math.random().toString(36).slice(2, 7)}`,
+          message: `Shelf ${si + 1} (${productName}) is now empty! Restock to avoid lost sales.`,
+          at: new Date(now).toISOString(),
+          type: "info",
+        });
+      }
+      // Shelf dropped below 3 (had >=3 before, now 1-2)
+      else if (
+        oldShelf.productId &&
+        oldShelf.quantity >= 3 &&
+        newShelf.productId &&
+        newShelf.quantity > 0 &&
+        newShelf.quantity < 3
+      ) {
+        const productName =
+          products.get(oldShelf.productId)?.name ?? oldShelf.productId;
+        extraNotifications.push({
+          id: `notif-lowstock-${now}-${si}-${Math.random().toString(36).slice(2, 7)}`,
+          message: `Shelf ${si + 1} (${productName}) is running low — only ${newShelf.quantity} left.`,
+          at: new Date(now).toISOString(),
+          type: "info",
+        });
+      }
     }
   }
 
@@ -405,6 +478,7 @@ export function processTick(
     customerVisit: lastCustomerVisit,
     updatedShelves: lastUpdatedShelves,
     notification: lastNotification,
+    extraNotifications,
     reputationPenalty,
   };
 }

@@ -11,6 +11,7 @@ import type {
   CustomerType,
   CustomerVisitResult,
   GameEvent,
+  PriceSentiment,
   ProductType,
   ShelfSlot,
   SetHype,
@@ -204,6 +205,27 @@ export function generateCustomerWave(
 // ── Customer Visit Simulation ────────────────────────────────────────
 
 /**
+ * B3: Classify price sentiment based on how close the price ratio is
+ * to the customer's maximum acceptable ratio.
+ *
+ * position = (priceRatio - 1) / (maxAcceptableRatio - 1)
+ *   ≤ 0.40 → "fair price"
+ *   ≤ 0.75 → "a bit high"
+ *   > 0.75 → "pricey!"
+ */
+function classifyPriceSentiment(
+  priceRatio: number,
+  maxAcceptableRatio: number,
+): PriceSentiment {
+  const range = maxAcceptableRatio - 1;
+  if (range <= 0) return priceRatio <= 1 ? "fair price" : "pricey!";
+  const position = (priceRatio - 1) / range;
+  if (position <= 0.4) return "fair price";
+  if (position <= 0.75) return "a bit high";
+  return "pricey!";
+}
+
+/**
  * Simulate a single customer visiting the shop.
  * The customer browses shelves (based on patience) and buys if they find
  * something within budget and markup tolerance.
@@ -237,6 +259,14 @@ export function simulateCustomerVisit(
     product: ProductDefinition;
   } | null = null;
   let bestSatisfaction = 0;
+  let bestPriceRatio = 0;
+  let bestMaxAcceptableRatio = 0;
+
+  // B3: Track whether the customer saw a relevant product but rejected it on price
+  let sawRelevantProduct = false;
+  let rejectedOnPrice = false;
+  let worstRejectedRatio = 0;
+  let worstRejectedMaxRatio = 0;
 
   for (const [index, shelf] of shuffled) {
     if (!shelf.productId || shelf.quantity <= 0) continue;
@@ -260,6 +290,9 @@ export function simulateCustomerVisit(
       continue;
     }
 
+    // This product is relevant to the customer
+    sawRelevantProduct = true;
+
     // Calculate effective sell price with hype
     const setHypeValue = hypeBySet.get(product.setCode) ?? 50;
     const hypeMult = getHypeMultiplier(setHypeValue);
@@ -269,8 +302,13 @@ export function simulateCustomerVisit(
       hypeMult,
     );
 
-    // Will they buy?
+    // Compute price ratio and max acceptable ratio for sentiment
+    const priceRatio =
+      product.sellPriceBase > 0 ? sellPrice / product.sellPriceBase : 1;
     const effectiveTolerance = customer.priceTolerance * priceToleranceMod;
+    const maxAcceptableRatio = 1 + (effectiveTolerance + toleranceBonus) * 1.5;
+
+    // Will they buy?
     if (
       willCustomerBuy(
         sellPrice,
@@ -281,12 +319,21 @@ export function simulateCustomerVisit(
       )
     ) {
       // Calculate satisfaction (lower price = higher satisfaction)
-      const priceRatio = sellPrice / product.sellPriceBase;
       const satisfaction = Math.max(0, Math.min(1, 1 - (priceRatio - 1) * 0.5));
 
       if (!bestShelf || satisfaction > bestSatisfaction) {
         bestShelf = { index, price: sellPrice, product };
         bestSatisfaction = satisfaction;
+        bestPriceRatio = priceRatio;
+        bestMaxAcceptableRatio = maxAcceptableRatio;
+      }
+    } else {
+      // B3: Customer rejected this product — track if it was price-related
+      // (if within budget but price ratio too high, or over budget)
+      rejectedOnPrice = true;
+      if (priceRatio > worstRejectedRatio) {
+        worstRejectedRatio = priceRatio;
+        worstRejectedMaxRatio = maxAcceptableRatio;
       }
     }
   }
@@ -314,8 +361,16 @@ export function simulateCustomerVisit(
       quantity,
       revenue: bestShelf.price * quantity,
       satisfaction: bestSatisfaction,
+      priceSentiment: classifyPriceSentiment(
+        bestPriceRatio,
+        bestMaxAcceptableRatio,
+      ),
+      leftDueToPrice: false,
     };
   }
+
+  // B3: Determine why the customer didn't buy
+  const leftDueToPrice = sawRelevantProduct && rejectedOnPrice;
 
   return {
     customer,
@@ -324,6 +379,8 @@ export function simulateCustomerVisit(
     quantity: 0,
     revenue: 0,
     satisfaction: 0,
+    priceSentiment: leftDueToPrice ? "too expensive" : null,
+    leftDueToPrice,
   };
 }
 

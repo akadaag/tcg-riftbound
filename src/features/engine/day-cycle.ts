@@ -70,6 +70,7 @@ import {
   getReputationTier,
   getReputationTierBonuses,
 } from "@/features/engine/reputation";
+import { generateDailyTrends } from "@/features/engine/market-trends";
 
 // ── Offline Progress ─────────────────────────────────────────────────
 
@@ -568,6 +569,35 @@ export function advanceDay(
     ...eventPlannerResult.newGameEvents,
   ];
 
+  // 7b. Generate daily market trends for the next day (B1)
+  const trendSetCodes = save.setHype.map((h) => h.setCode);
+  const trendSetNames: Record<string, string> = {};
+  if (sets) {
+    for (const s of sets) {
+      trendSetNames[s.setCode] = s.setName;
+    }
+  }
+  const nextDayTrends = generateDailyTrends(
+    nextDay,
+    xpResult.level,
+    trendSetCodes,
+    trendSetNames,
+  );
+
+  // Apply hype boosts from trends
+  for (const trend of nextDayTrends) {
+    if (trend.hypeBoost > 0 && trend.hypeSetCode) {
+      updatedHype = updatedHype.map((h) =>
+        h.setCode === trend.hypeSetCode
+          ? {
+              ...h,
+              currentHype: Math.min(100, h.currentHype + trend.hypeBoost),
+            }
+          : h,
+      );
+    }
+  }
+
   // 8. Check for newly completed sets and award currency rewards.
   //    A set is "complete" when the player owns at least 1 copy of every card
   //    in that set (totalCardCount includes showcase variants). We track which
@@ -817,6 +847,9 @@ export function advanceDay(
     playerEventCooldowns: eventPlannerResult.updatedCooldowns,
     totalPlayerEventsHosted:
       (save.totalPlayerEventsHosted ?? 0) + eventPlannerResult.newlyHosted,
+    // Market Trends (B1)
+    dailyMarketTrends: nextDayTrends,
+    dailyMarketTrendDay: nextDay,
   };
 
   // Record the completed day's XP in the report

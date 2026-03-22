@@ -232,6 +232,13 @@ export interface Customer {
   patience: number;
 }
 
+export type PriceSentiment =
+  | "fair price"
+  | "a bit high"
+  | "pricey!"
+  | "too expensive"
+  | null;
+
 export interface CustomerVisitResult {
   customer: Customer;
   purchased: boolean;
@@ -239,6 +246,10 @@ export interface CustomerVisitResult {
   quantity: number;
   revenue: number;
   satisfaction: number;
+  /** B3: How the customer felt about the price. null if no relevant shelf found. */
+  priceSentiment: PriceSentiment;
+  /** B3: True if the customer left because of price (not lack of stock). */
+  leftDueToPrice: boolean;
 }
 
 // --------------- Event System ---------------
@@ -587,6 +598,23 @@ export interface SaveGame {
   totalPlayerEventsHosted: number;
   /** Per-type cooldown tracking: eventType -> day the cooldown expires. */
   playerEventCooldowns: Partial<Record<PlayerEventType, number>>;
+
+  // --- Market Trends (B1) ---
+  /** Daily market trends for the current day (regenerated each morning). */
+  dailyMarketTrends?: Array<{
+    id: string;
+    label: string;
+    description: string;
+    category: "traffic" | "tolerance" | "hype" | "budget";
+    trafficFlat: number;
+    toleranceMult: number;
+    hypeBoost: number;
+    hypeSetCode: string;
+    customerTypeBonus: Partial<Record<CustomerType, number>>;
+    budgetMult: number;
+  }>;
+  /** Day number for which dailyMarketTrends were generated. */
+  dailyMarketTrendDay?: number;
 }
 
 // ============================================

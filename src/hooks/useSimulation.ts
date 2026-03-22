@@ -32,10 +32,14 @@ import { getActiveEvents } from "@/features/engine/events";
 import { getAreaEffects } from "@/features/engine/areas";
 import { getStaffEffects } from "@/features/engine/staff";
 import { getReputationTierBonuses } from "@/features/engine/reputation";
+import {
+  getCombinedTrendModifiers,
+  generateDailyTrends,
+} from "@/features/engine/market-trends";
 import { TICK_INTERVAL_MS } from "@/types/game";
 
 export function useSimulation() {
-  const { applyTickResult, applyDayTransition, addNotification } =
+  const { applyTickResult, applyDayTransition, addNotification, patchSave } =
     useGameStore();
 
   const tick = useCallback(() => {
@@ -44,6 +48,27 @@ export function useSimulation() {
 
     // P3-05: Hydration guard — don't tick before save is loaded
     if (!currentSave?.lastTickAt && !currentSave?.currentPhase) return;
+
+    // B1: Lazily generate market trends if missing or stale
+    if ((currentSave.dailyMarketTrendDay ?? 0) !== currentSave.currentDay) {
+      const sets = getAllSets();
+      const setNames: Record<string, string> = {};
+      for (const s of sets) {
+        setNames[s.setCode] = s.setName;
+      }
+      const trends = generateDailyTrends(
+        currentSave.currentDay,
+        currentSave.shopLevel,
+        currentSave.setHype.map((h) => h.setCode),
+        setNames,
+      );
+      patchSave({
+        dailyMarketTrends: trends,
+        dailyMarketTrendDay: currentSave.currentDay,
+      });
+      // Don't run a tick this frame — let the store update first
+      return;
+    }
 
     // Don't run during night — the dashboard shows the summary
     if (currentSave.currentPhase === "night") return;
@@ -65,6 +90,11 @@ export function useSimulation() {
       currentSave.currentDay,
     );
 
+    // B1: Compute combined trend modifiers for the current day
+    const trendMods = getCombinedTrendModifiers(
+      currentSave.dailyMarketTrends ?? [],
+    );
+
     const result = processTick(
       Date.now(),
       currentSave.dayElapsedMs,
@@ -79,7 +109,8 @@ export function useSimulation() {
       upgradeMods.trafficBonus +
         areaEffects.trafficBonus +
         staffEffects.trafficBonus +
-        repTierBonuses.trafficBonus,
+        repTierBonuses.trafficBonus +
+        trendMods.trafficFlat,
       dcBonus.trafficBonus,
       upgradeMods.toleranceBonus +
         areaEffects.toleranceBonus +
@@ -88,6 +119,9 @@ export function useSimulation() {
       areaEffects.competitiveCustomerBonus +
         staffEffects.competitiveCustomerBonus,
       areaEffects.whaleCustomerBonus,
+      trendMods.toleranceMult,
+      trendMods.budgetMult,
+      trendMods.customerTypeBonus,
     );
 
     // Night→Morning: advance the day
@@ -134,7 +168,12 @@ export function useSimulation() {
       notification: result.notification,
       reputationPenalty: result.reputationPenalty,
     });
-  }, [applyTickResult, applyDayTransition, addNotification]);
+
+    // B2: Dispatch extra notifications (shelf empty, low stock)
+    for (const extra of result.extraNotifications) {
+      addNotification(extra);
+    }
+  }, [applyTickResult, applyDayTransition, addNotification, patchSave]);
 
   // Start the tick interval; pause when tab hidden
   useEffect(() => {
